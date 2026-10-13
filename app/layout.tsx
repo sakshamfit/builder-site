@@ -3,6 +3,7 @@ import { Rail } from "@/components/layout/Rail";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { RevealProvider } from "@/components/layout/RevealProvider";
+import { SiteIntro } from "@/components/layout/SiteIntro";
 import { siteConfig } from "@/lib/site-config";
 
 /*
@@ -45,6 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-IN">
       <body>
+        {/* Opening: the scroll-scrubbed video intro. Covers the page until entered. */}
+        <SiteIntro />
+
         {/*
           Film grain. Fixed, decorative, pointer-events none — it sits over the
           page the way grain sits over a print, and is never interactive.

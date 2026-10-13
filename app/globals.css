@@ -410,7 +410,18 @@ p:last-child {
    Print
    ========================================================================== */
 
+/* Opening intro: never shown to readers who ask for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .site-intro {
+    display: none !important;
+  }
+}
+
 @media print {
+  .site-intro {
+    display: none !important;
+  }
+
   body {
     padding-left: 0;
     background: #fff;
