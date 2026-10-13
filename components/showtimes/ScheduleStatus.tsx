@@ -1,15 +1,17 @@
 import { Badge } from "@/components/ui/Badge";
 import { scheduleFreshness } from "@/lib/date-format";
-import { siteConfig } from "@/lib/site-config";
 import styles from "./showtimes.module.css";
 
 /**
  * Schedule provenance line.
  *
- * A visitor is entitled to know how current a timetable is, and whether it is
- * real. This states both: where the data came from and when it was produced.
- * The freshness treatment escalates to plain advice once a snapshot goes stale
+ * A visitor is entitled to know how current a timetable is and where it came
+ * from, so this states both: the source, and when the source produced the data.
+ * The freshness treatment escalates to plain advice once a snapshot goes stale,
  * rather than quietly presenting old times as current.
+ *
+ * This component only ever renders beside a real feed's screenings. There is no
+ * "sample data" state to warn about any more, because there is no sample data.
  */
 export function ScheduleStatus({
   lastUpdated,
@@ -19,6 +21,7 @@ export function ScheduleStatus({
 }: {
   lastUpdated: string | null;
   sourceLabel: string;
+  /** Non-fatal problem reported by the feed parser, e.g. dropped artwork. */
   notice: string | null;
   nowISO: string;
 }) {
@@ -40,19 +43,17 @@ export function ScheduleStatus({
       {notice ? (
         <p className="note">
           <span>
-            <strong>Sample data.</strong> {notice}
+            <strong>From the venue feed.</strong> {notice}
           </span>
         </p>
       ) : null}
 
       <p className={styles.statusRow}>
-        <Badge tone={siteConfig.isFixtureMode ? "amber" : "ok"}>
-          {siteConfig.isFixtureMode ? "Development" : "Live schedule"}
-        </Badge>
+        <Badge tone="ok">Venue feed</Badge>
         <span>{sourceLabel}</span>
         {updatedLabel ? <span aria-hidden="true">·</span> : null}
         {updatedLabel ? <span>{updatedLabel}</span> : null}
-        {freshness.level === "stale" && !siteConfig.isFixtureMode ? (
+        {freshness.level === "stale" ? (
           <span>
             Times may have changed since — please confirm with the cinema before travelling.
           </span>

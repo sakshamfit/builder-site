@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
 import { venue } from "@/data/cinema";
 import { getVenueWithScreens } from "@/lib/schedule-source";
-import { SCREEN_NAMING_NOTE, confirmed } from "@/lib/cinema-content";
+import { confirmed } from "@/lib/cinema-content";
 import type { Facility } from "@/lib/types";
 import styles from "./cinema.module.css";
 
@@ -100,8 +100,8 @@ export async function ScreenLegend() {
           Screens
         </h2>
         <p className={styles.pendingValue}>
-          {screensFrom === "unavailable"
-            ? "Auditorium details come from the cinema's scheduling system, which is not responding right now. Please check with the cinema directly."
+          {screensFrom !== "feed"
+            ? "The cinema has not supplied its auditorium list. Screen names, formats and accessibility provision appear here only once the venue's own scheduling data carries them."
             : "No auditorium details have been supplied."}
         </p>
       </section>
@@ -113,10 +113,6 @@ export async function ScreenLegend() {
       <h2 className={styles.panelTitle} id="screens-title">
         Screens
       </h2>
-      {screensFrom === "sample" ? (
-        <p className={styles.pendingValue}>{SCREEN_NAMING_NOTE}</p>
-      ) : null}
-
       <ul className={styles.screenList}>
         {screens.map((screen) => (
           <li className={styles.screenItem} key={screen.id}>

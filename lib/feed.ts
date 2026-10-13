@@ -295,15 +295,26 @@ function parseMovie(
     genres,
     certification,
     formats,
-    posterPath,
-    posterAlt,
+    /* Null unless the allow-list and the licence check both passed. */
+    artwork: posterPath
+      ? {
+          url: posterPath,
+          alt: posterAlt,
+          /*
+           * The parser refuses any payload that supplies artwork without a
+           * payload-level "artworkLicence", so reaching here means a licence
+           * exists. A per-film credit refines it when the feed supplies one.
+           */
+          licence:
+            nonEmptyString(raw.artworkCredit) ??
+            "Covered by the licence declared in the venue feed",
+        }
+      : null,
     releaseDate,
-    rights: {
-      artwork:
-        nonEmptyString(raw.artworkCredit) ??
-        (posterPath ? "Artwork supplied by the provider feed" : "No artwork supplied"),
-      copy: nonEmptyString(raw.copyCredit) ?? `Synopsis supplied by ${options.expectedVenueId} feed`,
-    },
+    /* Feed dates belong to this venue's own programme, not a national calendar. */
+    releaseScope: null,
+    sources: [],
+    provenance: `Supplied by the ${options.expectedVenueId} ticketing feed`,
   };
 }
 

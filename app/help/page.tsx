@@ -62,13 +62,14 @@ export default function HelpPage() {
           ))}
         </ol>
 
-        {siteConfig.isFixtureMode ? (
+        {!siteConfig.hasScreeningSchedule ? (
           <p className="note" style={{ marginTop: "1.25rem" }}>
             <span>
-              <strong>In this build, the last step is disabled.</strong> The screenings you can see
-              are sample data, so no ticket link is produced. Once the venue&rsquo;s provider is
-              connected, each screening becomes a link that says{" "}
-              <em>Continue to [ticketing partner]</em>.
+              <strong>Right now, the last step is not available.</strong> This site is not connected
+              to the cinema&rsquo;s ticketing system, so it publishes no screening times and no
+              ticket links. The film programme is real and sourced — the timetable is the part that
+              is missing. Once the venue&rsquo;s provider is connected, each screening becomes a
+              link that says <em>Continue to [ticketing partner]</em>.
             </span>
           </p>
         ) : null}

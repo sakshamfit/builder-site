@@ -1,59 +1,62 @@
 /**
- * The single entry point for schedule and catalogue data.
+ * The single entry point for catalogue and schedule data.
  *
- * Pages call `getScheduleSnapshot()` and render one of two states. This keeps the
- * difference between sample data and live provider data in exactly one place, and
- * makes "the schedule is unavailable" a first-class state rather than an
- * afterthought.
+ * There are exactly two sources, and they answer different questions:
  *
- * Both modes are fully implemented. The only thing separating this build from a
- * live site is configuration:
+ *   "programme" — the sourced national release calendar in
+ *                 `data/programme.json`. Real films, real announced release
+ *                 dates, each one cited. It carries NO screenings, because a
+ *                 release calendar cannot know what this cinema is showing.
  *
- *   NEXT_PUBLIC_DATA_MODE=live
- *   SCHEDULE_FEED_URL=https://…
- *   POSTER_HOST_ALLOWLIST=cdn.example.com
+ *   "live"      — the venue's own ticketing feed, which is the only thing that
+ *                 can supply screening times, screens and per-screening data.
  *
- * In live mode the catalogue, the screens and the screenings all come from the
- * partner payload — the development fixtures are not read at all, so there is no
- * path by which a sample film can appear beside a real one.
+ * Nothing is mixed between them and there is no third source: the development
+ * fixtures that used to live in `data/movies.ts` and
+ * `data/showtimes.fixture.ts` have been deleted, so there is no code path by
+ * which an invented film or an invented screening can reach a page. A build with
+ * no feed renders the real release calendar and says plainly that screening
+ * times are not connected; it does not quietly substitute anything.
  */
 
 import { cache } from "react";
-import { siteConfig, type DataMode } from "@/lib/site-config";
+import { siteConfig } from "@/lib/site-config";
 import { validateSchedule, type ScheduleHealth } from "@/lib/schedule";
 import { loadFeed } from "@/lib/feed-source";
-import { FIXTURE_LAST_UPDATED, FIXTURE_NOTICE, fixtureShowtimes } from "@/data/showtimes.fixture";
-import { movies as fixtureMovies } from "@/data/movies";
+import { loadProgramme } from "@/lib/programme";
 import { venue } from "@/data/cinema";
 import type { Movie, Screen, Showtime, Venue } from "@/lib/types";
 
 export type ScheduleSnapshot =
   | {
       state: "ready";
-      mode: DataMode;
+      mode: "programme" | "live";
+      /** Screenings. Always empty on the sourced programme. */
       showtimes: Showtime[];
-      /** Films that may be rendered. Never mixed between modes. */
+      /** True only when a real timetable exists to render. */
+      scheduleAvailable: boolean;
+      /** Films that may be rendered. Never mixed between sources. */
       catalogue: Movie[];
-      /** Screens that may be rendered, resolved against the active source. */
+      /** Screens that may be rendered. Empty on the sourced programme. */
       screens: Screen[];
       /** The venue record with `screens` replaced by the active source's screens. */
       venue: Venue;
       /** ISO instant the data was produced by its source. */
-      lastUpdated: string;
+      lastUpdated: string | null;
       /** Provider or source name, shown to the visitor. */
       sourceLabel: string;
-      /** Prominent notice for sample data. Null when live. */
+      /** Statement of what the data is and is not. */
       notice: string | null;
       /** True when a live payload is older than the configured window. */
       isStale: boolean;
       /** Records that failed validation, for build logs and the health report. */
-      health: ScheduleHealth;
+      health: ScheduleHealth | null;
       /** Non-fatal parser problems, e.g. dropped artwork. */
       warnings: string[];
     }
   | {
       state: "unavailable";
-      mode: DataMode;
+      mode: "programme" | "live";
       /** Plain-language reason, safe to show a visitor. */
       reason: string;
       /** Technical detail for logs. Rendered in development only. */
@@ -65,15 +68,16 @@ export type ScheduleSnapshot =
  * Replaces the venue's screen list with the active source's screens.
  *
  * The venue record in `data/cinema.ts` holds owner-confirmed facts about the
- * venue; the screen list is operational data that belongs to whoever is running
- * the programme. Keeping them separate means a partner feed can name its own
- * auditoriums without anyone editing a venue facts file.
+ * venue. Screen identity is operational data that belongs to whoever is running
+ * the programme, so a partner feed names its own auditoriums without anyone
+ * editing a venue facts file — and the sourced programme names none, because a
+ * release calendar cannot know how a cinema labels its screens.
  */
 function withScreens(screens: Screen[]): Venue {
   return { ...venue, screens };
 }
 
-/** Reads, validates and returns the schedule for the current data mode. */
+/** Reads, validates and returns the catalogue and schedule for the active source. */
 export async function getScheduleSnapshot(): Promise<ScheduleSnapshot> {
   if (siteConfig.dataMode === "live") {
     const load = await loadFeed();
@@ -120,6 +124,7 @@ export async function getScheduleSnapshot(): Promise<ScheduleSnapshot> {
       state: "ready",
       mode: "live",
       showtimes: health.valid,
+      scheduleAvailable: true,
       catalogue: load.feed.movies,
       screens,
       venue: resolvedVenue,
@@ -133,66 +138,75 @@ export async function getScheduleSnapshot(): Promise<ScheduleSnapshot> {
   }
 
   /*
-   * Fixture mode. The samples run through the same validation a live feed uses,
-   * so the validation itself is exercised on every build rather than being dead
-   * code until launch.
+   * Sourced programme. This is real data with no screenings attached, so the
+   * snapshot is "ready" for the catalogue and explicitly not available as a
+   * schedule — a distinction the UI renders, rather than an empty timetable that
+   * could be mistaken for "nothing is on".
    */
-  const health = validateSchedule(fixtureShowtimes, fixtureMovies, venue);
+  const programme = loadProgramme();
 
-  if (health.valid.length === 0) {
+  if (programme.movies.length === 0) {
     return {
       state: "unavailable",
-      mode: "fixture",
-      reason: "The development schedule could not be read.",
-      detail: `All ${fixtureShowtimes.length} fixture records failed validation.`,
+      mode: "programme",
+      reason: "No film programme could be read.",
+      detail:
+        programme.rejected.length > 0
+          ? `Every entry in data/programme.json failed validation:\n  - ${programme.rejected
+              .map((entry) => `${entry.slug}: ${entry.errors.join("; ")}`)
+              .join("\n  - ")}`
+          : "data/programme.json contains no films.",
       lastUpdated: null,
     };
   }
 
+  const noScreens: Screen[] = [];
+
   return {
     state: "ready",
-    mode: "fixture",
-    showtimes: health.valid,
-    catalogue: fixtureMovies,
-    screens: venue.screens,
-    venue,
-    lastUpdated: FIXTURE_LAST_UPDATED,
-    sourceLabel: "Development sample schedule",
-    notice: FIXTURE_NOTICE,
+    mode: "programme",
+    showtimes: [],
+    scheduleAvailable: false,
+    catalogue: programme.movies,
+    screens: noScreens,
+    venue: withScreens(noScreens),
+    lastUpdated: null,
+    sourceLabel: programme.sourceLabel,
+    notice: programme.caveat,
     isStale: false,
-    health,
-    warnings: [],
+    health: null,
+    warnings: programme.rejected.map(
+      (entry) => `data/programme.json — dropped "${entry.slug}": ${entry.errors.join("; ")}`,
+    ),
   };
 }
 
 /**
  * The venue record with whatever screen list is currently authoritative.
  *
- * Used by the venue-information sections, which must keep working when the
- * programme feed is down: the address and access facts are owner-supplied and
- * have nothing to do with whether a partner API is answering. Only the screen
- * list depends on the feed, so only the screen list degrades.
+ * Used by the venue-information sections, which must keep working when there is
+ * no schedule: the address and access facts are owner-supplied and have nothing
+ * to do with whether a partner API is answering. Only the screen list depends on
+ * a feed, so only the screen list degrades — and it never falls back to invented
+ * auditoriums.
  */
 export const getVenueWithScreens = cache(
-  async (): Promise<{ venue: Venue; screensFrom: "feed" | "sample" | "unavailable" }> => {
+  async (): Promise<{ venue: Venue; screensFrom: "feed" | "unavailable" }> => {
     const snapshot = await getScheduleSnapshot();
-    if (snapshot.state === "ready") {
+    if (snapshot.state === "ready" && snapshot.screens.length > 0) {
       return {
         venue: snapshot.venue,
-        screensFrom: snapshot.mode === "live" ? "feed" : "sample",
+        screensFrom: snapshot.mode === "live" ? "feed" : "unavailable",
       };
     }
-    // No screens to offer. The venue facts still render; the screen section says
-    // why it cannot list any rather than falling back to sample auditoriums,
-    // which would be inventing a venue's layout.
     return { venue: { ...venue, screens: [] }, screensFrom: "unavailable" };
   },
 );
 
 /**
  * Development- and operator-facing report of rejected records. Shown on the
- * movies page in development so a malformed payload is visible while the
- * integration is being built.
+ * movies page in development so a malformed payload or programme file is visible
+ * while the integration is being built.
  */
 export function describeHealth(health: ScheduleHealth): string | null {
   if (health.rejected.length === 0) return null;

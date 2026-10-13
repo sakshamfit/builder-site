@@ -8,7 +8,7 @@
  * See .env.example for the full list and README "Production configuration".
  */
 
-export type DataMode = "fixture" | "live";
+export type DataMode = "programme" | "live";
 
 function readEnv(value: string | undefined): string {
   return (value ?? "").trim();
@@ -40,8 +40,20 @@ function resolveSiteUrl(raw: string): string {
   }
 }
 
+const feedUrl = readEnv(process.env.SCHEDULE_FEED_URL);
 const dataModeRaw = readEnv(process.env.NEXT_PUBLIC_DATA_MODE).toLowerCase();
-const dataMode: DataMode = dataModeRaw === "live" ? "live" : "fixture";
+
+/**
+ * Live mode is only entered when both switches are set.
+ *
+ * Choosing "live" without a feed URL would flip the site into a mode whose only
+ * possible output is "the schedule could not be read", so it is treated as
+ * configuration that has not finished — the site stays on the sourced programme
+ * and keeps working. There is no third mode and no fallback data: the sourced
+ * programme is real film data, and the feed is real schedule data. Neither one
+ * pretends to be the other.
+ */
+const dataMode: DataMode = dataModeRaw === "live" && feedUrl ? "live" : "programme";
 
 export const siteConfig = {
   /**
@@ -67,14 +79,21 @@ export const siteConfig = {
    */
   timezone: readEnv(process.env.NEXT_PUBLIC_VENUE_TIMEZONE) || "Asia/Kolkata",
 
-  /** "fixture" = labelled sample data. "live" = a verified operator feed. */
+  /**
+   * "programme" = the sourced national release calendar, which is real film data
+   * but carries no screenings. "live" = the venue's own ticketing feed, which
+   * carries the screenings. Live requires SCHEDULE_FEED_URL.
+   */
   dataMode,
 
+  /** True when the venue's feed is authoritative for this build. */
+  isLiveMode: dataMode === "live",
+
   /**
-   * True while the site is serving sample data. Drives the site-wide banner,
-   * the per-card "sample" badges and the refusal to render booking links.
+   * True when the site can publish screening times at all. False on the sourced
+   * programme, where the UI must say so rather than show an empty timetable.
    */
-  isFixtureMode: dataMode === "fixture",
+  hasScreeningSchedule: dataMode === "live",
 
   ticketing: {
     /** Display name of the confirmed provider. Empty = no booking button. */
@@ -86,7 +105,7 @@ export const siteConfig = {
     /**
      * Server-only feed credentials. Never exposed to the browser bundle.
      */
-    feedUrl: readEnv(process.env.SCHEDULE_FEED_URL),
+    feedUrl,
   },
 } as const;
 

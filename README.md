@@ -1,17 +1,18 @@
 # Cinema at Elante Mall — venue website
 
 A mobile-first website that **showcases the cinema hall** at Elante Mall, Chandigarh — the
-auditorium, the screen, the seating, the foyer and the route from the mall to your seat — with
-showtimes and film listings supporting that, rather than the other way round.
+auditorium, the screen, the seating, the foyer and the route from the mall to your seat — with the
+film programme supporting that, rather than the other way round.
 
 This is a venue showcase, not a booking engine. It shows the hall and tells you what is playing; when
 you are ready, it hands you to the venue's ticketing partner to choose seats and pay.
 
-> **Status: development build, not launch-ready.**
-> The site currently serves **sample data** — fictional films with original placeholder artwork and
-> a generated schedule. It is structured so that connecting the venue's real schedule and ticketing
-> partner is a configuration change, not a rewrite. Nothing on the site invents a film, a showtime, a
-> price, an availability state, a facility or a policy.
+> **Status: production-ready build, awaiting two inputs from the venue.**
+> The site carries **no sample data of any kind.** The film programme is a real, sourced release
+> calendar — actual films, actual announced release dates, each one cited — and the venue facts are
+> the venue's own, with every unconfirmed item labelled as unconfirmed. What is still missing is the
+> cinema's own timetable, which only its ticketing feed can supply, and photographs of its own
+> interiors. Neither can be invented, and neither is.
 
 ---
 
@@ -26,13 +27,13 @@ Other commands:
 
 | Command | What it does |
 | --- | --- |
-| `npm run check` | Runs the project's self-checks (64 assertions) covering timezone maths, schedule validation, the ticketing handoff rules and the venue feed contract. |
+| `npm run check` | Runs the project's self-checks (75 assertions) covering the sourced programme's provenance rules, timezone maths, schedule validation, the ticketing handoff rules and the venue feed contract. |
 | `npm run feed:serve` | Starts a stand-in partner feed on `http://127.0.0.1:4100` so live mode can be exercised without a partner account. |
 | `npm run build` | Production build. |
 | `npm run lint` | ESLint (`eslint-config-next`). |
 | `npm run typecheck` | `tsc --noEmit`. |
 
-To run the site against a feed rather than the sample data:
+To run the site against the stand-in feed, which turns the schedule on:
 
 ```bash
 npm run feed:serve     # terminal 1
@@ -43,29 +44,27 @@ POSTER_HOST_ALLOWLIST=127.0.0.1 \
 npm run dev            # terminal 2
 ```
 
-Always run `npm run check` before changing anything in `lib/` — the rules it protects are not all
-reachable through the UI while the project is in fixture mode.
+Always run `npm run check` before changing anything in `lib/`. Several of the rules it protects —
+everything to do with screening times, prices, availability and the booking handoff — are not
+reachable through the UI until a feed is connected, so the checks are the only thing exercising them.
 
 ---
 
-## 2. What is real and what is sample data
+## 2. What is real, and what is genuinely not known yet
 
 | Content | State |
 | --- | --- |
+| Films, languages, genres, release dates | **Real and sourced.** Held in `data/programme.json`, each entry citing at least one published release calendar. `npm run check` fails if any entry loses its sources. |
+| Runtimes, certifications, synopses, posters | **Absent, deliberately.** The sources used publish no runtime, certification, synopsis or artwork, so the record holds `null` rather than a plausible guess. These appear when a feed or the venue supplies them. |
+| Screening times, screens, formats, prices | **Not available.** These are the venue's own operational data. They arrive only from its ticketing feed (`FEED_CONTRACT.md`). Until then the site says so, and shows nothing. |
 | Mall-level address (178-178A, Purv Marg, Industrial Area Phase I, Chandigarh 160002) | Confirmed — publicly listed mall address |
 | Google Maps search link for that address | Confirmed — a text search, **not** a pinned cinema entrance |
-| Cinema trade name, logo, brand colours | **Not confirmed** — the site uses the working name "Cinema at Elante Mall" |
-| Screen names and count | **Not confirmed** — fixtures use working labels ("Screen 1"…), and the UI says so |
+| Cinema trade name, logo, brand colours | **Not confirmed** — the site uses the working name "Cinema at Elante Mall" and draws no logo |
+| Screen names and count | **Not confirmed** — no auditorium list is published |
 | Box office hours, phone, email, parking, transit, entrances | **Not confirmed** — rendered as "awaiting venue", never guessed |
 | Accessibility provision | **Not confirmed** — listed item by item with its own verification state |
-| Films, runtimes, certifications, synopses | **Sample** — original fictional entries written for this project |
-| Poster artwork | **Sample** — original abstract images generated for this project |
-| Cinema-hall showcase imagery | **Illustration** — original generated images, captioned on screen as illustrations and not as photographs of this venue |
-| Schedule | **Sample** — generated for the next 7 days at build time |
-| Prices and seat availability | **Never invented** — the fixtures deliberately carry `null`/`unknown`, and the UI states that these come from the ticketing partner |
-
-The site says all of this to the visitor too: a development banner sits above the header, the
-schedule panel is labelled "Development", and every film card is tagged as a sample.
+| Photographs of this cinema | **Not supplied** — the site therefore shows none, and substitutes none |
+| Poster artwork | **Not licensed** — so cards carry a typographic plate that states artwork is pending |
 
 ### Why the gaps are published rather than filled
 
@@ -74,99 +73,135 @@ access, an entrance, or a refund policy costs someone a wasted journey. So the p
 `Fact<T>` type (`lib/types.ts`) whose values are only rendered when `status === "confirmed"`; anything
 else renders the owner's outstanding question instead (see `/cinema` → "Still being confirmed").
 
+The same rule governs the film programme. A release date is a fact a source can be held to; a
+national release date does not mean *this* cinema is screening the film, and the site says so on the
+programme page, in the banner above it, and on every film page.
+
 ---
 
 ## 3. Project structure
 
 ```text
 app/                      routes (App Router)
-  page.tsx                home: hero → now showing → showtimes → coming soon → venue
-  movies/page.tsx         catalogue with language/format filters
-  movies/[slug]/page.tsx  one film, its dates and screenings
+  page.tsx                home: hero → venue showcase → film programme → showtimes → venue info
+  movies/page.tsx         the programme; becomes a filterable schedule view with a feed
+  movies/[slug]/page.tsx  one film: release facts, sources, and its screenings when they exist
   cinema/page.tsx         location, hours, facilities, accessibility, contact
   offers/page.tsx         approved promotions only
   help/page.tsx           booking handoff steps, FAQs, policies
   sitemap.ts robots.ts    generated from NEXT_PUBLIC_SITE_URL
 components/
   layout/                 header, footer, primary nav, mobile dialog
-  showcase/               venue spotlight (ARIA tabs), highlights, full gallery
-  home/                   hero, showcase section, now showing, coming soon, experience, visit
-  movies/                 poster card, grid, filters
+  showcase/               venue spotlight (ARIA tabs), highlights, gallery, photography-pending panel
+  home/                   hero, showcase section, cinema experience, visit information
+  programme/              the film programme: board, cards, typographic plate, schedule-wait panel
+  movies/                 filter row
   showtimes/              date selector, film groups, screening chips, schedule status
   cinema/                 location, facilities, screens
-  booking/                the ticket handoff component
   ui/                     button, badge, poster image, empty state
 data/
-  showcase.ts             the cinema-hall showcase: images, captions, highlights
+  programme.json          SOURCED film programme: real titles, real release dates, real citations
+  showcase.ts             venue imagery registry (empty until approved photography arrives)
   cinema.ts               venue facts, each with a confirmation status
-  movies.ts               SAMPLE catalogue
-  showtimes.fixture.ts    SAMPLE schedule
   offers.ts faqs.ts       approved content only
 lib/
+  programme.ts            loads, validates and cites the sourced programme
+  feed.ts feed-source.ts  the partner feed contract and its validator
+  schedule-source.ts      the one place that decides programme vs. feed
   ticketing-provider.ts   the single boundary to the ticket provider
   schedule.ts             validation and grouping
-  schedule-source.ts      fixture vs. live selection
   showtime-view.ts        display models (all formatting happens here)
   date-format.ts          timezone-safe date/time/price formatting
   types.ts site-config.ts clock.ts share-url.ts metadata.ts cinema-content.ts
 scripts/checks.mts        self-checks (npm run check)
-ASSET_CREDITS.md          provenance for every image and every idea borrowed
+ASSET_CREDITS.md          provenance for every asset and every idea borrowed
 ```
 
-Every screen is a server component. The only client components are the mobile navigation dialog and
-the two navigation helpers that mark the current section — so the whole booking journey works with
-JavaScript disabled, and each date/filter choice is a real, shareable URL.
+Every screen is a server component. The only client components are the mobile navigation dialog, the
+venue spotlight, the marquee and the two navigation helpers that mark the current section — so the
+whole booking journey works with JavaScript disabled, and each date/filter choice is a real, shareable
+URL.
 
 ---
 
-## 4. The cinema-hall showcase
+## 4. The film programme
 
-The centrepiece of the site. It sits directly under the hero, ahead of anything ticket-related,
-because the first question a venue site answers is "what is this place like?".
+`data/programme.json` holds the films, and `lib/programme.ts` turns them into records the UI can
+render. Two properties matter more than the others:
 
-* **`VenueSpotlight`** is a proper WAI-ARIA tabs widget — roving tabindex so the whole strip is one
-  tab stop, arrow keys and Home/End to move between spaces, a labelled `tabpanel`, and visible
-  caption text. No interaction is required to read any caption.
-* **`ShowcaseHighlights`** lists what the cinema offers as facts where the venue has confirmed them
-  and as open questions where it has not. Seven of the eight lines are marked "Awaiting venue",
-  because seating, projection, access and concession details are genuinely unconfirmed.
-* **`VenueGallery`** shows the full set of spaces on `/cinema`, with the same caption and provenance
-  treatment.
-* **Every image is an original illustration**, and says so on screen. `ShowcaseImage.depictsVenue`
-  drives that wording, so approved venue photography automatically stops being labelled an
-  illustration once it lands.
+* **Every film is citable.** Each entry carries at least one `https` source, and the check suite fails
+  the build if an entry loses one, gains a duplicate slug, or carries a release date that is not a
+  valid calendar date. The sources are rendered to the visitor — on each film page, and as a footnote
+  to the programme listing.
+* **Nothing is filled in.** The record type has no field for runtime, certification, synopsis or
+  artwork values that a release calendar does not publish. A check asserts that `data/programme.json`
+  contains none of those keys at all, and that no parsed film claims a runtime, certification,
+  synopsis, format or artwork. Adding a runtime by hand is not a shortcut here — it is a build
+  failure, because it would be an unsourced claim about someone else's film.
 
-### Motion without a video file
+Films are grouped by whether their release date has passed: *In cinemas* and *Upcoming releases*.
+Both groups are statements about cinemas in India, not about this venue, and the board says so once at
+the top rather than relying on the reader to infer it.
 
-The hero still and the spotlight image carry a very slow ambient drift implemented purely in CSS.
-That choice was deliberate: no licensed footage of this cinema exists yet, a background video would
-add autoplay-policy, offscreen-pause and reduced-motion complexity for little gain, and decorative
-CSS motion is collapsed outright by the existing `prefers-reduced-motion: reduce` rule in
-`app/globals.css` — so it is safe by construction rather than by careful implementation.
+The check suite also guards the boundaries of the whole approach: it fails if `data/movies.ts`,
+`data/showtimes.fixture.ts` or any of the placeholder image directories reappear, and if any app file
+starts importing sample data again.
+
+### Artwork
+
+None of the films has licensed artwork, so none is shown. Each card carries a **typographic plate**
+(`components/programme/ProgrammePlate.tsx`): the title set in the display face over one of four flat
+brand treatments, chosen deterministically from the slug, labelled *Artwork pending* on its face. It
+carries no imagery, no studio mark and no title treatment, so it cannot be mistaken for key art.
+
+When the venue supplies licensed artwork — through its own asset kit, or from the partner feed's
+allow-listed CDN — `Movie.artwork` is populated and the plate is replaced by the real poster. Both
+paths are already rendered by the same component.
 
 ---
 
-## 5. Design language
+## 5. The cinema-hall showcase
+
+The centrepiece of the site, and the reason it exists. It sits directly under the hero, ahead of
+anything ticket-related, because the first question a venue site answers is "what is this place like?".
+
+It currently renders the **photography-pending panel** (`components/showcase/VenuePhotographyPending.tsx`)
+instead of a gallery. That is a deliberate choice, taken after an earlier build used original
+generated illustrations of a generic auditorium: a picture of *some* cinema on *this* cinema's page
+reads as documentation of this building, and it is not. So the panel lists what has been requested
+from the venue, what is known for certain, and nothing in between.
+
+* **`ShowcaseHighlights`** lists what the cinema offers as facts where the venue has confirmed them and
+  as open questions where it has not: one confirmed line (its location inside the mall) and five
+  marked "Awaiting venue".
+* **`VenueSpotlight`** and **`VenueGallery`** are already wired for approved photography. Add files to
+  `public/showcase/`, set `depictsVenue: true` and a real caption in `data/showcase.ts`, record them in
+  `ASSET_CREDITS.md`, and both components switch on with no code change. Until then they render
+  nothing at all — not a placeholder.
+
+---
+
+## 6. Design language
 
 The site is built as an **editorial poster system** rather than a dark interface: cream paper stock,
 near-black ink, one crimson accent, and an antique gold reserved for information that is still
-unconfirmed. A fixed narrow rail runs down the left edge carrying a scroll-progress rule, a vertical venue label and
-the percentage scrolled; the rest of the page is inset by its width, which is what gives every screen
-a poster margin.
+unconfirmed. A fixed narrow rail runs down the left edge carrying a scroll-progress rule, a vertical
+venue label and the percentage scrolled; the rest of the page is inset by its width, which is what
+gives every screen a poster margin.
 
 The signature device is the **specification sheet** (`components/cinema/SpecSheet.tsx`): ruled rows
 pairing a small uppercase label with either a confirmed figure set in oversized display type or an
 explicit statement of what is outstanding. It is the honesty model rendered as the visual centrepiece
-— on `/cinema` the venue sheet currently reads *2 of 8 confirmed*, and the six open rows are visible,
-designed, and each names the input that is missing.
+— on `/cinema` the venue sheet reads *2 of 8 confirmed*, and the six open rows are visible, designed,
+and each names the input that is missing.
 
 Type is the other half of it: **Anton** set very large and very tight for display, against **DM Sans**
 at 14px for body copy, with **Barlow** carrying labels and numerals. Everything above is expressed in
 CSS custom properties in `app/globals.css`, so the palette and type scale can be retuned in one file.
 
-Motion is limited to two things: a slow push on the spotlight image, and reveal-on-scroll for section
-blocks. The reveal is gated behind a `data-reveal="ready"` flag that only JavaScript sets, so if the
-script never runs every section renders fully visible — content is never hidden behind an animation.
+Motion is limited to two things: reveal-on-scroll for section blocks, and short hover transitions.
+The reveal is gated behind a `data-reveal="ready"` flag that only JavaScript sets, so if the script
+never runs every section renders fully visible — content is never hidden behind an animation.
 `prefers-reduced-motion: reduce` removes both, and disables the marquee outright.
 
 **Where this came from:** the owner directed that the visual layer follow their own repository,
@@ -176,19 +211,21 @@ trademarks, wording, Google Fonts links and scroll-driven centrepiece), is set o
 
 ---
 
-## 6. Data: how the schedule works
+## 7. Data: how the programme and the schedule work
 
-```
-data/showtimes.fixture.ts ─┐
-                           ├─► validateSchedule() ─► ScheduleSnapshot ─► view models ─► UI
-lib/feed-source.ts ────────┘      (lib/schedule.ts)     (lib/schedule-source.ts)
-  │  fetch + 8s timeout
-  └─► lib/feed.ts  (the contract, and the validator that enforces it)
+```text
+data/programme.json ──► lib/programme.ts ──┐
+                                           ├─► ScheduleSnapshot ─► view models ─► UI
+lib/feed-source.ts ─► lib/feed.ts ─────────┘   (lib/schedule-source.ts)
+  │  fetch + 8s timeout, validated
+  └─► lib/schedule.ts  (validation and grouping)
 ```
 
-Both branches are implemented and tested. The fixture branch runs the samples
-through exactly the same validator the live branch uses, so the validation code is
-exercised on every build rather than lying dormant until launch.
+There are exactly two sources and they answer different questions. The **sourced programme** answers
+"what films exist and when do they open"; it carries no screenings, because a release calendar cannot
+know what this cinema is showing. The **venue feed** answers "what is this cinema showing, when, on
+which screen, at what price"; it is the only thing that can. `lib/schedule-source.ts` is the single
+place that picks between them, and nothing is ever mixed.
 
 * **A showtime is only rendered if it passes validation.** `validateShowtime` requires an ISO 8601
   timestamp **with an explicit UTC offset**, a known format, a known availability state, and a price
@@ -197,15 +234,15 @@ exercised on every build rather than lying dormant until launch.
 * **Records are cross-checked** against the catalogue and the venue record, so a screening can never
   reference a film, screen or venue that does not exist. Rejections are surfaced in development on
   `/movies` and are covered by `npm run check`.
-* **Fixtures describe no prices and no availability.** Every sample record carries
-  `availability: "unknown"`, `priceMinor: null`. The storefront slots for both are implemented and
-  render as soon as a validated live feed supplies them.
+* **No screening is ever inferred, priced or availability-claimed** by this project. Those fields are
+  populated only from a validated provider payload; until one arrives, the site renders the
+  schedule-wait panel instead of an empty timetable that could be read as "nothing is on".
 * **Staleness is stated, not hidden.** `ScheduleStatus` shows the source and when the snapshot was
   produced, and escalates to "times may have changed — confirm with the cinema" once a snapshot is
   older than `SCHEDULE_STALE_AFTER_HOURS` (default 12). A stale schedule is labelled, not withdrawn.
-* **Unlicensed artwork cannot reach a page.** A poster URL is accepted only from an allow-listed
-  host, only when the payload declares the licence covering it, and only with alt text. Fail any of
-  the three and the image is dropped, the film still lists, and the reason is logged. With an empty
+* **Unlicensed artwork cannot reach a page.** A poster URL is accepted only from an allow-listed host,
+  only when the payload declares the licence covering it, and only with alt text. Fail any of the
+  three and the image is dropped, the film still lists, and the reason is logged. With an empty
   allow-list — the default — no remote artwork is accepted at all. `next.config.ts` derives its image
   `remotePatterns` from the same list, so the two cannot drift apart.
 
@@ -222,29 +259,30 @@ SCHEDULE_FEED_TOKEN=<bearer token>        # only if the endpoint needs one
 
 When `live` is set:
 
-* the sample catalogue, the sample screens and the sample screenings are **not read at all** — the
-  films, auditoriums and screenings all come from the payload, so there is no path by which a sample
-  film can appear beside a real one;
-* the site-wide development banner and every "Sample" badge disappear;
-* `robots.txt` switches from `Disallow: /` to allowing crawlers, and the sitemap is built from the
-  real catalogue;
-* the film pages render on demand rather than being frozen into a build.
+* the films, auditoriums and screenings all come from the payload, so there is no path by which a
+  sourced release-calendar title can appear beside a feed title;
+* the site-wide "screening times not published yet" banner disappears, and the schedule section
+  becomes a date-and-screening chooser;
+* the sitemap is built from the live catalogue, and film pages render on demand rather than being
+  frozen into a build.
 
-The payload shape, every enforced rule, the allowed enum values and the failure
-behaviour are specified in **[`FEED_CONTRACT.md`](./FEED_CONTRACT.md)** — that is
-the document to send to the ticketing partner. `lib/feed.ts` is its executable
-form, and `scripts/feed-fixtures.mts` contains one deliberately broken payload per
-rule so every rejection path has a test.
+Live mode requires both switches: setting `NEXT_PUBLIC_DATA_MODE=live` without a `SCHEDULE_FEED_URL`
+leaves the site on the sourced programme, because a mode whose only possible output is "the schedule
+could not be read" is not a state worth shipping.
 
-If the feed is unreachable, returns a non-200, times out after 8 seconds, or fails
-validation, the site renders "we could not read the cinema's schedule" while the
-venue information, showcase and everything else keep working. It never falls back
-to sample data, and it never shows the last payload forever without saying how old
-it is.
+The payload shape, every enforced rule, the allowed enum values and the failure behaviour are
+specified in **[`FEED_CONTRACT.md`](./FEED_CONTRACT.md)** — that is the document to send to the
+ticketing partner. `lib/feed.ts` is its executable form, and `scripts/feed-fixtures.mts` contains one
+deliberately broken payload per rule so every rejection path has a test.
+
+If the feed is unreachable, returns a non-200, times out after 8 seconds, or fails validation, the
+site renders "we could not read the cinema's schedule" while the venue information, the showcase and
+the film programme keep working. It never falls back to sample data, and it never shows the last
+payload forever without saying how old it is.
 
 ---
 
-## 7. Booking handoff
+## 8. Booking handoff
 
 `lib/ticketing-provider.ts` is the **only** place that knows how a visitor leaves to buy a ticket.
 There is no seat map, no cart, no checkout and no confirmation page anywhere in this project — seat
@@ -252,7 +290,8 @@ selection and payment belong to the authorised provider.
 
 A booking link is produced only when **all** of these hold:
 
-1. the schedule is live data (fixture data never links out);
+1. the screening came from the venue's feed (nothing else in this project can produce a screening, so
+   nothing else can produce a link);
 2. a provider name is configured, so the button can say where it goes;
 3. the deep-link template is valid https and contains `{movieId}`, `{date}` and `{venueId}`, with no
    unsupported `{token}` left in it;
@@ -273,12 +312,12 @@ NEXT_PUBLIC_TICKETING_URL_TEMPLATE="https://provider.example/cinema/{venueId}?fi
 NEXT_PUBLIC_TICKETING_ALLOWED_HOSTS="provider.example"
 ```
 
-The handoff carries the film, the **venue-local date**, the venue and (when the feed supplies one)
-the provider's own screening id — verified in `npm run check`.
+The handoff carries the film, the **venue-local date**, the venue and (when the feed supplies one) the
+provider's own screening id — verified in `npm run check`.
 
 ---
 
-## 8. Dates, times and timezones
+## 9. Dates, times and timezones
 
 The venue operates in one timezone (`NEXT_PUBLIC_VENUE_TIMEZONE`, default `Asia/Kolkata`) while a
 visitor's device may be in another. Therefore:
@@ -292,24 +331,25 @@ visitor's device may be in another. Therefore:
 
 ---
 
-## 9. Brand, attribution and never-claims
+## 10. Brand, attribution and never-claims
 
 * The public name is configurable (`NEXT_PUBLIC_BRAND_DISPLAY_NAME`) and defaults to the neutral
   working title **"Cinema at Elante Mall"**.
 * **This site does not imply an official relationship** with the mall, any cinema chain or any
   operator. That is stated in the footer. An attribution line renders only when the operator supplies
   approved wording (`NEXT_PUBLIC_BRAND_ATTRIBUTION`).
-* No brand marks, mall logos, film titles, posters, stills or trailers from any source project or fan
-  project ship here — see `ASSET_CREDITS.md`.
+* No brand marks, mall logos, film posters, stills or trailers from any source project or fan project
+  ship here — see `ASSET_CREDITS.md`.
 * The copy avoids unverifiable superlatives. There is no "largest", "best", "official", "exclusive",
   and no format claim (IMAX, 4DX, Dolby, ScreenX) unless the venue's own record states it.
-* The only external image source configured in `next.config.ts` is this repository's own `public/`
-  directory — remote patterns are deliberately absent, so unlicensed artwork cannot be hot-linked by
-  accident.
+* Artwork can only enter through two doors, and both are closed by default: an allow-listed partner
+  CDN with a declared licence, or a file the venue itself supplies and licenses. `next.config.ts`
+  derives its image `remotePatterns` from the allow-list, so a host cannot be reachable without the
+  parser having accepted it.
 
 ---
 
-## 10. Accessibility and motion
+## 11. Accessibility and motion
 
 * Semantic landmarks, one `h1` per page, a skip link as the first tab stop, and visible focus rings
   that are never removed.
@@ -318,12 +358,13 @@ visitor's device may be in another. Therefore:
   `aria-current` (`="date"` on the date strip), not colour alone.
 * The mobile menu is a modal dialog: focus moves in, is trapped, Escape closes it, focus returns to
   the toggle, and background scrolling is locked.
-* FAQs use native `<details>`, so they need no JavaScript.
-* Poster artwork has descriptive alt text; the generated hero still is decorative (`alt=""`) and is
-  captioned as a placeholder.
-* Motion is limited to short opacity/transform transitions. `prefers-reduced-motion: reduce`
-  collapses animation globally. There is no scroll-jacking, no scroll-scrubbed video, no forced smooth
-  scrolling and no intro splash.
+* The venue spotlight is a WAI-ARIA tabs widget with roving tabindex and arrow-key navigation; its
+  captions are visible text, not tooltips.
+* The programme plate is decorative (`aria-hidden`) with the film title rendered once as a real
+  heading beside it, so a screen reader hears each title once, in a sensible outline.
+* Motion is limited to short opacity/transform transitions. `prefers-reduced-motion: reduce` collapses
+  animation globally. There is no scroll-jacking, no scroll-scrubbed video, no forced smooth scrolling
+  and no intro splash.
 * Every touch target is at least 44 px, and the layouts start at 320 px.
 
 Verified by rendering each route and auditing the HTML for `h1` count, duplicate ids, missing image
@@ -332,12 +373,24 @@ could overflow a 320 px viewport (none).
 
 ---
 
-## 11. Assets and their rights
+## 12. Assets and their rights
 
-Every image in `public/` — the ten film posters, the hero still and the five cinema-hall showcase
-illustrations plus the auditorium still — is original artwork generated for this project. None is a
-photograph of this venue and none is licensed film artwork. Full provenance, including the
-placeholder checklist that must be completed before launch, is in **`ASSET_CREDITS.md`**.
+**The site currently ships no images at all.** The ten stand-in film posters and the six generated
+cinema illustrations that this project previously carried have been deleted, along with the two data
+files that held the sample films and the sample schedule. `npm run check` fails if any of those
+directories or files reappear.
+
+That is a deliberate position rather than an omission:
+
+* **Film artwork** belongs to the studio or distributor and reaches a cinema website only through that
+  distributor's approved asset kit or the ticketing partner's feed, with per-title permission. It
+  cannot be searched for, scraped or substituted, and a stand-in that looks like a poster is worse
+  than none at all — so each film card carries a typographic plate that names the gap.
+* **Venue photography** must be of *this* building. A generated illustration of a generic auditorium
+  reads as documentation and is not, so the venue showcase states what has been requested instead.
+
+Both gaps close the same way: the venue supplies the asset, and it is recorded in `ASSET_CREDITS.md`
+before it ships.
 
 **On reusing media from the owner's other repositories:** the owner also owns the GitHub accounts
 `gireeshkumarreddy` and `divyashrma18` and asked for cinema-hall and film imagery to be taken from
@@ -347,24 +400,16 @@ them. That was investigated in detail and could not be done, for four documented
    cannot be relicensed into this project.
 2. Some repositories *do* document their own assets (`vara-studio`, `varasaree`, `Telangana-tech`),
    and that documentation is what made the audit possible — but the images are women's fashion
-   editorial, sarees and Telangana government buildings. Wrong subject, and in `Telangana-tech`'s
-   case CC BY-SA 4.0 share-alike obligations that a commercial venue site should not inherit.
+   editorial, sarees and Telangana government buildings. Wrong subject, and in `Telangana-tech`'s case
+   CC BY-SA 4.0 share-alike obligations that a commercial venue site should not inherit.
 3. The franchise repositories contain the material the brief explicitly prohibits. Inspection found
    `divyashrma18/harryPotter` shipping `house1–4.png`, `wand-cursor.svg` and a video, and
    `divyashrma18/avengers` shipping `a1–4.png` and `logo.png`.
 4. **No repository contains current film key art**, and none could: film posters and stills belong to
-   the distributor and reach a cinema site only through a studio-approved asset kit. A personal
-   GitHub account cannot grant that permission.
+   the distributor and reach a cinema site only through a studio-approved asset kit. A personal GitHub
+   account cannot grant that permission.
 
-The showcase was therefore built from original imagery, and `data/showcase.ts` is written so approved
-venue photography and properly licensed film artwork can be dropped in later. See
-`ASSET_CREDITS.md` §4.
-
-Those images were generated for an earlier dark theme. When the palette changed to cream poster stock
-they were **reviewed and kept rather than re-shot**: they are warm-toned, the screens in them read as
-cream panels against dark curtains, and a dark plate inside an ink rule on paper is exactly the
-composition the design system is built around. One subtle grade unifies them with the paper. The
-reasoning is recorded in `ASSET_CREDITS.md` §2.
+See `ASSET_CREDITS.md` §4.
 
 Typography is self-hosted and OFL-1.1 licensed (**Anton** for display, **Barlow** and **Barlow
 Condensed** for interface labels and numerals, **DM Sans Variable** for body copy), installed as npm
@@ -373,19 +418,19 @@ packages so nothing is fetched from a font CDN at runtime. Licences and swap ins
 
 ---
 
-## 12. Review of the source repositories
+## 13. Review of the source repositories
 
 The brief asked for specific patterns to be studied in a list of public repositories before building.
 Those repositories were inspected, and the decisive finding is recorded in `ASSET_CREDITS.md`:
 
 **None of the candidate repositories carries a LICENSE file.** Under the brief's own rule — code
-without a licence is unavailable for copying — no source file, asset or asset path was copied from
-any of them. The high-level ideas that informed this build (a restrained full-bleed hero with a text
-scrim; typed local content separated from presentation; poster-led cards; filter state kept separate
-from data; an enquiry form's honest failure states; offscreen video pausing as a principle applied
-here by not shipping video at all) are reimplemented from scratch in this project's own code and
-visual language. `ASSET_CREDITS.md` lists each repository reviewed and what was taken from it, which
-in every case is "concepts only, no files".
+without a licence is unavailable for copying — no source file, asset or asset path was copied from any
+of them. The high-level ideas that informed this build (a restrained full-bleed hero; typed local
+content separated from presentation; poster-led cards; filter state kept separate from data; an
+enquiry form's honest failure states; offscreen video pausing as a principle applied here by not
+shipping video at all) are reimplemented from scratch in this project's own code and visual language.
+`ASSET_CREDITS.md` lists each repository reviewed and what was taken from it, which in every case is
+"concepts only, no files".
 
 **One documented exception.** The owner subsequently directed that the visual layer follow their own
 repository, `gireeshkumarreddy/kingfisher` ("just clone the repo and then customize it"). Its design
@@ -396,11 +441,10 @@ and why is itemised in `ASSET_CREDITS.md` §6.
 
 ---
 
-## 13. Production configuration
+## 14. Production configuration
 
-Every value below is an owner or operator decision. The defaults are chosen so the
-site fails closed rather than guessing. `lib/site-config.ts` reads them; `.env.example`
-is the template.
+Every value below is an owner or operator decision. The defaults are chosen so the site fails closed
+rather than guessing. `lib/site-config.ts` reads them; `.env.example` is the template.
 
 | Variable | Default | What it controls |
 | --- | --- | --- |
@@ -408,7 +452,7 @@ is the template.
 | `NEXT_PUBLIC_BRAND_ATTRIBUTION` | empty | Operator/mall attribution. Empty means no attribution line is shown, because an unapproved one implies a relationship the venue has not granted. |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Canonical URLs, sitemap and social previews. **Must be set before launch or the sitemap advertises the wrong domain.** |
 | `NEXT_PUBLIC_VENUE_TIMEZONE` | `Asia/Kolkata` | How screening times are displayed. Not a data field — records carry their own offset. |
-| `NEXT_PUBLIC_DATA_MODE` | `fixture` | `fixture` shows labelled sample data and disables the booking handoff. `live` renders the partner feed. |
+| `NEXT_PUBLIC_DATA_MODE` | `programme` | `programme` serves the sourced release calendar and states that screening times are not connected. `live` renders the partner feed, and is only entered when `SCHEDULE_FEED_URL` is also set. |
 | `SCHEDULE_FEED_URL` | empty | **Server-only.** The partner payload. See `FEED_CONTRACT.md`. |
 | `SCHEDULE_FEED_TOKEN` | empty | **Server-only.** Bearer token, if the endpoint needs one. Never reaches the browser. |
 | `POSTER_HOST_ALLOWLIST` | empty | Comma-separated artwork hosts. Empty means **no remote artwork is accepted**. Also drives next/image `remotePatterns`, so the two cannot disagree. |
@@ -422,25 +466,27 @@ is the template.
 
 1. Set `NEXT_PUBLIC_SITE_URL` to the real domain. Until then the sitemap and canonical links point at
    `localhost`, which is wrong in public.
-2. Keep `NEXT_PUBLIC_DATA_MODE=fixture` while the site is being reviewed. In this mode `robots.txt`
-   is `Disallow: /`, so the sample programme cannot be indexed.
+2. Deploy as-is. The sourced programme is real data and is safe to serve and to index: every film
+   carries the sources behind its release date, and every public claim about the venue is either
+   confirmed by the owner or labelled outstanding.
 3. Connect the ticketing provider last: `SCHEDULE_FEED_URL`, `POSTER_HOST_ALLOWLIST`, then flip
-   `NEXT_PUBLIC_DATA_MODE=live`. Flip it only when the payload passes validation — a live banner over
-   a broken feed is worse than a labelled one.
+   `NEXT_PUBLIC_DATA_MODE=live`. Flip it only when the payload passes validation — a live schedule
+   over a broken feed is worse than an honest "not connected" panel.
 
 ---
 
-## 14. Owner inputs required before launch
+## 15. Owner inputs required before launch
 
 The full list is published on `/cinema` and `/help` as "Still being confirmed". In summary:
 
 1. Confirmed cinema trade name, operator, and written approval for any mall attribution.
-2. Official logo and brand colours — the site currently shows type only and draws no mark, by
-   decision. Send files for `public/brand/` when ready. Also the production domain
-   (`NEXT_PUBLIC_SITE_URL`).
-3. Ticketing provider, its approved deep-link format, and the live showtime API or feed.
+2. Official logo and brand colours — the site currently shows type only and draws no mark, by decision.
+   Send files for `public/brand/` when ready. Also the production domain (`NEXT_PUBLIC_SITE_URL`).
+3. Ticketing provider, its approved deep-link format, and the live showtime API or feed — see
+   `FEED_CONTRACT.md`.
 4. Verified address, entrance, box office hours, phone number and email.
 5. Screen names, presenting formats, and confirmed accessibility provision.
-6. Licensed poster/trailer assets and approved film copy for the current programme.
+6. **Approved venue photography**, and licensed poster assets for the films it is screening.
+   *Runtimes and certifications per film also arrive with the feed.*
 7. Approved promotions with dates and terms; approved refund/cancellation and privacy wording.
 8. Confirmation of whether any analytics, cookies or customer contact collection is in scope.

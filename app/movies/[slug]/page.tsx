@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PosterImage } from "@/components/ui/PosterImage";
+import { ProgrammePlate } from "@/components/programme/ProgrammePlate";
+import { ScheduleWait } from "@/components/programme/ScheduleWait";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { ShowtimeBoard } from "@/components/showtimes/ShowtimeBoard";
 import { readClock } from "@/lib/clock";
 import { formatDateLong, formatRuntime, isValidCalendarDate } from "@/lib/date-format";
@@ -12,8 +12,8 @@ import { buildMetadata } from "@/lib/metadata";
 import { getScheduleSnapshot } from "@/lib/schedule-source";
 import { readFilterParams } from "@/lib/share-url";
 import { findMovie, loadCatalogue } from "@/lib/catalogue";
-import { siteConfig } from "@/lib/site-config";
 import styles from "@/components/movies/movies.module.css";
+import programmeStyles from "@/components/programme/programme.module.css";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const catalogue = await loadCatalogue();
   const movie = findMovie(catalogue, slug);
 
-  if (!movie) {
+  if (!movie || !catalogue.available) {
     return buildMetadata({
       title: "Film not found",
       description: "That film is not in this cinema's current programme.",
@@ -49,33 +49,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const parts = [
     movie.languages.map((language) => language.label).join(" and "),
-    formatRuntime(movie.runtimeMinutes),
-    `${movie.status === "coming_soon" ? "coming soon" : "showtimes"}`,
+    movie.genres.slice(0, 2).join(" "),
+    movie.releaseDate
+      ? `${movie.status === "coming_soon" ? "releases" : "released"} ${formatDateLong(movie.releaseDate)}`
+      : null,
+    "at the cinema at Elante Mall, Chandigarh",
   ].filter(Boolean);
 
   return buildMetadata({
     title: movie.title,
-    description: `${movie.title} at ${siteConfig.brandName} — ${parts.join(", ")}.`,
+    description: `${movie.title} — ${parts.join(", ")}.`,
     path: `/movies/${movie.slug}`,
-    imagePath: movie.posterPath,
+    /* Social previews use the film's own artwork only when it is licensed. */
+    imagePath: movie.artwork?.url,
   });
 }
 
 /**
  * One film.
  *
- * Poster, the facts the record actually holds, the synopsis, then the dates and
- * times for this film at this venue. A coming-soon title deliberately gets no
- * showtime board — there is nothing on sale, and a date picker with no results
- * would be noise.
+ * The record's own facts, in the record's own terms. A sourced release record
+ * holds a title, languages, genres and an announced release date — so the page
+ * shows those, cites where the date came from, and states plainly that screening
+ * times at this cinema are a separate fact that only the venue's feed can supply.
+ *
+ * Where a synopsis, runtime, certification or licensed poster exists, each one
+ * renders. Where it does not, the page is shorter. It is never filled in.
  */
 export default async function MoviePage({ params, searchParams }: Props) {
   const { slug } = await params;
   const catalogue = await loadCatalogue();
-  const movie = findMovie(catalogue, slug);
 
-  if (!movie) notFound();
   if (!catalogue.available) notFound();
+  const movie = findMovie(catalogue, slug);
+  if (!movie) notFound();
 
   const { venue } = catalogue;
 
@@ -88,8 +95,14 @@ export default async function MoviePage({ params, searchParams }: Props) {
     requestedDate && isValidCalendarDate(requestedDate) ? requestedDate : clock.todayISO;
 
   const runtime = formatRuntime(movie.runtimeMinutes);
-  const isComingSoon = movie.status === "coming_soon";
+  const released = movie.status === "now_showing";
   const languageList = movie.languages.map((language) => language.label).join(", ");
+  const dateLabel = movie.releaseDate ? formatDateLong(movie.releaseDate) : null;
+
+  const hasShowtimes =
+    snapshot.state === "ready" &&
+    snapshot.scheduleAvailable &&
+    snapshot.showtimes.some((showtime) => showtime.movieSlug === movie.slug);
 
   return (
     <article className="wrap scene-pad">
@@ -100,19 +113,38 @@ export default async function MoviePage({ params, searchParams }: Props) {
       <div className={styles.detail}>
         <div className={styles.detailBody}>
           <div className={styles.detailPoster}>
-            <PosterImage
-              src={movie.posterPath}
-              alt={movie.posterAlt}
-              sizes="(min-width: 720px) 15rem, 45vw"
-              priority
-            />
+            {movie.artwork ? (
+              <PosterImage
+                src={movie.artwork.url}
+                alt={movie.artwork.alt}
+                sizes="(min-width: 720px) 15rem, 45vw"
+                priority
+              />
+            ) : (
+              <ProgrammePlate title={movie.title} slug={movie.slug} />
+            )}
           </div>
 
           <div>
             <h1>{movie.title}</h1>
 
+            {movie.originalTitle ? (
+              <p className={programmeStyles.cardOriginal} style={{ marginTop: "0.5rem" }}>
+                Also listed as {movie.originalTitle}
+              </p>
+            ) : null}
+
             <p className={`muted ${styles.cardMeta}`} style={{ marginTop: "0.6rem" }}>
-              <span>{languageList}</span>
+              <span>
+                {released ? "In cinemas" : "Releases"}
+                {dateLabel ? ` — ${dateLabel}` : ""}
+              </span>
+              {languageList ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{languageList}</span>
+                </>
+              ) : null}
               {runtime ? (
                 <>
                   <span aria-hidden="true">·</span>
@@ -146,39 +178,46 @@ export default async function MoviePage({ params, searchParams }: Props) {
               </p>
             ) : null}
 
-            <p className="lede" style={{ marginTop: "1rem" }}>
-              {movie.synopsis}
-            </p>
-
-            {isComingSoon ? (
-              <p style={{ marginTop: "1rem" }}>
-                <Badge tone="amber">Coming soon</Badge>{" "}
-                {movie.releaseDate
-                  ? `Scheduled from ${formatDateLong(movie.releaseDate)}. Times are published once the film is on sale.`
-                  : "A release date has not been confirmed yet."}
+            {movie.synopsis ? (
+              <p className="lede" style={{ marginTop: "1rem" }}>
+                {movie.synopsis}
               </p>
             ) : null}
 
-            {siteConfig.isFixtureMode ? (
-              <p className="small muted" style={{ marginTop: "1rem" }}>
-                Sample catalogue entry — {movie.rights.artwork}. {movie.rights.copy}.
+            {movie.releaseScope ? (
+              <p className="small muted" style={{ marginTop: "1rem", maxWidth: "62ch" }}>
+                {movie.releaseScope}. The date above is when this film opens in cinemas, not when
+                this cinema is showing it — a venue can add, move or drop a title, and its own times
+                appear on this page only once its ticketing feed is connected.
               </p>
             ) : null}
+
+            {movie.sources.length > 0 ? (
+              <details className={programmeStyles.sources} style={{ marginTop: "1.25rem" }}>
+                <summary className={programmeStyles.sourcesSummary}>
+                  Sources for this release date ({movie.sources.length})
+                </summary>
+                <ul className={programmeStyles.sourcesList}>
+                  {movie.sources.map((source) => (
+                    <li key={source.url}>
+                      <a href={source.url} rel="nofollow noopener" target="_blank">
+                        {source.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <p className={programmeStyles.sourcesNote}>{movie.provenance}</p>
+              </details>
+            ) : (
+              <p className="small muted" style={{ marginTop: "1.25rem" }}>
+                {movie.provenance}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
-      {isComingSoon ? (
-        <EmptyState title="Tickets are not on sale for this film yet">
-          <p>
-            Showtimes appear here as soon as the cinema publishes them. Until then there is nothing
-            to book, and this site will not guess at dates.
-          </p>
-          <Button href="/movies" variant="outline" size="small">
-            See what is on now
-          </Button>
-        </EmptyState>
-      ) : (
+      {hasShowtimes && snapshot.state === "ready" ? (
         <section aria-labelledby="film-showtimes">
           <div className="section-head">
             <div>
@@ -200,6 +239,28 @@ export default async function MoviePage({ params, searchParams }: Props) {
             onlySlug={movie.slug}
             showPosters={false}
             headingLevel={3}
+          />
+        </section>
+      ) : (
+        <section aria-labelledby="film-showtimes">
+          <div className="section-head">
+            <div>
+              <span className="eyebrow">Dates and times</span>
+              <h2 id="film-showtimes">Showtimes for {movie.title}</h2>
+            </div>
+          </div>
+          <ScheduleWait
+            variant="page"
+            title={
+              released
+                ? "This cinema's times are not published yet"
+                : "Tickets are not on sale for this film yet"
+            }
+            reason={
+              released
+                ? undefined
+                : `This film is announced for release${dateLabel ? ` on ${dateLabel}` : ""}. Showtimes appear here once the cinema publishes them, and this site will not guess at dates.`
+            }
           />
         </section>
       )}

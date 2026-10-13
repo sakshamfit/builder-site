@@ -4,21 +4,22 @@ import { absoluteUrl } from "@/lib/metadata";
 /**
  * robots.txt.
  *
- * Policy pages announced in the footer do not exist yet, and no page carries
- * approved policy copy. The site stays crawlable, but the schedule pages are
- * the only ones with real value before launch — and while sample data is on
- * screen, indexing it would put fictional films in search results.
+ * The film programme is real, sourced and cited, so the pages that carry it are
+ * worth indexing and are open to crawlers: a film's release date and its sources
+ * are public facts, and a search result pointing at them is accurate.
  *
- * `NEXT_PUBLIC_DATA_MODE=fixture` therefore disallows crawling. Set it to
- * "live" with a real schedule before the site is indexed.
+ * This is a change from the earlier build, where the catalogue was development
+ * sample data and indexing it would have put invented films into search results.
+ * That data is gone from the repository, so the reason for the blanket block is
+ * gone with it.
+ *
+ * Before launch the owner must set NEXT_PUBLIC_SITE_URL to the production
+ * domain; until then this file advertises the configured origin, which is the
+ * only honest thing it can advertise.
  */
 export default function robots(): MetadataRoute.Robots {
-  const isFixture = process.env.NEXT_PUBLIC_DATA_MODE !== "live";
-
   return {
-    rules: isFixture
-      ? [{ userAgent: "*", disallow: "/" }]
-      : [{ userAgent: "*", allow: "/", disallow: ["/api/"] }],
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/api/"] }],
     sitemap: absoluteUrl("/sitemap.xml"),
     host: absoluteUrl("/"),
   };

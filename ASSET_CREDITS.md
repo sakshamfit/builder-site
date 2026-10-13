@@ -4,10 +4,14 @@ This file records where every asset and every borrowed idea came from, as requir
 brief. It is the audit trail for the site's rights position: if something here is wrong, it is wrong
 in public and can be corrected.
 
-**Summary: no third-party code, imagery, audio or video is included in this project.** Every source
-file was written for this repository and every image was generated for it. The repositories listed
-below were reviewed for interaction ideas only, with one documented exception: the visual design
-language is adapted from a repository owned by the same owner, at the owner's instruction. See §6.
+**Summary: no third-party code, imagery, audio or video is included in this project — and, as of the
+current build, no first-party placeholder imagery either.** The site ships no images at all: the
+generated posters and cinema illustrations that an earlier build carried have been deleted, because a
+stand-in that reads as a photograph of this cinema, or as a film's own poster, is worse than no image.
+Every asset that will appear on this site has to arrive with its licence attached. The repositories
+listed below were reviewed for interaction ideas only, with one documented exception: the visual
+design language is adapted from a repository owned by the same owner, at the owner's instruction. See
+§6.
 
 ---
 
@@ -51,44 +55,44 @@ build, and nothing in them was executed or obeyed.
 
 ## 2. Image provenance
 
-All images are original, abstract artwork generated for this project with the Arena image tools.
-They contain no real person, no real venue, no film title, no studio or brand mark and no logo.
+**This build ships no images.** `public/` contains no posters, no cinema illustrations and no hero
+still; `npm run check` fails if `public/posters`, `public/showcase` or `public/stills` reappears.
 
-These are **placeholders**. They are not photographs of this cinema and must not be presented as
-such: the hero still is marked decorative for assistive technology and is captioned on the page as a
-placeholder.
+### What was removed, and why
 
-| File | Subject | Prompt summary | Used for |
-| --- | --- | --- | --- |
-| `public/stills/auditorium.jpg` | Empty auditorium, unlit screen | Dark premium auditorium, no people, no branding, no film imagery on screen | Home hero (decorative) |
-| `public/posters/lantern-keeper.jpg` | Lit brass lantern in fog | Warm lantern light, deep charcoal, coral rim light | Sample film `lantern-keeper` |
-| `public/posters/monsoon-circuit.jpg` | Rain on a dark window | Blurred amber city bokeh, noir mood | Sample film `monsoon-circuit` |
-| `public/posters/nightshift-at-zero.jpg` | Concrete corridor, one lamp | One-point perspective, austere | Sample film `nightshift-at-zero` |
-| `public/posters/paper-boats.jpg` | Paper boats on dark water | Low warm light, shallow depth of field | Sample film `paper-boats` |
-| `public/posters/quiet-orbit.jpg` | Ring of light in darkness | Abstract orbit, restrained sci-fi | Sample film `quiet-orbit` |
-| `public/posters/harbour-lights.jpg` | Harbour water at dusk | Reflected warm lights, romance mood | Sample film `harbour-lights` |
-| `public/posters/the-long-interval.jpg` | Empty vintage auditorium | Soft glow from an unseen screen | Sample film `the-long-interval` |
-| `public/posters/second-reel.jpg` | Curling 35mm film strip | Macro, dust and scratches, amber light | Sample film `second-reel` |
-| `public/posters/static-and-stars.jpg` | Stars crossed by static | Deep black, coral signal line | Sample film `static-and-stars` |
-| `public/showcase/screen-wall.jpg` | Blank screen between dark curtains | Warm screen glow, low angle | Cinema-hall showcase |
-| `public/showcase/seats.jpg` | Rows of dark upholstered seats | Warm aisle light, shallow focus | Cinema-hall showcase |
-| `public/showcase/foyer.jpg` | Dark foyer, low counter | Warm cove lighting, wide angle | Cinema-hall showcase |
-| `public/showcase/concessions.jpg` | Dark concession counter | Amber under-shelf light, bokeh | Cinema-hall showcase |
-| `public/showcase/corridor.jpg` | Entrance corridor | Line of light, one-point perspective | Cinema-hall showcase |
+An earlier build carried sixteen generated images: ten abstract film posters for a fictional
+catalogue, one auditorium still used behind the hero, and five cinema interiors for the venue
+showcase. They were original work — generated for this project, containing no real person, venue,
+title, studio mark or logo — and they were nonetheless the wrong thing to ship, for two separate
+reasons:
 
-Each poster is 800 × 1200 (2:3) JPEG, metadata stripped. The hero still is 1376 × 768. All are
-served through `next/image` with explicit `sizes` and are converted to AVIF/WebP at request time.
-That conversion runs on `sharp`, which is therefore a production dependency rather than a build-time
-extra.
+1. **The posters belonged to films that do not exist.** They illustrated a sample catalogue. With that
+   catalogue gone (see §4), keeping the images would have left artwork for films nobody can watch.
+2. **The cinema illustrations were of a cinema that is not this one.** However carefully they were
+   captioned, a picture of a generic auditorium on this venue's own page reads as documentation of
+   this building. The owner's instruction to remove them was the correct call.
 
-**On the palette change:** these images were generated against an earlier dark scheme. When the
-visual direction changed to cream poster stock they were reviewed rather than replaced, and kept:
-they are warm-toned (amber screen glow, warm aisle light) rather than cool, the screens in them read
-as cream panels against dark curtains, and a dark plate inside an ink rule on paper is the
-composition the design system is built around. A single subtle grade
-(`filter: saturate(.95) contrast(1.03)` on poster frames, `sepia(.35)` at 17% opacity on the hero
-still) unifies them with the paper tone. No image was traced, cropped from a third party, or
-recoloured into something it is not.
+The files were deleted along with `data/movies.ts` and `data/showtimes.fixture.ts`, and no replacement
+imagery was generated. What occupies those spaces instead is designed, and honest:
+
+| Was | Now |
+| --- | --- |
+| Ten generated film posters | `components/programme/ProgrammePlate.tsx` — a typographic plate per film, carrying the title over one of four flat brand treatments and the words *Artwork pending* |
+| Hero still (`/stills/auditorium.jpg`) | The hero is type only. The design language was built for it: ruled overline, display type, ruled footer. |
+| Five `public/showcase/` interiors | `components/showcase/VenuePhotographyPending.tsx` — a ruled panel listing what has been requested from the venue and what is known for certain |
+
+### How imagery gets back in
+
+Two doors, both requiring something this project cannot manufacture:
+
+* **Venue photography** — approved photographs of this building, supplied by its owner. Drop the files
+  into `public/showcase/`, set `depictsVenue: true` with a real `alt`, caption and provenance in
+  `data/showcase.ts`, and record the photographer and licence here. `VenueSpotlight` and
+  `VenueGallery` are already wired to render them; until then they render nothing.
+* **Film artwork** — posters, key art and stills belong to the studio or distributor. They reach a
+  cinema website through that distributor's approved asset kit, or through the ticketing partner's
+  feed as an allow-listed CDN URL with a declared licence (`lib/feed.ts` refuses anything else). They
+  cannot be searched for, scraped or substituted, and no stand-in will be generated for them.
 
 ### Typography
 
@@ -147,19 +151,22 @@ documents the handover.
 
 ## 3. Required before launch
 
-- [ ] Replace the ten placeholder images with licensed assets, or confirm in writing that the
-      generated placeholders may remain on the public site.
-- [ ] Supply the confirmed trade name as a string and the logo file(s). `siteConfig.brandName` and
-      `public/brand/` are the two places they go; until then a neutral mark is drawn from the first
-      letter of the brand name.
-- [ ] Replace the sample film catalogue (`data/movies.ts`) with the venue's approved programme, and
-      record the licence for each poster and still here.
-- [ ] Supply the approved logo. Until then the site shows type only and no mark; `app/icon.svg`
-      (favicon) is the sole identity-free glyph, to be replaced at the same time.
-- [ ] Replace the five `public/showcase/` illustrations and the hero still with approved photographs
-      of this cinema, and set `depictsVenue: true` in `data/showcase.ts` for each.
+- [x] Sample films, sample screenings and all placeholder imagery deleted. The programme is now real
+      and sourced (`data/programme.json`), and `npm run check` fails if any fixture file or stand-in
+      image directory returns.
+- [ ] Supply the venue's own screening times. They come from the ticketing partner's feed — see
+      `FEED_CONTRACT.md` for the payload this site expects, which is the same shape any Indian
+      exhibitor listing already exposes to aggregators.
+- [ ] Supply approved photographs of this cinema for `public/showcase/`, and set `depictsVenue: true`
+      with a real caption and provenance in `data/showcase.ts`. Record the photographer here.
+- [ ] Supply the confirmed trade name as a string, and the logo file(s) if a mark is wanted. The site
+      currently draws **no logo at all**, by the owner's decision; `app/icon.svg` (favicon) is the
+      sole identity-free glyph.
 - [ ] If film key art is wanted, obtain each distributor's digital asset kit in writing and record
-      the granted permission title by title here. Do not source it from any personal repository.
+      the granted permission title by title here. Do not source it from any personal repository, and
+      do not treat a search engine result as a licence.
+- [ ] Per-film runtimes and certifications. These are not published by release calendars, so they are
+      `null` throughout the programme until a feed or the venue supplies them.
 - [ ] If any trailer or video is added: confirm distribution rights, supply captions or a transcript,
       provide a poster fallback, keep it muted and user-initiated, and pause it when it scrolls out of
       view. (This build ships no video at all, because no licensed footage was available.)
@@ -210,12 +217,13 @@ per-territory permission. Nothing in a personal GitHub account can grant that.
 
 ### What was done instead
 
-The cinema-hall showcase was built from **original generated imagery** (`public/showcase/`, plus the
-existing `public/stills/auditorium.jpg`), which achieves the requested outcome — a venue-first
-showcase of the hall — with no third-party rights exposure. The showcase's data layer
-(`data/showcase.ts`) is written so that approved venue photography and, later, properly licensed
-film key art can be dropped in: set `depictsVenue: true`, update `src`/`alt`/`caption`, and record
-the photographer and licence in this file.
+The cinema-hall showcase was first built from **original generated imagery**, which achieved a
+venue-first showcase of the hall with no third-party rights exposure — but which illustrated a
+generic cinema rather than this one, and was removed for that reason (see §2). The showcase now
+presents the venue's confirmed facts and its outstanding questions, and is empty of imagery until the
+venue supplies photographs of its own building. `data/showcase.ts` is written so those photographs and,
+later, properly licensed film key art drop straight in: set `depictsVenue: true`, update
+`src`/`alt`/`caption`, and record the photographer and licence in this file.
 
 If the owner wants film artwork on the site, the correct route is to request the distributor's
 digital asset kit for each title, and to record the granted permission here per asset. That is a
@@ -228,7 +236,8 @@ For the avoidance of doubt, this project contains:
 * no franchise imagery, titles, characters, logos, music or footage;
 * no studio or distributor artwork;
 * no mall or operator logos;
-* no scraped or hot-linked images (remote image patterns are disabled in `next.config.ts`);
+* no scraped or hot-linked images — `next.config.ts` derives its permitted remote artwork hosts
+  from `POSTER_HOST_ALLOWLIST`, which is empty by default, so no remote host is reachable at all;
 * no analytics, advertising or tracking scripts;
 * no credentials, API keys, Firebase configuration or demo user accounts from any source repository.
 
@@ -285,3 +294,29 @@ the other repositories contributed ideas only. This one is the owner's own repos
 adaptation was explicitly directed by the owner, so it is permitted here — but only for the owner,
 and only for this project. If any part of this codebase is ever reused elsewhere, the design language
 in this section must be re-checked against the same rule.
+
+---
+
+## 7. Programme data provenance
+
+`data/programme.json` holds the film programme. It is the one place in this project where facts about
+the outside world are recorded, so its provenance is written down here as well as beside each film.
+
+**What it contains:** real films with announced theatrical release dates for cinemas in India,
+compiled on 13 October 2026 from published release calendars and film-trade listings. Each film carries
+the sources it was compiled from, as `https` URLs; `npm run check` fails the build if an entry loses
+its sources, gains a duplicate slug, or carries a date that is not a valid calendar date.
+
+**What was taken from those sources:** the film's title, its language or languages, its genre
+classification, and its announced release date. Nothing else. No synopsis, no runtime, no
+certification, no cast list and **no image** was copied from any of them — a check asserts that
+`data/programme.json` does not even contain those keys.
+
+**What that means for rights:** a film's title, language, genre and release date are facts. Facts are
+not copyrightable, they are reported by every listings site, and a cinema publishing what is opening
+this month is the ordinary use of them. Poster images, stills and trailers are a different matter
+entirely: they are the distributor's property, and they are not taken here.
+
+**How to add a film:** add an entry with a published release date and at least one `https` source.
+The record type deliberately has no field for a runtime, a certification, a synopsis or an image URL,
+so there is nowhere to put an invented one.

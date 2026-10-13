@@ -5,23 +5,34 @@
  * presented here. It is the centrepiece of the site, with ticketing kept as a
  * separate, secondary concern (see lib/ticketing-provider.ts).
  *
- * RIGHTS AND HONESTY RULES FOR THIS FILE
- * -------------------------------------
- * 1. No third-party imagery. Every image here is original artwork generated for
- *    this project — never a film still, poster, studio key art or frame from a
- *    trailer, and never fan-project artwork. Film key art can only be added by
- *    the venue with the distributor's approval, and it must be recorded in
- *    ASSET_CREDITS.md before it ships.
- * 2. `depictsVenue` is false for every placeholder. The UI relies on it: a
- *    placeholder is captioned as illustrative, so nobody reads a generated
- *    image as a photograph of this cinema.
- * 3. A caption never states a fact the venue has not confirmed. Where a
- *    physical detail (screen size, seat type, sound system) is unknown, the
- *    caption says it is being confirmed instead of describing it.
+ * WHY THERE ARE NO IMAGES HERE
+ * ---------------------------
+ * This project previously carried original generated illustrations of a generic
+ * auditorium, captioned as illustrations. They were removed at the owner's
+ * instruction, and the instruction was right: an illustration of *some* cinema on
+ * *this* cinema's website is decoration that reads as documentation, and a
+ * visitor who has not been to the venue cannot tell the difference.
  *
- * To publish real venue photography: drop the approved files into
- * `public/showcase/`, set `depictsVenue: true`, update `src`/`alt`/`caption`,
- * and record the photographer and licence in ASSET_CREDITS.md.
+ * So this file now holds no imagery at all. The showcase presents the venue's
+ * own facts as a specification sheet instead — which is what the design language
+ * was built for, and which has the advantage of being true. `showcaseImages` is
+ * an empty array, not a list of placeholders, and nothing renders in its place.
+ *
+ * TO PUBLISH REAL PHOTOGRAPHY, the process is short and it is the only route:
+ *   1. The venue supplies approved photographs of its own spaces (its own
+ *      building, its own staff's work — no third party is involved).
+ *   2. Drop the files into `public/showcase/`.
+ *   3. Add an entry here with `depictsVenue: true`, a real `alt` description, a
+ *      caption stating only what the photograph shows, and a `provenance` line
+ *      naming who took it and when.
+ *   4. Record it in ASSET_CREDITS.md.
+ *
+ * Nothing else changes: the gallery and spotlight components already render
+ * whatever is in this array, and they stay hidden while it is empty.
+ *
+ * Film key art is a separate matter and is not covered by the above — posters
+ * and stills belong to the distributor and reach a venue site only through a
+ * studio-approved asset kit or the ticketing partner's feed.
  */
 
 import type { FactStatus } from "@/lib/types";
@@ -35,81 +46,21 @@ export type ShowcaseImage = {
   /** Short label shown over the tile. */
   title: string;
   /**
-   * One line describing the space. States a confirmed fact, or names what is
-   * still being confirmed.
+   * One line describing the space. States what the photograph shows, or names
+   * what is still being confirmed.
    */
   caption: string;
-  /** True only when the image is an approved photograph of this venue. */
+  /** Set true only for an approved photograph of this venue. */
   depictsVenue: boolean;
   /** Where the image came from. Shown to the visitor as a provenance line. */
   provenance: string;
 };
 
-const PLACEHOLDER_PROVENANCE =
-  "Original illustration made for this project — not a photograph of this cinema";
-
-export const showcaseImages: ShowcaseImage[] = [
-  {
-    id: "auditorium",
-    src: "/stills/auditorium.jpg",
-    alt: "Illustration of an empty cinema auditorium, rows of dark seats facing a softly glowing blank screen",
-    title: "The auditorium",
-    caption:
-      "Seating, legroom, recliner provision and auditorium layout are still being confirmed with the venue.",
-    depictsVenue: false,
-    provenance: PLACEHOLDER_PROVENANCE,
-  },
-  {
-    id: "screen",
-    src: "/showcase/screen-wall.jpg",
-    alt: "Illustration of a large blank cinema screen glowing warmly between dark side curtains",
-    title: "The screen",
-    caption:
-      "Screen size, aspect ratio and projector specification are still being confirmed with the venue.",
-    depictsVenue: false,
-    provenance: PLACEHOLDER_PROVENANCE,
-  },
-  {
-    id: "seats",
-    src: "/showcase/seats.jpg",
-    alt: "Illustration of rows of dark upholstered cinema seats lit by a warm aisle light",
-    title: "The seating",
-    caption:
-      "Seat type, row layout and companion-seating provision are still being confirmed with the venue.",
-    depictsVenue: false,
-    provenance: PLACEHOLDER_PROVENANCE,
-  },
-  {
-    id: "foyer",
-    src: "/showcase/foyer.jpg",
-    alt: "Illustration of a dark cinema foyer with a long low counter lit by warm cove lighting",
-    title: "The foyer",
-    caption:
-      "Box office location, opening hours and the mall-level entrance used by the cinema are still being confirmed.",
-    depictsVenue: false,
-    provenance: PLACEHOLDER_PROVENANCE,
-  },
-  {
-    id: "concessions",
-    src: "/showcase/concessions.jpg",
-    alt: "Illustration of a dark concession counter with warm under-shelf lighting and out-of-focus cups",
-    title: "Food and drink",
-    caption:
-      "Menu, pricing and whether outside food is permitted are still being confirmed with the venue.",
-    depictsVenue: false,
-    provenance: PLACEHOLDER_PROVENANCE,
-  },
-  {
-    id: "corridor",
-    src: "/showcase/corridor.jpg",
-    alt: "Illustration of a dark corridor with a line of warm light leading to a glowing opening",
-    title: "Getting to your screen",
-    caption:
-      "Step-free routes from the mall levels, lift access and accessible washroom provision are still being confirmed.",
-    depictsVenue: false,
-    provenance: PLACEHOLDER_PROVENANCE,
-  },
-];
+/**
+ * Empty on purpose. See the file header — the venue has not yet supplied
+ * photographs, and nothing is substituted in their place.
+ */
+export const showcaseImages: ShowcaseImage[] = [];
 
 export type ShowcaseHighlight = {
   id: string;
@@ -160,17 +111,26 @@ export const showcaseHighlights: ShowcaseHighlight[] = [
     id: "programming",
     label: "Programming and languages",
     detail:
-      "Languages and formats shown each week are taken from the venue's own published schedule.",
+      "Which films, languages and formats play here each week comes from the venue's own published schedule.",
     status: "pending",
   },
 ];
 
-/** Copy for the showcase section, kept out of the components. */
+/**
+ * Copy for the showcase section, kept out of the components.
+ *
+ * Each line here is checked against the no-invention rule: nothing claims a
+ * facility, a standard or a superlative the venue has not supplied.
+ */
 export const showcaseCopy = {
   eyebrow: "The cinema hall",
   heading: "Inside the cinema",
   lede:
-    "A look at the space itself: the auditorium, the screen, the foyer and everything between the mall and your seat. Photographs of this cinema are still being supplied — the images below are original illustrations, and each one says what is still being confirmed.",
+    "A venue site should show you the place before you commit to coming. This cinema has not yet supplied photographs of its own interiors, so rather than fill the space with pictures of a cinema in general, this page carries what the venue has actually told us — and names what it has not.",
   galleryNote:
-    "Every tile above is an illustration made for this project. Approved photographs of this cinema will replace them, and each will be captioned with its source.",
+    "No photographs of this cinema are published yet. Approved venue photography will replace this section when it is supplied, and each image will be credited.",
+  /** Shown in the space the gallery would occupy. */
+  pendingTitle: "Photography of this cinema is pending",
+  pendingDetail:
+    "The venue has been asked for approved photographs of the auditorium, screen, foyer, seating and concession counter. This site publishes none until then, and uses no stock or generated footage of a different cinema in their place.",
 } as const;

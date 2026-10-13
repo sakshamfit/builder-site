@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { siteConfig } from "@/lib/site-config";
 import { formatDateLong } from "@/lib/date-format";
@@ -21,39 +20,44 @@ function splitBrandName(name: string): string[] {
 /**
  * Hero.
  *
- * A full-height poster: a ruled overline, the venue name set as large as the
- * viewport allows, and a ruled footer line carrying the date and the actions.
- * The still sits behind at low opacity so the type stays dominant — it is a
- * texture, not the subject.
+ * A full-height opening scene built from type alone: a ruled overline, the venue
+ * name set as large as the viewport allows, and a ruled footer carrying the date
+ * and the actions.
+ *
+ * Deliberately NOT carried over from the design reference: the cinematic
+ * back-drop. This project previously used a generated illustration of a generic
+ * auditorium behind this heading, which was removed — a picture of some cinema
+ * behind the name of this cinema reads as a photograph of it, and it is not one.
+ * The typography carries the opening scene instead, and the hero is quieter and
+ * more confident for it.
  *
  * No autoplaying video, no scroll-jacking, no intro animation that delays
- * content. The still is a generated illustration, not a photograph of this
- * cinema, and is captioned as such.
+ * content.
  */
 export function Hero({
   todayISO,
-  screeningsToday,
   place,
-  isFixture,
+  leadingFilmSlug,
+  leadingFilmTitle,
+  upcomingCount,
 }: {
   todayISO: string;
-  screeningsToday: number;
   place: string;
-  isFixture: boolean;
+  /** The film opening soonest, used for the primary action's label. */
+  leadingFilmSlug: string | null;
+  leadingFilmTitle: string | null;
+  /** How many announced releases are still to come. */
+  upcomingCount: number;
 }) {
   const titleLines = splitBrandName(siteConfig.brandName);
   const [firstLine, secondLine] = titleLines;
 
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
-      <div className={styles.heroStill} aria-hidden="true">
-        <Image src="/stills/auditorium.jpg" alt="" fill priority sizes="100vw" />
-      </div>
-
       <div className={`wrap ${styles.heroInner}`}>
         <div className={styles.heroOverline}>
-          <span>{isFixture ? "Development preview" : "Now showing"}</span>
-          <span className={styles.heroOverlineRight}>{place}</span>
+          <span>{place}</span>
+          <span className={styles.heroOverlineRight}>{formatDateLong(todayISO)}</span>
         </div>
 
         <h1 className={styles.heroTitle} id="hero-title">
@@ -64,20 +68,16 @@ export function Hero({
         </h1>
 
         <p className={`script ${styles.heroScript}`}>
-          Inside Elante Mall, Chandigarh — the auditorium, the screen, the seating, and everything
-          between the mall and your seat.
+          {upcomingCount > 0
+            ? `${upcomingCount} announced release${upcomingCount === 1 ? "" : "s"} listed, with the cinema's own times still to come.`
+            : "The hall, the location and everything between the mall and your seat."}
         </p>
 
         <div className={styles.heroBottom}>
           <div className={styles.heroMeta}>
-            <p>{formatDateLong(todayISO)}</p>
-            {screeningsToday > 0 ? (
-              <p className={styles.heroCount}>
-                {screeningsToday} screening{screeningsToday === 1 ? "" : "s"} listed today
-              </p>
-            ) : null}
+            <p>Inside Elante Mall, Chandigarh</p>
             <p className={styles.heroImageNote}>
-              Illustrative background — photographs of this cinema are still being supplied.
+              Venue photography is pending. This page states only what the venue has confirmed.
             </p>
           </div>
 
@@ -85,9 +85,15 @@ export function Hero({
             <Button href="#showcase" variant="red">
               See the cinema <span aria-hidden="true">↓</span>
             </Button>
-            <Button href="#showtimes" variant="outline">
-              Showtimes <span aria-hidden="true">→</span>
-            </Button>
+            {leadingFilmSlug ? (
+              <Button href={`/movies/${leadingFilmSlug}`} variant="outline">
+                {leadingFilmTitle ?? "Next release"} <span aria-hidden="true">→</span>
+              </Button>
+            ) : (
+              <Button href="/movies" variant="outline">
+                The programme <span aria-hidden="true">→</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>

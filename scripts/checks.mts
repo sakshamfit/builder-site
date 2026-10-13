@@ -2,18 +2,27 @@
  * Self-checks: `npm run check`
  *
  * These are not vanity tests. Each one covers a rule that keeps the site
- * truthful, and each is a rule that is *not* reachable through the UI while the
- * project is in fixture mode:
+ * truthful, and several cover rules that are *not* reachable through the UI
+ * until a venue feed is connected:
  *
+ *   - every film in the sourced programme carries a citable release date, and
+ *     none of them claims a runtime, certification, synopsis or poster that no
+ *     source published;
+ *   - no development fixture file or placeholder image survives in the project;
  *   - times are rendered in the venue's timezone, not the visitor's or the
  *     server's;
  *   - an invalid schedule record is rejected rather than rendered;
  *   - a booking link is produced only when a provider is confirmed, the deep
  *     link is well formed, and it points at an allow-listed host.
  *
- * The booking-handoff rules matter most: in fixture mode no link is ever
- * produced, so without these checks that code path would never run until the
- * day real ticketing is connected.
+ * The booking-handoff rules matter most: with no feed connected no live link is
+ * ever produced, so without these checks that code path would never run until
+ * the day real ticketing is connected.
+
+ * The catalogue used by the schedule tests is defined here, in the harness,
+ * rather than imported from the app. That is deliberate: the app must have no
+ * sample catalogue for a test to borrow, and a record that lives inside a check
+ * file cannot be rendered on a page.
  *
  * Run with: npm run check
  */
@@ -151,11 +160,35 @@ const { validateShowtime, validateSchedule, showtimesOnDate, bookableDates } = a
 );
 
 const venue = (await import("../data/cinema.ts")).venue;
-const movies = (await import("../data/movies.ts")).movies;
+
+/*
+ * A catalogue that exists only here. It is structurally identical to a feed
+ * record so the validator is exercised properly, and it names a film that cannot
+ * be rendered anywhere, because nothing outside this file can see it.
+ */
+const movies: import("../lib/types.ts").Movie[] = [
+  {
+    slug: "test-film-a",
+    title: "Test film A",
+    originalTitle: null,
+    status: "now_showing",
+    synopsis: null,
+    languages: [{ code: "hi", label: "Hindi" }],
+    runtimeMinutes: null,
+    genres: [],
+    certification: null,
+    formats: [],
+    artwork: null,
+    releaseDate: null,
+    releaseScope: null,
+    sources: [],
+    provenance: "check harness record — not rendered by the app",
+  },
+];
 
 const goodRecord = {
   id: "sample-1",
-  movieSlug: "lantern-keeper",
+  movieSlug: "test-film-a",
   venueId: venue.id,
   screenId: "screen-1",
   startsAt: "2026-10-13T18:15:00+05:30",
@@ -261,7 +294,7 @@ section("Ticketing handoff");
 
 const liveShowtime = {
   id: "live-1",
-  movieSlug: "lantern-keeper",
+  movieSlug: "test-film-a",
   venueId: venue.id,
   screenId: "screen-1",
   startsAt: "2026-10-13T18:15:00+05:30",
@@ -278,7 +311,7 @@ const liveShowtime = {
 
 const fixtureShowtime = { ...liveShowtime, id: "fixture-1", source: "fixture" as const };
 
-const context = { movieSlug: "lantern-keeper", venueId: venue.id, timezone: venue.timezone };
+const context = { movieSlug: "test-film-a", venueId: venue.id, timezone: venue.timezone };
 
 console.log("\n  1. fixture data / no provider configured (the current default)\n");
 
@@ -289,7 +322,7 @@ console.log("\n  1. fixture data / no provider configured (the current default)\
     const handoff = resolveBookingHandoff({ ...context, showtime: fixtureShowtime });
     assert.equal(handoff.kind, "unavailable");
     if (handoff.kind !== "unavailable") return;
-    assert.equal(handoff.reason, "fixture-data");
+    assert.equal(handoff.reason, "not-from-feed");
     assert.ok(handoff.detail.length > 0, "the visitor is told why");
   });
 }
@@ -310,7 +343,7 @@ const { resolveBookingHandoff } = await import("./lib/ticketing-provider.ts");
 const venue = (await import("./data/cinema.ts")).venue;
 const showtime = {
   id: "live-1",
-  movieSlug: "lantern-keeper",
+  movieSlug: "test-film-a",
   venueId: venue.id,
   screenId: "screen-1",
   startsAt: "2026-10-13T18:15:00+05:30",
@@ -325,14 +358,14 @@ const showtime = {
   provenance: "test",
 };
 
-const context = { movieSlug: "lantern-keeper", venueId: venue.id, timezone: venue.timezone, showtime };
+const context = { movieSlug: "test-film-a", venueId: venue.id, timezone: venue.timezone, showtime };
 const handoff = resolveBookingHandoff(context);
 process.stdout.write(JSON.stringify(handoff));
 `;
 
 const childScriptNoVenueId = childScript.replace(
-  'const context = { movieSlug: "lantern-keeper", venueId: venue.id, timezone: venue.timezone, showtime };',
-  'const context = { movieSlug: "lantern-keeper", venueId: "", timezone: venue.timezone, showtime };',
+  'const context = { movieSlug: "test-film-a", venueId: venue.id, timezone: venue.timezone, showtime };',
+  'const context = { movieSlug: "test-film-a", venueId: "", timezone: venue.timezone, showtime };',
 );
 
 const runChild = (env: Record<string, string>) =>
@@ -367,7 +400,7 @@ check("a valid template produces a handoff carrying film, date and venue", () =>
 
   const url = new URL(handoff.href);
   assert.equal(url.hostname, "tickets.example.com");
-  assert.equal(url.searchParams.get("film"), "lantern-keeper", "the chosen film travels with the link");
+  assert.equal(url.searchParams.get("film"), "test-film-a", "the chosen film travels with the link");
   assert.equal(url.searchParams.get("date"), "2026-10-13", "the venue-local date travels with the link");
   assert.equal(url.pathname, `/cinema/${venue.id}`, "the venue travels with the link");
   assert.equal(url.searchParams.get("show"), "provider-abc-123");
@@ -477,10 +510,10 @@ check("a template needing a showtime id is refused when the feed supplied none",
 });
 
 /* -------------------------------------------------------------------------- */
-/* Links and fixture integrity                                                */
+/* Links and data integrity                                                    */
 /* -------------------------------------------------------------------------- */
 
-section("Links and fixture integrity");
+section("Links and data integrity");
 
 const { buildHref, readFilterParams } = await import("../lib/share-url.ts");
 
@@ -508,30 +541,169 @@ check("query parameters are validated before use", () => {
   assert.equal(parsed.format, "3D", "a known format survives");
 });
 
-const { fixtureShowtimes } = await import("../data/showtimes.fixture.ts");
+/* -------------------------------------------------------------------------- */
+/* The sourced programme                                                       */
+/* -------------------------------------------------------------------------- */
 
-check("no fixture record claims availability or a price", () => {
-  assert.ok(fixtureShowtimes.length > 0, "there are samples to render");
-  for (const showtime of fixtureShowtimes) {
-    assert.equal(showtime.availability, "unknown", `${showtime.id} must not claim availability`);
-    assert.equal(showtime.priceMinor, null, `${showtime.id} must not claim a price`);
-    assert.equal(showtime.source, "fixture");
+section("Sourced programme");
+
+const { parseProgramme, loadProgramme } = await import("../lib/programme.ts");
+const { readFileSync, existsSync } = await import("node:fs");
+
+const parsedProgramme = parseProgramme("2026-10-13");
+
+check("every film in data/programme.json passes validation", () => {
+  assert.equal(
+    parsedProgramme.rejected.length,
+    0,
+    `${parsedProgramme.rejected.length} rejected: ${JSON.stringify(parsedProgramme.rejected[0] ?? null)}`,
+  );
+  assert.ok(
+    parsedProgramme.movies.length >= 10,
+    `only ${parsedProgramme.movies.length} films parsed — the programme looks truncated`,
+  );
+});
+
+check("every film carries a citable https source", () => {
+  for (const movie of parsedProgramme.movies) {
+    assert.ok(movie.sources.length > 0, `${movie.slug} has no source`);
+    for (const source of movie.sources) {
+      assert.ok(
+        source.url.startsWith("https://"),
+        `${movie.slug} cites a source that cannot be checked: ${source.url}`,
+      );
+      assert.ok(source.label.length > 0, `${movie.slug} cites an unlabelled source`);
+    }
   }
 });
 
-check("every fixture showtime passes validation against the venue record", () => {
-  const report = validateSchedule(fixtureShowtimes, movies, venue);
-  assert.equal(
-    report.rejected.length,
-    0,
-    `${report.rejected.length} fixture record(s) rejected: ${JSON.stringify(report.rejected[0] ?? null)}`,
-  );
-  assert.equal(report.valid.length, fixtureShowtimes.length);
+check("no film in the programme claims a fact its source did not publish", () => {
+  for (const movie of parsedProgramme.movies) {
+    assert.equal(movie.runtimeMinutes, null, `${movie.slug} claims a runtime`);
+    assert.equal(movie.certification, null, `${movie.slug} claims a certification`);
+    assert.equal(movie.synopsis, null, `${movie.slug} claims a synopsis`);
+    assert.equal(movie.artwork, null, `${movie.slug} claims artwork`);
+    assert.deepEqual(movie.formats, [], `${movie.slug} claims a screening format`);
+  }
 });
 
-check("fixture showtimes are offset correctly for the venue's timezone", () => {
-  const sample = fixtureShowtimes[0];
-  assert.match(sample.startsAt, /\+05:30$/, "Asia/Kolkata has no daylight saving, so +05:30 always");
+check("every film states that it is not this cinema's schedule", () => {
+  for (const movie of parsedProgramme.movies) {
+    assert.match(
+      movie.provenance,
+      /Not this cinema's schedule\./,
+      `${movie.slug} does not carry the schedule caveat`,
+    );
+    assert.equal(movie.releaseScope, "Announced national theatrical release in India");
+  }
+});
+
+check("slugs are unique and URL-safe", () => {
+  const seen = new Set<string>();
+  for (const movie of parsedProgramme.movies) {
+    assert.match(movie.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/, `bad slug: ${movie.slug}`);
+    assert.ok(!seen.has(movie.slug), `duplicate slug: ${movie.slug}`);
+    seen.add(movie.slug);
+  }
+});
+
+check("release dates decide which side of today a film sits on", () => {
+  const today = "2026-10-13";
+  const { movies: parsed } = parseProgramme(today);
+  for (const movie of parsed) {
+    const expected = (movie.releaseDate ?? "") <= today ? "now_showing" : "coming_soon";
+    assert.equal(
+      movie.status,
+      expected,
+      `${movie.slug} (${movie.releaseDate}) should be ${expected}`,
+    );
+  }
+});
+
+check("a film released today is in cinemas, not upcoming", () => {
+  const { movies: parsed } = parseProgramme("2026-10-09");
+  const bokshi = parsed.find((movie) => movie.slug === "bokshi");
+  assert.ok(bokshi, "the 9 October release should be present");
+  assert.equal(bokshi.status, "now_showing");
+
+  const { movies: earlier } = parseProgramme("2026-10-08");
+  const stillUpcoming = earlier.find((movie) => movie.slug === "bokshi");
+  assert.equal(stillUpcoming?.status, "coming_soon");
+});
+
+check("no programme title is a placeholder", () => {
+  for (const movie of parsedProgramme.movies) {
+    assert.doesNotMatch(
+      movie.title,
+      /placeholder|sample|lorem|dummy|test film|tbd|todo/i,
+      `"${movie.title}" looks like a placeholder`,
+    );
+  }
+});
+
+check("the compiled programme groups upcoming films soonest first", () => {
+  const live = loadProgramme();
+  const upcoming = live.movies.filter((movie) => movie.status === "coming_soon");
+  const dates = upcoming.map((movie) => movie.releaseDate ?? "");
+  assert.deepEqual(dates, [...dates].sort(), "upcoming films must be ordered by release date");
+  assert.ok(upcoming.every((movie) => (movie.releaseDate ?? "") > "2026-10-13"));
+});
+
+check("the programme cites every distinct source exactly once", () => {
+  const live = loadProgramme();
+  const urls = live.citations.map((citation) => citation.url);
+  assert.equal(new Set(urls).size, urls.length, "a source is listed twice");
+  const total = live.movies.reduce((sum, movie) => sum + movie.sources.length, 0);
+  assert.ok(live.citations.length <= total, "more citations than film sources");
+  assert.ok(live.citations.length > 0);
+});
+
+/* -------------------------------------------------------------------------- */
+/* Nothing left over from the sample build                                     */
+/* -------------------------------------------------------------------------- */
+
+section("No sample data survives in the project");
+
+check("the development fixture files are gone", () => {
+  for (const path of ["data/movies.ts", "data/showtimes.fixture.ts"]) {
+    assert.ok(!existsSync(path), `${path} is back — the app must have no sample catalogue`);
+  }
+});
+
+check("no placeholder artwork remains in public/", () => {
+  for (const dir of ["public/posters", "public/showcase", "public/stills"]) {
+    assert.ok(!existsSync(dir), `${dir} is back — a stand-in image must not ship`);
+  }
+});
+
+check("no component or data file mentions fixture data", () => {
+  const files = [
+    "app/page.tsx",
+    "app/movies/page.tsx",
+    "app/movies/[slug]/page.tsx",
+    "lib/catalogue.ts",
+    "lib/schedule-source.ts",
+    "lib/ticketing-provider.ts",
+    "data/programme.json",
+  ];
+  for (const file of files) {
+    const source = readFileSync(file, "utf8");
+    assert.doesNotMatch(
+      source,
+      /fixtureShowtimes|from "@\/data\/movies"|from "@\/data\/showtimes\.fixture"|placeholder-film/i,
+      `${file} still references sample data`,
+    );
+  }
+});
+
+check("the programme file declares no runtime, certification, synopsis or artwork keys", () => {
+  const raw = readFileSync("data/programme.json", "utf8");
+  for (const forbidden of ["runtimeMinutes", "certification", "synopsis", "posterUrl", "posterPath"]) {
+    assert.ok(
+      !raw.includes(`"${forbidden}"`),
+      `data/programme.json carries "${forbidden}" — that fact has to come from a source or a feed`,
+    );
+  }
 });
 
 /* -------------------------------------------------------------------------- */
@@ -632,8 +804,7 @@ check("artwork from a host that is not allow-listed is dropped, not rendered", (
   if (!result.ok) return;
 
   const affected = result.feed.movies.find((movie) => movie.slug === "placeholder-film-a");
-  assert.equal(affected?.posterPath, "", "the poster must be dropped");
-  assert.equal(affected?.posterAlt, "");
+  assert.equal(affected?.artwork, null, "the poster must be dropped");
   // The film itself is still listed — losing artwork must not lose the programme.
   assert.equal(result.feed.movies.length, 3);
 });
@@ -643,7 +814,7 @@ check("with no allow-list configured, no remote artwork is accepted at all", () 
   assert.equal(result.ok, true);
   if (!result.ok) return;
   assert.ok(
-    result.feed.movies.every((movie) => movie.posterPath === ""),
+    result.feed.movies.every((movie) => movie.artwork === null),
     "an empty allow-list must fail closed",
   );
 });
@@ -662,7 +833,11 @@ check("a subdomain of an allow-listed host is accepted", () => {
   const result = parseVenueFeed(payload, { ...feedOptions, artworkHostAllowlist: ["partner.example.com"] });
   assert.equal(result.ok, true);
   if (!result.ok) return;
-  assert.equal(result.feed.movies[0].posterPath, "https://cdn.partner.example.com/poster.jpg");
+  assert.equal(
+    result.feed.movies[0].artwork?.url,
+    "https://cdn.partner.example.com/poster.jpg",
+  );
+  assert.ok((result.feed.movies[0].artwork?.licence ?? "").length > 0, "artwork must state its licence");
 });
 
 check("a lookalike host cannot smuggle artwork past the allow-list", () => {
@@ -675,7 +850,7 @@ check("a lookalike host cannot smuggle artwork past the allow-list", () => {
   const result = parseVenueFeed(payload, { ...feedOptions, artworkHostAllowlist: ["partner.example.com"] });
   assert.equal(result.ok, true);
   if (!result.ok) return;
-  assert.equal(result.feed.movies[0].posterPath, "", "lookalike domain must be refused");
+  assert.equal(result.feed.movies[0].artwork, null, "lookalike domain must be refused");
 });
 
 check("feed age is computed for the staleness warning", () => {

@@ -1,0 +1,368 @@
+{
+  "$comment": [
+    "SOURCED RELEASE PROGRAMME — real films, real release dates.",
+    "",
+    "This file replaces the development fixtures. Every title below is a real",
+    "film with a theatrical release date that was published before this file was",
+    "compiled, and every entry carries the sources it was compiled from so any",
+    "claim here can be checked by a reader.",
+    "",
+    "WHAT THIS FILE IS: an announced national release calendar — when a film",
+    "opens in cinemas in India.",
+    "",
+    "WHAT THIS FILE IS NOT: this cinema's own programme. A release date says a",
+    "film opens, not that this venue is screening it, on which screen, at what",
+    "time, or in which language version. Those facts come only from the venue's",
+    "ticketing feed (see FEED_CONTRACT.md). The site says so on every surface",
+    "that shows these titles.",
+    "",
+    "WHAT IS DELIBERATELY ABSENT PER TITLE: runtime, certification, synopsis and",
+    "artwork. Those were not published by the sources used here, and inventing",
+    "them would be exactly the kind of invented fact this project forbids. They",
+    "appear automatically once a feed or the venue supplies them.",
+    "",
+    "EDITING RULES: add a film only with a published release date and at least",
+    "one source. Never add a runtime, certification, synopsis or image URL by",
+    "hand — those fields do not exist here on purpose."
+  ],
+  "compiledOn": "2026-10-13",
+  "releaseScope": "Announced national theatrical release in India",
+  "films": [
+    {
+      "slug": "drishyam-the-conclusion",
+      "title": "Drishyam: The Conclusion",
+      "originalTitle": "Drishyam 3",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Crime", "Drama", "Thriller"],
+      "releaseDate": "2026-10-02",
+      "sources": [
+        {
+          "label": "Times Now — October 2026 Bollywood release list",
+          "url": "https://www.timesnownews.com/entertainment-news/bollywood/upcoming-bollywood-movie-releases-in-october-2026-ajay-devgns-drishyam-3-yamis-nayyi-navelli-and-more-article-156231444"
+        },
+        {
+          "label": "Gadgets 360 — new Hindi movies",
+          "url": "https://www.gadgets360.com/entertainment/new-hindi-movies"
+        }
+      ]
+    },
+    {
+      "slug": "prem-keetanu",
+      "title": "Prem Keetanu",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Drama", "Romance"],
+      "releaseDate": "2026-10-02",
+      "sources": [
+        {
+          "label": "Times Now — October 2026 Bollywood release list",
+          "url": "https://www.timesnownews.com/entertainment-news/bollywood/upcoming-bollywood-movie-releases-in-october-2026-ajay-devgns-drishyam-3-yamis-nayyi-navelli-and-more-article-156231444"
+        },
+        {
+          "label": "Gadgets 360 — new Hindi movies",
+          "url": "https://www.gadgets360.com/entertainment/new-hindi-movies"
+        }
+      ]
+    },
+    {
+      "slug": "bokshi",
+      "title": "Bokshi",
+      "languages": [
+        { "code": "hi", "label": "Hindi" },
+        { "code": "en", "label": "English" },
+        { "code": "ne", "label": "Nepali" }
+      ],
+      "genres": ["Horror", "Drama"],
+      "releaseDate": "2026-10-09",
+      "sources": [
+        {
+          "label": "Movies of India — releases for the week of 9 October 2026",
+          "url": "https://www.mapsofindia.com/my-india/movies-reviews/movies-releasing-this-friday"
+        },
+        {
+          "label": "Filmibeat — October 2026 releases",
+          "url": "https://www.filmibeat.com/bollywood/movies/october-2026.html"
+        }
+      ]
+    },
+    {
+      "slug": "reporting-live",
+      "title": "Reporting Live",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Crime", "Thriller"],
+      "releaseDate": "2026-10-09",
+      "sources": [
+        {
+          "label": "Filmibeat — October 2026 releases",
+          "url": "https://www.filmibeat.com/bollywood/movies/october-2026.html"
+        },
+        {
+          "label": "Gadgets 360 — new Hindi movies",
+          "url": "https://www.gadgets360.com/entertainment/new-hindi-movies"
+        }
+      ]
+    },
+    {
+      "slug": "other-mommy",
+      "title": "Other Mommy",
+      "languages": [{ "code": "en", "label": "English" }],
+      "genres": ["Horror", "Mystery", "Thriller"],
+      "releaseDate": "2026-10-09",
+      "sources": [
+        {
+          "label": "Movies of India — releases for the week of 9 October 2026",
+          "url": "https://www.mapsofindia.com/my-india/movies-reviews/movies-releasing-this-friday"
+        },
+        {
+          "label": "DirecTV — new movies in theatres",
+          "url": "https://www.directv.com/insider/new-movies-in-theaters/"
+        }
+      ]
+    },
+    {
+      "slug": "the-social-reckoning",
+      "title": "The Social Reckoning",
+      "languages": [{ "code": "en", "label": "English" }],
+      "genres": ["Biography", "Drama", "Thriller"],
+      "releaseDate": "2026-10-09",
+      "sources": [
+        {
+          "label": "Movies of India — releases for the week of 9 October 2026",
+          "url": "https://www.mapsofindia.com/my-india/movies-reviews/movies-releasing-this-friday"
+        },
+        {
+          "label": "DirecTV — new movies in theatres",
+          "url": "https://www.directv.com/insider/new-movies-in-theaters/"
+        }
+      ]
+    },
+    {
+      "slug": "jailer-2",
+      "title": "Jailer 2",
+      "languages": [{ "code": "ta", "label": "Tamil" }],
+      "genres": ["Action", "Comedy", "Crime"],
+      "releaseDate": "2026-10-15",
+      "sources": [
+        {
+          "label": "Pinkvilla — releases for the week",
+          "url": "https://pinkvilla.com/cinema/9-hindi-films-and-shows-releasing-in-theaters-and-ott-this-week-prahaar-nayyi-navelli-to-koffee-with-karan-9-1405861"
+        },
+        {
+          "label": "Box Office India 24 — upcoming release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "Dainik Jagran — October to December 2026 release calendar",
+          "url": "https://english.dainikjagranmpcg.com/entertainment/upcoming-bollywood-movies-2026-oct-dec-releases/article-37007"
+        }
+      ]
+    },
+    {
+      "slug": "prahaar-the-untold-story-of-ujjwal-nikam",
+      "title": "Prahaar: The Untold Story of Ujjwal Nikam",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Biography", "Drama"],
+      "releaseDate": "2026-10-16",
+      "sources": [
+        {
+          "label": "Outlook India — releases this week",
+          "url": "https://www.outlookindia.com/art-entertainment/latest-ott-and-theatrical-releases-this-week-prahaar-koffee-with-karan-9-nayyi-navelli-and-more"
+        },
+        {
+          "label": "Gadgets 360 — upcoming Bollywood movies",
+          "url": "https://www.gadgets360.com/entertainment/upcoming-bollywood-movies"
+        }
+      ]
+    },
+    {
+      "slug": "nayyi-navelli",
+      "title": "Nayyi Navelli",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Comedy", "Drama", "Fantasy"],
+      "releaseDate": "2026-10-16",
+      "sources": [
+        {
+          "label": "Gadgets 360 — upcoming Bollywood movies",
+          "url": "https://www.gadgets360.com/entertainment/upcoming-bollywood-movies"
+        },
+        {
+          "label": "Dainik Jagran — October to December 2026 release calendar",
+          "url": "https://english.dainikjagranmpcg.com/entertainment/upcoming-bollywood-movies-2026-oct-dec-releases/article-37007"
+        }
+      ]
+    },
+    {
+      "slug": "raftaar",
+      "title": "Raftaar",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Drama", "Thriller"],
+      "releaseDate": "2026-10-16",
+      "sources": [
+        {
+          "label": "Gadgets 360 — upcoming Bollywood movies",
+          "url": "https://www.gadgets360.com/entertainment/upcoming-bollywood-movies"
+        },
+        {
+          "label": "Box Office India 24 — upcoming release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        }
+      ]
+    },
+    {
+      "slug": "ranabaali",
+      "title": "Ranabaali",
+      "languages": [{ "code": "te", "label": "Telugu" }],
+      "genres": ["Action", "Drama", "History"],
+      "releaseDate": "2026-10-16",
+      "sources": [
+        {
+          "label": "Dainik Jagran — October to December 2026 release calendar",
+          "url": "https://english.dainikjagranmpcg.com/entertainment/upcoming-bollywood-movies-2026-oct-dec-releases/article-37007"
+        },
+        {
+          "label": "Box Office India 24 — upcoming release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        }
+      ]
+    },
+    {
+      "slug": "street-fighter",
+      "title": "Street Fighter",
+      "languages": [{ "code": "en", "label": "English" }],
+      "genres": ["Action"],
+      "releaseDate": "2026-10-16",
+      "sources": [
+        {
+          "label": "Outlook India — releases this week",
+          "url": "https://www.outlookindia.com/art-entertainment/latest-ott-and-theatrical-releases-this-week-prahaar-koffee-with-karan-9-nayyi-navelli-and-more"
+        },
+        {
+          "label": "Box Office India 24 — upcoming release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        }
+      ]
+    },
+    {
+      "slug": "udta-teer",
+      "title": "Udta Teer",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Action", "Comedy"],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "Dainik Jagran — October to December 2026 release calendar",
+          "url": "https://english.dainikjagranmpcg.com/entertainment/upcoming-bollywood-movies-2026-oct-dec-releases/article-37007"
+        },
+        {
+          "label": "Gadgets 360 — upcoming Bollywood movies",
+          "url": "https://www.gadgets360.com/entertainment/upcoming-bollywood-movies"
+        }
+      ]
+    },
+    {
+      "slug": "tu-hai-meri-kiran",
+      "title": "Tu Hai Meri Kiran",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Mystery", "Romance", "Thriller"],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "Gadgets 360 — upcoming Bollywood movies",
+          "url": "https://www.gadgets360.com/entertainment/upcoming-bollywood-movies"
+        },
+        {
+          "label": "Filmibeat — October 2026 releases",
+          "url": "https://www.filmibeat.com/bollywood/movies/october-2026.html"
+        }
+      ]
+    },
+    {
+      "slug": "main-na-raha-mera",
+      "title": "Main Na Raha Mera",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Musical", "Romance"],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "Dainik Jagran — October to December 2026 release calendar",
+          "url": "https://english.dainikjagranmpcg.com/entertainment/upcoming-bollywood-movies-2026-oct-dec-releases/article-37007"
+        },
+        {
+          "label": "Filmibeat — October 2026 releases",
+          "url": "https://www.filmibeat.com/bollywood/movies/october-2026.html"
+        }
+      ]
+    },
+    {
+      "slug": "pehla-pyaar-doosri-baar",
+      "title": "Pehla Pyaar Doosri Baar",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Comedy", "Romance"],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "Gadgets 360 — upcoming Bollywood movies",
+          "url": "https://www.gadgets360.com/entertainment/upcoming-bollywood-movies"
+        },
+        {
+          "label": "Times Now — October 2026 Bollywood release list",
+          "url": "https://www.timesnownews.com/entertainment-news/bollywood/upcoming-bollywood-movie-releases-in-october-2026-ajay-devgns-drishyam-3-yamis-nayyi-navelli-and-more-article-156231444"
+        }
+      ]
+    },
+    {
+      "slug": "little-thomas",
+      "title": "Little Thomas",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Comedy", "Drama", "Family"],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "Box Office India 24 — upcoming release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "91mobiles — upcoming Hindi movies",
+          "url": "https://www.91mobiles.com/entertainment/upcoming-bollywood-hindi-movies"
+        }
+      ]
+    },
+    {
+      "slug": "tum-mere-ho",
+      "title": "Tum Mere Ho",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Drama", "Romance"],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "Dainik Jagran — October to December 2026 release calendar",
+          "url": "https://english.dainikjagranmpcg.com/entertainment/upcoming-bollywood-movies-2026-oct-dec-releases/article-37007"
+        },
+        {
+          "label": "Box Office India 24 — upcoming release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        }
+      ]
+    },
+    {
+      "slug": "ramayana-part-one",
+      "title": "Ramayana: Part One",
+      "languages": [{ "code": "hi", "label": "Hindi" }],
+      "genres": ["Action", "Drama", "Fantasy"],
+      "releaseDate": "2026-11-06",
+      "sources": [
+        {
+          "label": "91mobiles — upcoming Hindi movies",
+          "url": "https://www.91mobiles.com/entertainment/upcoming-bollywood-hindi-movies"
+        },
+        {
+          "label": "Filmibeat — October 2026 releases",
+          "url": "https://www.filmibeat.com/bollywood/movies/october-2026.html"
+        },
+        {
+          "label": "Movie Release Date India — 2026 calendar",
+          "url": "https://moviereleasedate.in/"
+        }
+      ]
+    }
+  ]
+}

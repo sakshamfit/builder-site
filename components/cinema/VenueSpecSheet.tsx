@@ -30,9 +30,9 @@ export function VenueSpecSheet({
   const boxOffice = venue.hours[0];
   /*
    * Screen records carry no verification status of their own, and SCREEN_NAMING_NOTE
-   * records that the auditorium naming is still a working label. The auditorium
-   * count therefore stays an open row: the number below is what the fixture
-   * schedule had to assign, not something the venue has stated.
+   * records that the auditorium naming is not the venue's. The auditorium row
+   * therefore stays open: the venue has not stated a screen count, so no count is
+   * printed here.
    */
 
   const all: SpecEntry[] = [
@@ -61,7 +61,7 @@ export function VenueSpecSheet({
       id: "auditoriums",
       label: "Auditoriums",
       value: null,
-      pending: `${SCREEN_NAMING_NOTE} The schedule shown on this site had to assign screenings to named auditoriums, so it uses working labels — they are not the venue's own names.`,
+      pending: `${SCREEN_NAMING_NOTE} No auditorium list is published here until it is supplied: naming screens a visitor cannot walk to would be worse than naming none.`,
       status: "pending",
     },
     {

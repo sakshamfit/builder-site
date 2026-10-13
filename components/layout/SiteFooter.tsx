@@ -92,9 +92,9 @@ export function SiteFooter() {
             operated by the mall or any cinema chain unless an attribution line appears above.
           </p>
           <p>
-            {siteConfig.isFixtureMode
-              ? "Sample data in use: films, screenings and venue details shown here are development fixtures, not a real programme."
-              : "Schedule data is supplied by the venue's ticketing partner."}
+            {siteConfig.hasScreeningSchedule
+              ? "Screening times are supplied by the venue's ticketing partner. Release dates in the film programme are sourced from published release calendars and cited on each film."
+              : "Film release dates are sourced from published release calendars, with the sources listed on each film. Screening times, prices and seat availability are supplied by a cinema only, and this site is not connected to that system yet."}
           </p>
         </div>
       </div>

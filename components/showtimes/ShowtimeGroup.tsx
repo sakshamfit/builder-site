@@ -39,11 +39,12 @@ export function ShowtimeGroup({
   return (
     <article className={styles.group} aria-labelledby={`group-${group.movie.slug}`}>
       <div className={styles.groupHead}>
-        {showPoster ? (
+        {/* A poster chip only when the film has licensed artwork. */}
+        {showPoster && group.movie.artwork ? (
           <PosterImage
             className={styles.groupPoster}
-            src={group.movie.posterPath}
-            alt={group.movie.posterAlt}
+            src={group.movie.artwork.url}
+            alt={group.movie.artwork.alt}
             sizes="60px"
           />
         ) : null}

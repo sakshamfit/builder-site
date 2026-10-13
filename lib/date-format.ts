@@ -196,3 +196,42 @@ export function scheduleFreshness(
   if (hours < 24) return { level: "aging", hours };
   return { level: "stale", hours };
 }
+
+/**
+ * Offset string for a wall-clock time in a zone, e.g. "+05:30".
+ *
+ * Computed through Intl rather than hardcoded, so anything generating ISO
+ * timestamps stays correct if the venue timezone is configured differently.
+ * Moved here from the deleted fixture generator, which needed it to build sample
+ * screenings; the test harness that builds stand-in feed payloads still does.
+ */
+export function zoneOffsetString(dateISO: string, time: string, timeZone: string): string {
+  const naive = new Date(`${dateISO}T${time}:00Z`);
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(naive);
+  const read = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((part) => part.type === type)?.value ?? "0");
+
+  const wallClock = Date.UTC(
+    read("year"),
+    read("month") - 1,
+    read("day"),
+    read("hour"),
+    read("minute"),
+    read("second"),
+  );
+  const offsetMinutes = Math.round((wallClock - naive.getTime()) / 60_000);
+  const sign = offsetMinutes < 0 ? "-" : "+";
+  const absolute = Math.abs(offsetMinutes);
+  const hours = String(Math.floor(absolute / 60)).padStart(2, "0");
+  const minutes = String(absolute % 60).padStart(2, "0");
+  return `${sign}${hours}:${minutes}`;
+}

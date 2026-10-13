@@ -19,7 +19,7 @@
  */
 
 import { addDays, todayInZone } from "@/lib/date-format";
-import { zoneOffsetString } from "@/data/showtimes.fixture";
+import { zoneOffsetString } from "@/lib/date-format";
 
 export const TEST_VENUE_ID = "elante-chandigarh";
 export const TEST_TIMEZONE = "Asia/Kolkata";

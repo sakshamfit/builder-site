@@ -14,7 +14,7 @@ import cinemaStyles from "@/components/cinema/cinema.module.css";
  * be claims the venue has not made.
  */
 export async function CinemaExperience() {
-  const { venue: resolved, screensFrom } = await getVenueWithScreens();
+  const { venue: resolved } = await getVenueWithScreens();
   const accessibilityPending = venue.accessibility.filter((item) => item.status !== "confirmed");
   const region = confirmed(venue.address.region);
 
@@ -40,9 +40,11 @@ export async function CinemaExperience() {
             <h3 className={cinemaStyles.panelTitle} id="exp-screens">
               Screens and formats
             </h3>
-            {screensFrom === "sample" ? (
+
+            {resolved.screens.length === 0 ? (
               <p className={cinemaStyles.pendingNote}>{SCREEN_NAMING_NOTE}</p>
             ) : null}
+
             <ul className={cinemaStyles.screenList}>
               {resolved.screens.map((screen) => (
                 <li className={cinemaStyles.screenItem} key={screen.id}>

@@ -2,13 +2,14 @@
  * Ticketing provider boundary.
  *
  * This module is the ONLY place that knows how a visitor leaves this site to
- * buy a ticket. It exists so that swapping fixture data for a real provider is
- * a configuration change, not a rewrite — and so that the site can never
- * fabricate a booking state it cannot honour.
+ * buy a ticket. It exists so that connecting a real provider is a configuration
+ * change, not a rewrite — and so that the site can never fabricate a booking
+ * state it cannot honour.
  *
  * Rules encoded here:
- *   1. While `dataMode` is "fixture", no booking link is produced at all. The
- *      UI shows an honest explanation instead.
+ *   1. A screening counts as bookable only when it came from the venue's own
+ *      feed. Nothing else in this project can produce a showtime at all, so
+ *      there is no path from the sourced release calendar to a ticket link.
  *   2. A deep link is only produced when the provider is named, the template is
  *      syntactically valid, and the resulting URL points at an allow-listed
  *      host over https.
@@ -28,8 +29,8 @@ const REQUIRED_TOKENS = ["{movieId}", "{date}", "{venueId}"] as const;
 const OPTIONAL_TOKENS = ["{showtimeId}", "{format}", "{screenId}", "{language}"] as const;
 
 export type BookingUnavailableReason =
-  /** Sample data is on screen; linking out would send people to a dead end. */
-  | "fixture-data"
+  /** The screening did not come from the venue's feed; nothing to link to. */
+  | "not-from-feed"
   /** No provider has been confirmed for this venue yet. */
   | "no-provider"
   /** A provider is named but its deep-link template is missing or malformed. */
@@ -156,14 +157,14 @@ function allowedHosts(): string[] {
 export function resolveBookingHandoff(context: BookingContext): BookingHandoff {
   const { showtime } = context;
 
-  // (1) Fixture data never links out.
-  if (showtime.source === "fixture" || siteConfig.isFixtureMode) {
+  // (1) Only a feed-supplied screening is linked. Nothing else is bookable.
+  if (showtime.source !== "live") {
     return {
       kind: "unavailable",
-      reason: "fixture-data",
+      reason: "not-from-feed",
       title: "Online booking is not connected yet",
       detail:
-        "These screenings are sample data for development, so there is nothing to book. Ticket links appear here once the venue's ticketing partner is connected.",
+        "This screening did not come from the venue's ticketing feed, so there is nothing to book. Ticket links appear here once the venue's partner is connected.",
     };
   }
 

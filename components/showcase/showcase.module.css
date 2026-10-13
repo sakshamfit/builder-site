@@ -267,3 +267,114 @@
     gap: 1.5rem 1.25rem;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Photography-pending panel.
+   Occupies the gallery's place until the venue supplies real photographs. A
+   ruled panel in the spec-sheet idiom: a real state, designed.
+--------------------------------------------------------------------------- */
+
+.pendingPanel {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  border: 1px solid var(--line-strong);
+  border-top: 4px solid var(--red);
+  background: var(--paper-2);
+  padding: 1.15rem 1.1rem 1.35rem;
+}
+
+.pendingHead {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pendingKicker {
+  font-family: var(--font-label);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.pendingTitle {
+  font-size: clamp(1.45rem, 3vw, 2.15rem);
+}
+
+.pendingDetail {
+  font-size: 0.9rem;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+
+.pendingGrid {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.pendingColumnTitle {
+  font-family: var(--font-label);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0.6rem;
+}
+
+.pendingList {
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pendingList > li {
+  display: grid;
+  gap: 0.12rem;
+  padding-left: 0.85rem;
+  position: relative;
+}
+
+.pendingList > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 0.4rem;
+  height: 1px;
+  background: var(--gold);
+}
+
+.pendingItemLabel {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.pendingItemDetail {
+  font-size: 0.82rem;
+  color: var(--ink-2);
+}
+
+.pendingFootnote {
+  margin-top: 0.6rem;
+  font-size: 0.76rem;
+  color: var(--ink-3);
+  border-top: 1px solid var(--line);
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 760px) {
+  .pendingPanel {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: 1.75rem;
+    padding: 1.5rem 1.6rem 1.7rem;
+  }
+
+  .pendingGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}

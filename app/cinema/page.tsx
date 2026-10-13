@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LocationPanel } from "@/components/cinema/LocationPanel";
 import { VenueSpecSheet } from "@/components/cinema/VenueSpecSheet";
 import { VenueGallery } from "@/components/showcase/VenueGallery";
+import { VenuePhotographyPending } from "@/components/showcase/VenuePhotographyPending";
 import { showcaseCopy, showcaseImages } from "@/data/showcase";
 import { Facilities, ScreenLegend } from "@/components/cinema/Facilities";
 import { Button } from "@/components/ui/Button";
@@ -31,6 +32,7 @@ export default function CinemaPage() {
   const email = confirmed(venue.contact.email);
   const directions = directionsLink();
   const outstanding = pendingFacts();
+  const venuePhotographs = showcaseImages.filter((image) => image.depictsVenue);
 
   return (
     <div className="wrap scene-pad reveal">
@@ -58,7 +60,18 @@ export default function CinemaPage() {
             <p>{showcaseCopy.lede}</p>
           </div>
         </div>
-        <VenueGallery images={showcaseImages} note={showcaseCopy.galleryNote} />
+        {/*
+          Approved venue photography renders here the moment it exists. Until
+          then the page states that it is pending — the illustrations that used
+          to stand in for it were removed, because a picture of a generic
+          auditorium on this cinema's own venue page reads as a photograph of
+          this cinema.
+        */}
+        {venuePhotographs.length > 0 ? (
+          <VenueGallery images={venuePhotographs} note={showcaseCopy.galleryNote} />
+        ) : (
+          <VenuePhotographyPending />
+        )}
       </section>
 
       <div className={styles.layout}>

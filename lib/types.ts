@@ -1,8 +1,8 @@
 /**
  * Shared domain types.
  *
- * Everything the UI renders is described here once, so the fixture data and a
- * future operator feed can be validated against the same contract.
+ * Everything the UI renders is described here once, so the sourced release
+ * programme and the operator feed are validated against the same contract.
  */
 
 /** How confident we are in a piece of public information. */
@@ -41,14 +41,42 @@ export type Format = "2D" | "3D" | "IMAX" | "4DX" | "ScreenX" | "Dolby Atmos";
 
 export type MovieStatus = "now_showing" | "coming_soon";
 
+/** A citation. Every film in a sourced programme carries at least one. */
+export type SourceRef = {
+  label: string;
+  url: string;
+};
+
+/**
+ * Film artwork.
+ *
+ * There are exactly two ways artwork can reach this site: the venue supplies a
+ * licensed file, or the partner feed supplies a URL on an allow-listed host with
+ * a stated licence. Searching for a poster is not one of them. When a film has no
+ * artwork, `Movie.artwork` is null and the UI renders a typographic plate — it
+ * never substitutes a lookalike.
+ */
+export type Artwork = {
+  /** Remote URL from the feed, or a path under /public supplied by the venue. */
+  url: string;
+  /** Describes the artwork for assistive technology. */
+  alt: string;
+  /** Who licensed it. Rendered to the visitor; never blank when artwork exists. */
+  licence: string;
+};
+
 export type Movie = {
   /** Stable identifier used in URLs and provider deep links. */
   slug: string;
   title: string;
-  /** Only when the feed supplies one; otherwise null and the UI omits it. */
+  /** Only when the source supplies one; otherwise null and the UI omits it. */
   originalTitle: string | null;
   status: MovieStatus;
-  synopsis: string;
+  /**
+   * Null unless the source actually published a synopsis. A sourced release
+   * programme carries none, so the UI shows the release facts instead of prose.
+   */
+  synopsis: string | null;
   languages: Language[];
   /** Whole minutes. Null when the source does not state a runtime. */
   runtimeMinutes: number | null;
@@ -59,20 +87,23 @@ export type Movie = {
    */
   certification: { label: string; body: string } | null;
   formats: Format[];
-  /** Path under /public. Must be a licensed asset before launch. */
-  posterPath: string;
-  /** Description of the poster for assistive tech. */
-  posterAlt: string;
+  /** Null when no licensed artwork exists. Never a stand-in. */
+  artwork: Artwork | null;
   /**
-   * Release date for coming-soon titles when the operator states one.
+   * Release date when the source states one.
    * ISO calendar date (no time), e.g. "2026-11-06".
    */
   releaseDate: string | null;
-  /** Provenance of the artwork/text so nothing ships unlicensed unnoticed. */
-  rights: {
-    artwork: string;
-    copy: string;
-  };
+  /**
+   * How far the release date reaches, in the source's own terms — e.g.
+   * "Announced national theatrical release in India". Null for feed films, where
+   * the date belongs to this venue's programme instead.
+   */
+  releaseScope: string | null;
+  /** Where the facts in this record came from. */
+  sources: SourceRef[];
+  /** One-line provenance, surfaced in the UI on each film page. */
+  provenance: string;
 };
 
 /** Where a screen belongs in the venue. Screen identity comes from the venue. */
