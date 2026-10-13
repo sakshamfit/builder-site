@@ -138,7 +138,7 @@ CSS motion is collapsed outright by the existing `prefers-reduced-motion: reduce
 
 The site is built as an **editorial poster system** rather than a dark interface: cream paper stock,
 near-black ink, one crimson accent, and an antique gold reserved for information that is still
-unconfirmed. A fixed narrow rail runs down the left edge with the mark, a scroll-progress rule and
+unconfirmed. A fixed narrow rail runs down the left edge carrying a scroll-progress rule, a vertical venue label and
 the percentage scrolled; the rest of the page is inset by its width, which is what gives every screen
 a poster margin.
 
@@ -355,7 +355,9 @@ and why is itemised in `ASSET_CREDITS.md` §6.
 The full list is published on `/cinema` and `/help` as "Still being confirmed". In summary:
 
 1. Confirmed cinema trade name, operator, and written approval for any mall attribution.
-2. Official logo, brand colours and the production domain (`NEXT_PUBLIC_SITE_URL`).
+2. Official logo and brand colours — the site currently shows type only and draws no mark, by
+   decision. Send files for `public/brand/` when ready. Also the production domain
+   (`NEXT_PUBLIC_SITE_URL`).
 3. Ticketing provider, its approved deep-link format, and the live showtime API or feed.
 4. Verified address, entrance, box office hours, phone number and email.
 5. Screen names, presenting formats, and confirmed accessibility provision.
