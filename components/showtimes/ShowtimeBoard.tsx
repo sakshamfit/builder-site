@@ -53,7 +53,7 @@ export function ShowtimeBoard({
           title="We cannot show times right now"
           headingLevel={headingLevel === 2 ? 2 : 3}
           action={
-            <Button href="/help" variant="secondary" size="small">
+            <Button href="/help" variant="outline" size="small">
               What to do next
             </Button>
           }
@@ -104,13 +104,13 @@ export function ShowtimeBoard({
             alternativeDate ? (
               <Button
                 href={buildHref(basePath, { ...filters, date: alternativeDate.dateISO })}
-                variant="secondary"
+                variant="outline"
                 size="small"
               >
                 Go to {alternativeDate.weekday} {alternativeDate.day} {alternativeDate.month}
               </Button>
             ) : (
-              <Button href="/help" variant="secondary" size="small">
+              <Button href="/help" variant="outline" size="small">
                 Help with showtimes
               </Button>
             )

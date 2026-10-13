@@ -1,25 +1,28 @@
 import type { Metadata, Viewport } from "next";
+import { Rail } from "@/components/layout/Rail";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { RevealProvider } from "@/components/layout/RevealProvider";
 import { siteConfig } from "@/lib/site-config";
 
 /*
  * Self-hosted, OFL-1.1 licensed fonts (see ASSET_CREDITS.md).
- * Archivo ships a width axis, which is what gives the headings their condensed
- * poster feel; Inter carries the interface; JetBrains Mono keeps showtimes and
- * prices aligned column-wise.
+ * Anton carries the oversized condensed display voice, Barlow handles interface
+ * labels and numbers, DM Sans carries body copy.
  *
  * Imported here rather than fetched from a font CDN: no third-party request, no
  * layout shift, and the licence travels with the repository.
  */
-import "@fontsource-variable/archivo/wdth.css";
-import "@fontsource-variable/inter";
-import "@fontsource-variable/jetbrains-mono";
+import "@fontsource/anton";
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/600.css";
+import "@fontsource/barlow/700.css";
+import "@fontsource/barlow-condensed/600.css";
+import "@fontsource-variable/dm-sans";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
-  // Resolves every relative OG/canonical URL against the configured domain.
   metadataBase: new URL(siteConfig.siteUrl),
   title: {
     default: `${siteConfig.brandName} — showtimes, location and visiting information`,
@@ -32,8 +35,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#07080c",
-  colorScheme: "dark",
+  themeColor: "#f4f1e6",
+  colorScheme: "light",
   width: "device-width",
   initialScale: 1,
 };
@@ -42,6 +45,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-IN">
       <body>
+        {/*
+          Film grain. Fixed, decorative, pointer-events none — it sits over the
+          page the way grain sits over a print, and is never interactive.
+        */}
+        <div className="grain" aria-hidden="true" />
+
         <a className="skip-link" href="#main">
           Skip to main content
         </a>
@@ -49,25 +58,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/*
           Development notice. Renders only while the site is serving sample
           data, and disappears the moment a verified schedule feed is
-          configured. It sits above the header so it can never be scrolled past
-          or mistaken for part of the programme.
+          configured.
         */}
         {siteConfig.isFixtureMode ? (
           <div className="fixture-banner">
-            <div className="container">
-              <p>
-                <strong>Development build.</strong> Films, screenings and venue details on this site
-                are sample data, not a real programme. No tickets can be bought here yet.
-              </p>
+            <div className="wrap">
+              <strong>Development build</strong>
+              <span>
+                Films, screenings and venue details on this site are sample data, not a real
+                programme. No tickets can be bought here yet.
+              </span>
             </div>
           </div>
         ) : null}
 
+        <Rail />
         <SiteHeader />
 
         <main id="main">{children}</main>
 
         <SiteFooter />
+        <RevealProvider />
       </body>
     </html>
   );

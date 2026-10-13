@@ -15,14 +15,14 @@ import styles from "./home.module.css";
 export function Showcase() {
   return (
     <section className={styles.showcaseSection} id="showcase" aria-labelledby="showcase-title">
-      <div className="container">
+      <div className="wrap reveal">
         <div className="section-head">
           <div>
             <span className="eyebrow">{showcaseCopy.eyebrow}</span>
             <h2 id="showcase-title">{showcaseCopy.heading}</h2>
             <p>{showcaseCopy.lede}</p>
           </div>
-          <Button href="/cinema" variant="secondary" size="small">
+          <Button href="/cinema" variant="outline" size="small">
             Full venue details
           </Button>
         </div>

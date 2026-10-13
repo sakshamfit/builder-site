@@ -79,7 +79,7 @@ export default async function MoviePage({ params, searchParams }: Props) {
   const languageList = movie.languages.map((language) => language.label).join(", ");
 
   return (
-    <article className="container section">
+    <article className="wrap scene-pad">
       <p className="small muted" style={{ marginBottom: "1rem" }}>
         <Link href="/movies">← All films</Link>
       </p>
@@ -161,7 +161,7 @@ export default async function MoviePage({ params, searchParams }: Props) {
             Showtimes appear here as soon as the cinema publishes them. Until then there is nothing
             to book, and this site will not guess at dates.
           </p>
-          <Button href="/movies" variant="secondary" size="small">
+          <Button href="/movies" variant="outline" size="small">
             See what is on now
           </Button>
         </EmptyState>

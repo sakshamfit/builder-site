@@ -1,26 +1,25 @@
 /* ==========================================================================
-   Cinema marquee ticker
-   A single illuminated strip of text, drawn from CSS only. Motion is decorative
-   and is collapsed by the site-wide prefers-reduced-motion rule, which leaves a
-   static, readable strip behind.
+   Marquee — a printed facts strip
+   --------------------------------------------------------------------------
+   A ruled band carrying true statements about the venue, set in condensed
+   display caps and scrolled slowly enough to read.
    ========================================================================== */
 
 .marquee {
   position: relative;
+  z-index: 5;
   overflow: hidden;
-  border-block: 1px solid var(--line);
-  background:
-    linear-gradient(96deg, rgba(247, 200, 115, 0.09) 0%, rgba(244, 63, 94, 0.07) 50%, rgba(124, 58, 237, 0.09) 100%),
-    var(--ink-950);
-  /* Soft edges so text fades out rather than clipping hard. */
-  mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  border-block: 1px solid var(--line-ink);
+  background: var(--red);
+  color: var(--paper);
 }
 
 .track {
   display: flex;
   width: max-content;
-  animation: marqueeScroll 46s linear infinite;
+  /* Duration is set from the item count in the component, so the speed stays
+     constant however many facts there are. */
+  animation: marqueeScroll var(--marquee-duration, 42s) linear infinite;
 }
 
 .marquee:hover .track,
@@ -28,50 +27,42 @@
   animation-play-state: paused;
 }
 
+@keyframes marqueeScroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 .group {
   display: flex;
-  flex: none;
   align-items: center;
+  flex: none;
 }
 
 .item {
   display: inline-flex;
   align-items: center;
-  gap: 1.6rem;
-  padding: 0.78rem 1.6rem;
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-variation-settings: "wdth" 88, "wght" 640;
+  gap: 1.1rem;
+  padding: 11px 1.1rem;
+  font-family: var(--font-label);
+  font-size: 11.5px;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--gold-300);
   white-space: nowrap;
 }
 
-/* A small diamond between items, like a bulb on a marquee board. */
 .item::after {
-  content: "";
-  width: 5px;
-  height: 5px;
-  flex: none;
-  transform: rotate(45deg);
-  background: var(--rose-400);
-  box-shadow: 0 0 10px rgba(255, 92, 114, 0.75);
+  content: "✳";
+  font-size: 9px;
+  opacity: 0.75;
 }
 
-@keyframes marqueeScroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* Halve the duplicate group on very small screens so the loop stays smooth. */
-@media (min-width: 720px) {
-  .item {
-    font-size: 1rem;
-    padding-inline: 2rem;
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
   }
 }

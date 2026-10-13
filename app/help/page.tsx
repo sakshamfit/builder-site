@@ -27,7 +27,7 @@ export default function HelpPage() {
   const outstanding = pendingFacts();
 
   return (
-    <div className="container section">
+    <div className="wrap scene-pad">
       <div className="section-head">
         <div>
           <span className="eyebrow">Support</span>
@@ -48,7 +48,7 @@ export default function HelpPage() {
 
         <ol style={{ display: "grid", gap: "0.9rem", marginTop: "1.25rem", counterReset: "step" }}>
           {bookingHandoffSteps.map((step, index) => (
-            <li key={step.title} className="surface" style={{ padding: "1rem 1.15rem" }}>
+            <li key={step.title} className="box" style={{ padding: "1rem 1.15rem" }}>
               <h3 style={{ fontSize: "1rem" }}>
                 <span className="eyebrow" style={{ display: "inline-block", marginRight: "0.5rem" }}>
                   Step {index + 1}
@@ -80,7 +80,7 @@ export default function HelpPage() {
           {faqs.map((faq) => (
             <details
               key={faq.id}
-              className="surface"
+              className="box"
               style={{ padding: "0.9rem 1.05rem", borderRadius: "var(--radius)" }}
             >
               <summary style={{ cursor: "pointer", fontWeight: 600 }}>

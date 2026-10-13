@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import styles from "./marquee.module.css";
 
 /**
@@ -27,8 +28,17 @@ export function MarqueeTicker({ items, label }: { items: string[]; label: string
     </div>
   );
 
+  /*
+   * A fixed seconds-per-item pace, so the strip travels at the same readable
+   * speed whether it carries four facts or twelve. Without this the duration
+   * would be constant and a long strip would race.
+   */
+  const pace: CSSProperties = {
+    ["--marquee-duration" as string]: `${(items.length * 7).toFixed(0)}s`,
+  };
+
   return (
-    <div className={styles.marquee}>
+    <div className={styles.marquee} style={pace}>
       <p className="visually-hidden">{label}</p>
       <div className={styles.track} aria-hidden="true">
         {group("a", true)}

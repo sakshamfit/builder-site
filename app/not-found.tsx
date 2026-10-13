@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
  */
 export default function NotFound() {
   return (
-    <div className="container section">
+    <div className="wrap scene-pad">
       <p className="eyebrow">404</p>
       <h1 style={{ marginTop: "0.5rem" }}>We could not find that page</h1>
       <p className="lede" style={{ marginTop: "0.75rem" }}>
@@ -17,13 +17,13 @@ export default function NotFound() {
       </p>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", marginTop: "1.5rem" }}>
-        <Button href="/movies" variant="primary">
+        <Button href="/movies" variant="red">
           See what is playing
         </Button>
-        <Button href="/#showtimes" variant="secondary">
+        <Button href="/#showtimes" variant="outline">
           Today&rsquo;s showtimes
         </Button>
-        <Button href="/cinema" variant="secondary">
+        <Button href="/cinema" variant="outline">
           Cinema and directions
         </Button>
       </div>

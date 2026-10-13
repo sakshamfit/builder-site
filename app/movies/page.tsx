@@ -37,7 +37,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
 
   if (snapshot.state !== "ready") {
     return (
-      <div className="container section">
+      <div className="wrap scene-pad">
         <div className="section-head">
           <div>
             <span className="eyebrow">Programme</span>
@@ -110,7 +110,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
   const healthReport = describeHealth(health);
 
   return (
-    <div className="container section">
+    <div className="wrap scene-pad">
       <div className="section-head">
         <div>
           <span className="eyebrow">Programme</span>
@@ -154,16 +154,24 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
       />
 
       {visible.length > 0 ? (
-        <MovieGrid
-          movies={visible}
-          nextScreenings={nextScreenings}
-          isFixture={siteConfig.isFixtureMode}
-        />
+        <section className="scene-pad reveal" aria-labelledby="programme-title">
+          {/* An explicit group heading keeps the outline in order (h1 -> h2 ->
+              h3 per film card) rather than dropping straight from the page
+              title to each poster. */}
+          <h2 className="visually-hidden" id="programme-title">
+            Programme
+          </h2>
+          <MovieGrid
+            movies={visible}
+            nextScreenings={nextScreenings}
+            isFixture={siteConfig.isFixtureMode}
+          />
+        </section>
       ) : (
         <EmptyState
           title="No films match those filters"
           action={
-            <Button href="/movies" variant="secondary" size="small">
+            <Button href="/movies" variant="outline" size="small">
               Show every film
             </Button>
           }

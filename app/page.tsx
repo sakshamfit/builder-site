@@ -79,12 +79,11 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           items={marqueeItems}
           label={`${siteConfig.brandName}, ${place || "Chandigarh"}. Schedule currently unavailable.`}
         />
-        <div className="filmstrip" aria-hidden="true" />
 
         <Showcase />
 
-        <section className="section section--tight" id="showtimes">
-          <div className="container">
+        <section className="scene-pad sceneAlt" id="showtimes">
+          <div className="wrap reveal">
             <div className="section-head">
               <div>
                 <span className="eyebrow">When you are ready to book</span>
@@ -129,7 +128,6 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         items={marqueeItems}
         label={`${siteConfig.brandName}, ${place || "Chandigarh"}. ${summaryForMarquee?.totalScreenings ?? 0} screenings listed.`}
       />
-      <div className="filmstrip" aria-hidden="true" />
 
       <Showcase />
 
@@ -142,8 +140,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         }
       />
 
-      <section className="section section--tight" id="showtimes" tabIndex={-1}>
-        <div className="container">
+      <section className="scene-pad sceneAlt" id="showtimes" tabIndex={-1}>
+        <div className="wrap">
           <div className="section-head">
             <div>
               <span className="eyebrow">When you are ready to book</span>

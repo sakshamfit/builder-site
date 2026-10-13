@@ -1,55 +1,55 @@
 /* ==========================================================================
    Booking handoff
+   --------------------------------------------------------------------------
+   The only place on the site that can lead to a ticket. It must always say
+   where it goes, and when the venue's partner is not connected it must say so
+   rather than render a dead control.
    ========================================================================== */
 
 .handoff {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.75rem;
+  padding: 18px 20px;
+  border: 1px solid var(--line-ink);
+  background: var(--paper-2);
+}
+
+/* A ruled line under the accent colour, so the handoff reads as the one
+   outbound action on a page. */
+.handoff::before {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 3px;
+  background: var(--red);
 }
 
 .handoffNote {
   max-width: 62ch;
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  line-height: 1.6;
 }
 
-/* The unavailable state is information, not a broken control: it reads as a
-   panel rather than a disabled button. */
 .unavailableBlock {
-  position: relative;
   display: grid;
-  gap: 0.4rem;
-  padding: 1rem 1.15rem;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  background:
-    linear-gradient(168deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.012) 70%),
-    var(--ink-900);
-  overflow: hidden;
-}
-
-.unavailableBlock::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 3px;
-  background: linear-gradient(180deg, var(--gold-400), rgba(247, 200, 115, 0.12));
+  gap: 0.6rem;
+  padding: 18px 20px;
+  border: 1px dashed var(--line-strong);
+  background: var(--paper);
 }
 
 .unavailableTitle {
   font-family: var(--font-display);
-  font-size: 1rem;
-  font-variation-settings: "wdth" 94, "wght" 720;
-  color: var(--paper);
+  font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+  line-height: 1.08;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
 .unavailableDetail {
-  max-width: 66ch;
-  color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.inline {
-  display: grid;
-  gap: 0.55rem;
+  max-width: 64ch;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.6;
 }

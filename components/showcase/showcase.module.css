@@ -1,170 +1,135 @@
 /* ==========================================================================
-   Venue showcase — spotlight viewer, highlights, gallery grid
+   Showcase — the venue spotlight
    ========================================================================== */
-
-/* --- spotlight ------------------------------------------------------------ */
 
 .spotlight {
   display: grid;
-  gap: 0.9rem;
+  gap: 1.25rem;
 }
+
+/* --- the stage ------------------------------------------------------------ */
 
 .stage {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-lg);
-  background: var(--ink-850);
-  box-shadow:
-    0 34px 70px -40px rgba(0, 0, 0, 0.95),
-    0 0 0 1px rgba(247, 200, 115, 0.06);
+  border: 1px solid var(--line-ink);
+  background: var(--ink);
+  aspect-ratio: 16 / 10;
 }
 
-/* A warm rim along the top edge: light catching the frame. */
-.stage::after {
-  content: "";
+.stageFrame {
   position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(247, 200, 115, 0.6) 22%,
-    rgba(255, 92, 114, 0.45) 58%,
-    transparent 100%
-  );
-  z-index: 3;
+  inset: 0;
 }
 
-.stage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Ambient drift, decorative only. Collapsed by prefers-reduced-motion. */
-  animation: stageDrift 44s ease-in-out infinite alternate;
-}
-
+/* A very slow push, so the hall feels alive without ever moving much. */
 @keyframes stageDrift {
   from {
-    transform: scale(1.01);
+    transform: scale(1.02);
   }
   to {
-    transform: scale(1.075) translate3d(1.1%, -1%, 0);
+    transform: scale(1.1);
   }
+}
+
+.stageImage {
+  object-fit: cover;
+  animation: stageDrift 46s var(--ease) infinite alternate;
 }
 
 .stageScrim {
   position: absolute;
   inset: 0;
-  z-index: 1;
-  background: var(--grad-poster);
+  background: linear-gradient(
+    to top,
+    rgba(18, 16, 14, 0.94) 0%,
+    rgba(20, 18, 16, 0.45) 42%,
+    rgba(20, 18, 16, 0.05) 78%
+  );
 }
 
 .stageOverlay {
   position: absolute;
   inset: auto 0 0 0;
-  z-index: 2;
   display: grid;
-  gap: 0.4rem;
-  padding: clamp(1rem, 2.6vw, 1.75rem);
+  gap: 0.45rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  color: var(--paper);
 }
 
 .stageTitle {
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 3.4vw, 2.1rem);
-  font-variation-settings: "wdth" 88, "wght" 780;
-  color: var(--paper);
-  text-shadow: 0 2px 20px rgba(4, 4, 10, 0.85);
+  font-size: clamp(1.35rem, 4vw, 3rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
 }
 
 .stageCaption {
-  max-width: 62ch;
-  color: var(--paper-dim);
-  font-size: clamp(0.83rem, 1.6vw, 0.96rem);
+  max-width: 54ch;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--paper);
 }
 
-/* Everyone sees where the image came from, not just a footnote. */
 .stageProvenance {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  margin-top: 0.15rem;
-  color: var(--gold-400);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  /* On the dark scrim the darker gold would not read, so the lighter tint is
+     used here and only here. */
+  color: #e0b45c;
 }
 
-.stageProvenance::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  flex: none;
-  transform: rotate(45deg);
-  background: var(--gold-400);
-}
-
-/* --- tabs ----------------------------------------------------------------- */
+/* --- tab strip ------------------------------------------------------------ */
 
 .tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 6px;
   overflow-x: auto;
-  padding-bottom: 0.3rem;
-  scroll-snap-type: x proximity;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
-  display: flex;
+  position: relative;
   flex: none;
-  align-items: center;
-  gap: 0.6rem;
-  min-height: 2.85rem;
-  padding: 0.36rem 0.95rem 0.36rem 0.36rem;
+  width: 96px;
+  overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.04);
-  color: var(--paper-dim);
-  font-size: 0.86rem;
-  font-weight: 560;
-  white-space: nowrap;
-  scroll-snap-align: start;
+  background: var(--paper-3);
+  aspect-ratio: 4 / 3;
+  opacity: 0.55;
+  filter: grayscale(0.6);
   transition:
-    border-color var(--dur) var(--ease),
-    background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
+    opacity var(--dur) var(--ease),
+    filter var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
 
 .tab:hover {
-  border-color: var(--gold-line);
-  background-color: rgba(247, 200, 115, 0.06);
-  color: var(--paper);
+  opacity: 1;
+  filter: none;
 }
 
-.tab:where([aria-selected="true"]) {
-  border-color: var(--gold-line);
-  background-image: linear-gradient(96deg, rgba(247, 200, 115, 0.18) 0%, rgba(255, 92, 114, 0.14) 100%);
-  color: var(--paper);
-  box-shadow: 0 8px 22px -14px rgba(247, 200, 115, 0.7);
+/* Selected tab: full colour with the accent rule, like a marked page. */
+.tab[aria-selected="true"] {
+  opacity: 1;
+  filter: none;
+  border-color: var(--line-ink);
+  box-shadow: inset 0 -3px 0 0 var(--red);
 }
 
 .tabThumb {
-  position: relative;
-  flex: none;
-  width: 2.1rem;
-  height: 2.1rem;
-  overflow: hidden;
-  border-radius: 50%;
-  background: var(--ink-750);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-}
-
-.tabThumb img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
 }
 
@@ -172,146 +137,133 @@
 
 .highlights {
   display: grid;
-  gap: 0.85rem;
-  margin-top: clamp(1.5rem, 3.5vw, 2.5rem);
+  gap: 0;
+  margin-top: 0.5rem;
+  border: 1px solid var(--line-ink);
 }
 
 .highlight {
-  position: relative;
   display: grid;
   gap: 0.35rem;
-  padding: 1.05rem 1.15rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background:
-    linear-gradient(168deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 60%),
-    var(--ink-900);
-  overflow: hidden;
-  transition:
-    border-color var(--dur) var(--ease),
-    transform var(--dur) var(--ease);
+  padding: 16px 20px;
+  border-top: 1px solid var(--line);
 }
 
-.highlight:hover {
-  transform: translateY(-2px);
-}
-
-/* A thin coloured spine on the left edge carries the verification state. It is
-   never the only signal — the badge below states it in words. */
-.highlight::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 3px;
-}
-
-.highlightConfirmed::before {
-  background: linear-gradient(180deg, var(--ok-300), rgba(126, 226, 176, 0.15));
-}
-
-.highlightPending::before {
-  background: linear-gradient(180deg, var(--gold-400), rgba(247, 200, 115, 0.15));
+.highlight:first-child {
+  border-top: 0;
 }
 
 .highlightLabel {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-variation-settings: "wdth" 94, "wght" 700;
-  letter-spacing: -0.015em;
-  color: var(--paper);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 .highlightDetail {
-  color: var(--muted);
-  font-size: 0.87rem;
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
-/* --- gallery grid --------------------------------------------------------- */
+/* Confirmed facts carry the venue's own word; pending ones are visibly open. */
+.highlightConfirmed .highlightDetail {
+  color: var(--ink);
+}
+
+.highlightPending .highlightDetail {
+  color: var(--ink-3);
+}
+
+/* --- gallery -------------------------------------------------------------- */
 
 .gallery {
   display: grid;
-  gap: 1.15rem;
+  gap: 1rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .galleryItem {
   display: grid;
-  align-content: start;
-  gap: 0.45rem;
+  gap: 0.5rem;
   min-width: 0;
 }
 
 .galleryFrame {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16 / 10;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--ink-850);
-  transition:
-    border-color var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
-}
-
-.galleryItem:hover .galleryFrame {
-  border-color: var(--gold-line);
-  box-shadow: 0 22px 44px -30px rgba(0, 0, 0, 0.95);
+  background: var(--paper-3);
+  aspect-ratio: 4 / 3;
 }
 
 .galleryFrame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--dur-slow) var(--ease-out);
+  transition: transform var(--dur-slow) var(--ease);
 }
 
 .galleryItem:hover .galleryFrame img {
-  transform: scale(1.045);
+  transform: scale(1.04);
 }
 
 .galleryTitle {
   font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-variation-settings: "wdth" 92, "wght" 700;
-  color: var(--paper);
+  font-size: 15px;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
 
 .galleryCaption {
-  color: var(--muted);
-  font-size: 0.85rem;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  line-height: 1.55;
 }
 
 .galleryProvenance {
-  color: var(--muted-2);
-  font-size: 0.7rem;
-  letter-spacing: 0.02em;
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--gold);
 }
 
 .galleryNote {
-  margin-top: 1.15rem;
-  color: var(--muted-2);
-  font-size: 0.82rem;
+  margin-top: 1.2rem;
+  color: var(--ink-3);
+  font-size: 11.5px;
 }
 
-/* --- breakpoints --------------------------------------------------------- */
+/* --- breakpoints ---------------------------------------------------------- */
 
-@media (min-width: 640px) {
-  .highlights {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (min-width: 900px) {
+  .spotlight {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
   }
-}
 
-@media (min-width: 1000px) {
+  .tabs {
+    grid-column: 1;
+  }
+
   .highlights {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 0;
   }
 
   .gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.4rem;
-  }
-
-  .spotlight {
-    gap: 1.1rem;
+    gap: 1.5rem 1.25rem;
   }
 }

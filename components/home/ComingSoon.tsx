@@ -18,7 +18,7 @@ export function ComingSoon({ movies, isFixture }: { movies: Movie[]; isFixture: 
 
   return (
     <section className={`section ${styles.sectionAlt}`} aria-labelledby="coming-soon-title">
-      <div className="container">
+      <div className="wrap reveal">
         <div className="section-head">
           <div>
             <span className="eyebrow">Later this season</span>

@@ -52,14 +52,14 @@ function FacilityList({ items, emptyLabel }: { items: Facility[]; emptyLabel: st
 export function Facilities() {
   return (
     <>
-      <section className={`surface ${styles.panel}`} aria-labelledby="facilities-title">
+      <section className={`box ${styles.panel}`} aria-labelledby="facilities-title">
         <h2 className={styles.panelTitle} id="facilities-title">
           At the cinema
         </h2>
         <FacilityList items={venue.facilities} emptyLabel="No facility information has been supplied." />
       </section>
 
-      <section className={`surface ${styles.panel}`} aria-labelledby="access-title">
+      <section className={`box ${styles.panel}`} aria-labelledby="access-title">
         <h2 className={styles.panelTitle} id="access-title">
           Accessibility
         </h2>
@@ -83,7 +83,7 @@ export function Facilities() {
  */
 export function ScreenLegend() {
   return (
-    <section className={`surface ${styles.panel}`} aria-labelledby="screens-title">
+    <section className={`box ${styles.panel}`} aria-labelledby="screens-title">
       <h2 className={styles.panelTitle} id="screens-title">
         Screens
       </h2>

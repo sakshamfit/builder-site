@@ -64,9 +64,9 @@ export function MovieFilters({
     <nav className={styles.filters} aria-label="Filter the film list">
       {languages.length > 1 ? (
         <div className={styles.filterGroup}>
-          <h3 className={styles.filterLegend} id="filter-language">
+          <h2 className={styles.filterLegend} id="filter-language">
             Language
-          </h3>
+          </h2>
           <ul className={styles.filterList} aria-labelledby="filter-language">
             {pill("language", null, "All", languageTotal)}
             {languages.map((option) => pill("language", option.value, option.label, option.count))}
@@ -76,9 +76,9 @@ export function MovieFilters({
 
       {formats.length > 1 ? (
         <div className={styles.filterGroup}>
-          <h3 className={styles.filterLegend} id="filter-format">
+          <h2 className={styles.filterLegend} id="filter-format">
             Format
-          </h3>
+          </h2>
           <ul className={styles.filterList} aria-labelledby="filter-format">
             {pill("format", null, "All", formatTotal)}
             {formats.map((option) => pill("format", option.value, option.label, option.count))}

@@ -16,7 +16,7 @@ export function LocationPanel() {
   const addressLines = confirmedAddressLines();
 
   return (
-    <section className={`surface ${styles.panel}`} aria-labelledby="location-title">
+    <section className={`box ${styles.panel}`} aria-labelledby="location-title">
       <h2 className={styles.panelTitle} id="location-title">
         Find the cinema
       </h2>
@@ -35,7 +35,7 @@ export function LocationPanel() {
 
       <div className={styles.actions}>
         <DirectionsLink size="small" showNote={false} />
-        <Button href="/help" variant="secondary" size="small">
+        <Button href="/help" variant="outline" size="small">
           Booking help
         </Button>
       </div>

@@ -1,105 +1,78 @@
 /* ==========================================================================
    Cinema at Elante Mall — design system
    --------------------------------------------------------------------------
-   Direction: "premium cinema after dark". Deep midnight ink with a violet
-   undertone, warm screen-light gold, and one vivid coral-rose for actions.
-   Light, heat, depth — three colours doing three jobs, nothing more.
+   Direction: "vintage cinema one-sheet". Warm cream poster stock, deep crimson
+   ink, near-black type, a restrained antique gold. A fixed left navigation
+   rail, oversized condensed display type over a small, quiet body size, and
+   full-height scenes.
+
+   This is an editorial poster system rather than a dark UI: light surfaces,
+   enormous uppercase display type, generous margins, and ruled boxes instead of
+   soft cards. It is deliberately built to a small palette — four colours doing
+   all the work.
 
    Typography is self-hosted and OFL-1.1 licensed:
-     Archivo Variable  — display. Its width axis (62–125) gives headings the
-                         condensed, heavy look of a film one-sheet.
-     Inter Variable    — interface, captions, policy text and anything long.
-     JetBrains Mono    — showtimes, dates and prices, so digits align.
+     Anton             — display. Condensed, heavy, uppercase. The one-sheet voice.
+     Barlow / Condensed— interface labels, eyebrows, navigation, numbers.
+     DM Sans           — body copy, captions and everything long.
 
-   Original to this project. The palette deliberately differs from every source
-   repository that was reviewed for ideas (notably the neon-green fan treatment)
-   as well as from any cinema chain's brand colours.
+   Original to this project. The palette is a classic cinema-poster pairing and
+   intentionally distinct from any cinema chain's brand colours.
    ========================================================================== */
 
 :root {
-  /* --- midnight ink surfaces -------------------------------------------- */
-  --ink-1000: #04040a;
-  --ink-950: #07070f;
-  --ink-900: #0b0a16;
-  --ink-850: #100e1e;
-  --ink-800: #171329;
-  --ink-750: #1e1935;
-  --ink-700: #272042;
+  /* --- paper and ink ----------------------------------------------------- */
+  --paper: #f4f1e6;
+  --paper-2: #eae5d4;
+  --paper-3: #ded7c1;
+  --ink: #1c1a17;
+  --ink-2: #3a3733;
+  --ink-3: #55524b;
 
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.16);
-  --line-warm: rgba(247, 200, 115, 0.22);
+  --line: #b9b4a3;
+  --line-strong: #8f8a79;
+  --line-ink: #1c1a17;
 
-  /* --- text ------------------------------------------------------------- */
-  --paper: #f8f5f0;
-  --paper-dim: #cec8c4;
-  --muted: #9c95a8;
-  --muted-2: #8b849b; /* AA-verified: 5.05:1 on the lightest surface it sits on */
+  /* --- crimson: the single accent ---------------------------------------- */
+  --red: #c1121f;
+  --red-dark: #8f0d18;
+  --red-soft: rgba(193, 18, 31, 0.1);
+  --red-line: rgba(193, 18, 31, 0.34);
 
-  /* --- light: warm screen-light gold ------------------------------------ */
-  --gold-200: #ffeec8;
-  --gold-300: #ffdda4;
-  --gold-400: #f7c873;
-  --gold-500: #eda84c;
-  --gold-600: #c4822a;
-  --gold-soft: rgba(247, 200, 115, 0.12);
-  --gold-line: rgba(247, 200, 115, 0.32);
+  /*
+   * --- antique gold: "awaiting confirmation" states only -----------------
+   * Darkened from a decorative gold to #755915 so it clears 4.5:1 as small text
+   * on every paper tone here: 5.81 on --paper, 5.21 on --paper-2 and 4.63 on the
+   * tinted badge fill. The lighter gold looks better on a swatch and cannot be
+   * read; contrast wins.
+   */
+  --gold: #755915;
+  --gold-bright: #b0863c;
+  --gold-soft: rgba(176, 134, 60, 0.14);
 
-  /* --- heat: the single action accent ----------------------------------- */
-  --rose-300: #ff8fa3;
-  --rose-400: #ff5c72;
-  --rose-500: #f43f5e;
-  --rose-600: #cf2b48;
-  --rose-soft: rgba(255, 92, 114, 0.13);
-  --rose-line: rgba(255, 92, 114, 0.4);
-  /* Text that sits on the rose fill. Near-black for a 5.2:1 ratio. */
-  --on-accent: #1c0510;
+  /* --- deep green: the "confirmed by venue" state ------------------------ */
+  --green: #1f6f4a;
+  --green-soft: rgba(31, 111, 74, 0.11);
 
-  /* --- depth: violet, used only in ambient glows ------------------------ */
-  --plum-400: #a855f7;
-  --plum-500: #7c3aed;
-  --plum-600: #5b21b6;
+  /* --- structure -------------------------------------------------------- */
+  --rail: 56px;
+  --pad: clamp(1.25rem, 5vw, 5.5rem);
+  --maxw: 1500px;
 
-  /* --- status ----------------------------------------------------------- */
-  --ok-300: #7ee2b0;
-  --ok-soft: rgba(126, 226, 176, 0.12);
-  --ok-line: rgba(126, 226, 176, 0.34);
-
-  --focus: #ffdda4;
-
-  /* --- signature gradients ---------------------------------------------- */
-  --grad-gold: linear-gradient(96deg, #ffdda4 0%, #f7c873 42%, #e0a03f 100%);
-  --grad-heat: linear-gradient(96deg, #ffdda4 0%, #ff5c72 60%, #f43f5e 100%);
-  --grad-dusk: linear-gradient(120deg, #a855f7 0%, #ff5c72 58%, #f7c873 100%);
-  --grad-poster: linear-gradient(
-    180deg,
-    rgba(4, 4, 10, 0) 0%,
-    rgba(4, 4, 10, 0.35) 45%,
-    rgba(4, 4, 10, 0.92) 100%
-  );
-
-  /* --- film grain, drawn inline so it costs no request ------------------- */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%231c1a17' filter='url(%23n)' opacity='.6' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
 
   /* --- type ------------------------------------------------------------- */
-  --font-display: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  /* --- geometry --------------------------------------------------------- */
-  --gutter: clamp(1rem, 4.2vw, 2.5rem);
-  --section-y: clamp(3rem, 7vw, 5.75rem);
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 22px;
-  --maxw: 1240px;
+  --font-display: "Anton", "Arial Narrow", Impact, sans-serif;
+  --font-label: "Barlow", "Arial Narrow", Arial, sans-serif;
+  --font-condensed: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --font-body: "DM Sans Variable", "DM Sans", system-ui, -apple-system, sans-serif;
 
   /* --- motion ----------------------------------------------------------- */
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-fast: 130ms;
-  --dur: 240ms;
-  --dur-slow: 420ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-fast: 150ms;
+  --dur: 280ms;
+  --dur-slow: 600ms;
 }
 
 /* ==========================================================================
@@ -118,61 +91,29 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  color-scheme: dark;
+  color-scheme: light;
   scroll-behavior: smooth;
+  /* Keeps anchored sections clear of the fixed header. */
+  scroll-padding-top: 90px;
 }
 
 body {
-  position: relative;
-  min-height: 100dvh;
-  background-color: var(--ink-1000);
-  color: var(--paper);
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.62;
-  letter-spacing: -0.008em;
+  background-color: var(--paper);
+  color: var(--ink);
+  /* Small body size against enormous display type is the core of the
+     editorial look, so the base stays deliberately modest. */
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.68;
+  letter-spacing: -0.005em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-/*
- * Ambient light. Three fixed radial washes — warm gold from above, coral on the
- * right, violet low-left — approximating light spilling off a screen into a
- * dark room. Purely decorative and never carries information.
- */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(58% 42% at 50% -6%, rgba(247, 200, 115, 0.11) 0%, rgba(247, 200, 115, 0) 68%),
-    radial-gradient(46% 38% at 92% 12%, rgba(244, 63, 94, 0.09) 0%, rgba(244, 63, 94, 0) 70%),
-    radial-gradient(52% 44% at 4% 68%, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0) 72%);
-}
-
-/* Film grain over everything, below interactive layers. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.032;
-  background-image: var(--grain);
-  background-repeat: repeat;
-}
-
-/* Keep real content above the texture layers. */
-.skip-link,
-header,
-main,
-footer,
-.fixture-banner {
-  position: relative;
-  z-index: 2;
+/* The rail owns the left edge, exactly as a poster's margin would. */
+body {
+  padding-left: var(--rail);
 }
 
 img,
@@ -195,17 +136,30 @@ button {
   border: 0;
   padding: 0;
   cursor: pointer;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 ul,
 ol {
   list-style: none;
   padding: 0;
+}
+
+/* Film grain, fixed over the whole page. Decorative. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: var(--grain);
 }
 
 /* ==========================================================================
@@ -217,161 +171,73 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  /* Condensed and heavy: the proportions of a film one-sheet. */
-  font-variation-settings: "wdth" 90, "wght" 700;
-  line-height: 1.03;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.99;
   letter-spacing: -0.028em;
-  text-wrap: balance;
 }
 
 h1 {
-  font-size: clamp(2.5rem, 8.4vw, 5rem);
-  font-variation-settings: "wdth" 84, "wght" 800;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
+  font-size: clamp(3.4rem, 12vw, 11rem);
 }
 
 h2 {
-  font-size: clamp(1.85rem, 4.6vw, 2.9rem);
-  font-variation-settings: "wdth" 86, "wght" 780;
+  font-size: clamp(2.1rem, 5.6vw, 4.6rem);
 }
 
 h3 {
-  font-size: clamp(1.2rem, 2.4vw, 1.5rem);
-  font-variation-settings: "wdth" 92, "wght" 700;
+  font-size: clamp(1.35rem, 3vw, 2.3rem);
 }
 
 h4 {
-  font-size: 1.05rem;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
 }
 
 p {
-  text-wrap: pretty;
+  margin: 0 0 1.1rem;
 }
 
-/* Display sizes for poster titles and hero-adjacent text. */
-.display-xl {
-  font-family: var(--font-display);
-  font-size: clamp(2.75rem, 9vw, 5.5rem);
-  font-variation-settings: "wdth" 80, "wght" 800;
-  line-height: 0.94;
-  letter-spacing: -0.045em;
-  text-transform: uppercase;
+p:last-child {
+  margin-bottom: 0;
 }
-
-/* Gold-gradient text. Falls back to flat gold where background-clip is
-   unsupported, so the heading is never invisible. */
-.grad-text {
-  color: var(--gold-400);
-}
-
-@supports (background-clip: text) or (-webkit-background-clip: text) {
-  .grad-text {
-    background: var(--grad-gold);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-}
-
-.accent-text {
-  color: var(--rose-400);
-}
-
-/* ==========================================================================
-   Focus — visible everywhere, never removed
-   ========================================================================== */
-
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-.skip-link {
-  position: absolute;
-  top: 0.6rem;
-  left: 0.6rem;
-  z-index: 120;
-  transform: translateY(-220%);
-  padding: 0.7rem 1.1rem;
-  border-radius: var(--radius-sm);
-  background: var(--paper);
-  color: var(--ink-1000);
-  font-weight: 650;
-  transition: transform var(--dur) var(--ease);
-}
-
-.skip-link:focus {
-  transform: translateY(0);
-}
-
-/* ==========================================================================
-   Layout primitives
-   ========================================================================== */
-
-.container {
-  width: 100%;
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding-inline: var(--gutter);
-}
-
-.section {
-  padding-block: var(--section-y);
-}
-
-.section--tight {
-  padding-block: clamp(2rem, 4.5vw, 3.25rem);
-}
-
-/* ==========================================================================
-   Shared text patterns
-   ========================================================================== */
 
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--font-sans);
-  font-size: 0.73rem;
+  display: block;
+  font-family: var(--font-label);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold-400);
 }
 
-/* A short gold rule before the eyebrow — a cheap, precise way to signal
-   "section start" without adding bulk. */
-.eyebrow::before {
-  content: "";
-  width: 1.75rem;
-  height: 1px;
-  background: var(--grad-gold);
+/* Small italic serif accents — the handwritten note on a poster. */
+.script {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: clamp(1.1rem, 1.7vw, 1.6rem);
+  line-height: 1.3;
 }
 
 .lede {
   max-width: 62ch;
-  color: var(--paper-dim);
-  font-size: clamp(1.02rem, 1.7vw, 1.18rem);
-  line-height: 1.6;
+  color: var(--ink-2);
+  font-size: clamp(0.95rem, 1.3vw, 1.05rem);
 }
 
 .muted {
-  color: var(--muted);
+  color: var(--ink-3);
 }
 
 .small {
-  font-size: 0.86rem;
+  font-size: 12px;
 }
 
-/* Practical data stays monospaced and tabular so times and prices line up. */
+/* Showtimes, dates and prices: condensed, so digits stay tight and legible. */
 .tabular {
-  font-family: var(--font-mono);
+  font-family: var(--font-condensed);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.01em;
 }
 
 .visually-hidden {
@@ -387,109 +253,148 @@ p {
 }
 
 /* ==========================================================================
-   Section headings
+   Focus — visible everywhere, never removed
    ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: calc(var(--rail) + 10px);
+  z-index: 150;
+  padding: 10px 18px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-label);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 11px;
+  transform: translateY(-220%);
+  transition: transform var(--dur) var(--ease);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+.scene {
+  position: relative;
+}
+
+.scene-pad {
+  padding-block: clamp(3rem, 7vw, 6.5rem);
+}
+
+/* Alternate paper tone, used to separate consecutive scenes. */
+.sceneAlt {
+  background: var(--paper-2);
+  border-block: 1px solid var(--line);
+}
 
 .section-head {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem 1.75rem;
-  margin-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
-}
-
-.section-head > div {
-  min-width: 0;
+  gap: 1rem 2rem;
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
 }
 
 .section-head h2 {
-  margin-top: 0.7rem;
+  margin-top: 0.6rem;
 }
 
 .section-head p {
-  max-width: 60ch;
+  max-width: 58ch;
   margin-top: 0.7rem;
-  color: var(--muted);
-  font-size: 0.97rem;
+  color: var(--ink-3);
+  font-size: 13px;
 }
 
 /* ==========================================================================
-   Surfaces
+   Surfaces — ruled boxes, not soft cards
    ========================================================================== */
 
-.surface {
-  position: relative;
-  background:
-    linear-gradient(168deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 58%),
-    var(--ink-900);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+.box {
+  border: 1px solid var(--line-ink);
+  background: var(--paper);
 }
 
-/* Gradient hairline along the top edge of a surface — reads as light catching
-   a raised edge. */
-.surface::before {
+/* Notice block: a ruled panel with a coloured spine. */
+.note {
+  position: relative;
+  display: block;
+  padding: 1rem 1.2rem 1rem 1.4rem;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.note::before {
   content: "";
   position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(247, 200, 115, 0.45) 30%,
-    rgba(255, 92, 114, 0.35) 65%,
-    transparent 100%
-  );
-  opacity: 0.7;
-}
-
-.note {
-  display: flex;
-  gap: 0.8rem;
-  align-items: flex-start;
-  padding: 1rem 1.15rem;
-  border: 1px solid var(--gold-line);
-  border-left-width: 3px;
-  border-radius: var(--radius);
-  background: linear-gradient(96deg, var(--gold-soft) 0%, rgba(247, 200, 115, 0.03) 100%);
-  color: var(--paper-dim);
-  font-size: 0.92rem;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--gold-bright);
 }
 
 .note strong {
-  color: var(--gold-300);
-  font-weight: 650;
+  color: var(--ink);
+}
+
+.note-red::before {
+  background: var(--red);
 }
 
 /* ==========================================================================
-   Film-strip divider
-   Perforated 35mm edge, drawn with repeating gradients. Decorative only.
+   Motion — reveal-on-scroll, progressive enhancement only
+   --------------------------------------------------------------------------
+   The hidden state is applied ONLY when JavaScript has confirmed it can reveal
+   the element again (data-reveal="ready" is set on <html>). Without JavaScript
+   every element renders fully visible, so no content can ever be trapped behind
+   an animation that will not run.
    ========================================================================== */
 
-.filmstrip {
-  height: 26px;
-  border-block: 1px solid var(--line);
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      rgba(247, 200, 115, 0.28) 0 10px,
-      transparent 10px 26px
-    ),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0));
-  background-size: 26px 8px, 100% 100%;
-  background-position: 0 50%, 0 0;
-  background-repeat: repeat-x, no-repeat;
+[data-reveal="ready"] .reveal {
+  opacity: 0;
+  translate: 0 28px;
+  transition:
+    opacity 750ms var(--ease),
+    translate 900ms var(--ease);
 }
 
-/* ==========================================================================
-   Motion — short, purposeful, and always defeatable
-   ========================================================================== */
+[data-reveal="ready"] .reveal.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  [data-reveal="ready"] .reveal,
+  [data-reveal="ready"] .reveal.is-visible {
+    opacity: 1;
+    translate: 0 0;
+    transition: none;
   }
 
   *,
@@ -502,22 +407,31 @@ p {
 }
 
 /* ==========================================================================
-   Development notice bar
+   Development notice
    ========================================================================== */
 
 .fixture-banner {
-  border-bottom: 1px solid var(--rose-line);
-  background: linear-gradient(96deg, rgba(244, 63, 94, 0.18) 0%, rgba(168, 85, 247, 0.14) 55%, rgba(247, 200, 115, 0.14) 100%);
-  color: var(--paper-dim);
-  font-size: 0.83rem;
+  position: relative;
+  z-index: 90;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.06em;
 }
 
-.fixture-banner p {
-  padding-block: 0.6rem;
+.fixture-banner .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-block: 9px;
 }
 
 .fixture-banner strong {
-  color: var(--gold-300);
+  color: var(--gold-bright);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 /* ==========================================================================
@@ -525,10 +439,15 @@ p {
    ========================================================================== */
 
 @media print {
-  body,
-  body::before,
-  body::after {
+  body {
+    padding-left: 0;
     background: #fff;
-    color: #000;
+  }
+
+  .grain,
+  .rail,
+  .site-header,
+  .fixture-banner {
+    display: none !important;
   }
 }

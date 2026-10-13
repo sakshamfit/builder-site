@@ -5,8 +5,9 @@ brief. It is the audit trail for the site's rights position: if something here i
 in public and can be corrected.
 
 **Summary: no third-party code, imagery, audio or video is included in this project.** Every source
-file was written for this repository, and every image was generated for it. The repositories listed
-below were reviewed for interaction ideas only.
+file was written for this repository and every image was generated for it. The repositories listed
+below were reviewed for interaction ideas only, with one documented exception: the visual design
+language is adapted from a repository owned by the same owner, at the owner's instruction. See §6.
 
 ---
 
@@ -80,22 +81,36 @@ served through `next/image` with explicit `sizes` and are converted to AVIF/WebP
 That conversion runs on `sharp`, which is therefore a production dependency rather than a build-time
 extra.
 
+**On the palette change:** these images were generated against an earlier dark scheme. When the
+visual direction changed to cream poster stock they were reviewed rather than replaced, and kept:
+they are warm-toned (amber screen glow, warm aisle light) rather than cool, the screens in them read
+as cream panels against dark curtains, and a dark plate inside an ink rule on paper is the
+composition the design system is built around. A single subtle grade
+(`filter: saturate(.95) contrast(1.03)` on poster frames, `sepia(.35)` at 17% opacity on the hero
+still) unifies them with the paper tone. No image was traced, cropped from a third party, or
+recoloured into something it is not.
+
 ### Typography
 
-Three self-hosted variable fonts, all under the **SIL Open Font License 1.1**, which permits
-commercial use, modification and redistribution provided the licence travels with the font files.
-They are installed as npm packages and bundled by Next.js, so no third-party font request is made at
-runtime and no licence obligation is left behind in a CDN.
+Four self-hosted font files, all under the **SIL Open Font License 1.1**, which permits commercial
+use, modification and redistribution provided the licence travels with the font files. They are
+installed as npm packages and bundled by Next.js, so no third-party font request is made at runtime
+and no licence obligation is left behind in a CDN.
 
-| Package | Family | Role | Licence |
-| --- | --- | --- | --- |
-| `@fontsource-variable/archivo` | Archivo Variable (width + weight axes) | Display: headings and film titles, set condensed and heavy | **OFL-1.1** |
-| `@fontsource-variable/inter` | Inter Variable | Interface, captions and policy text | **OFL-1.1** |
-| `@fontsource-variable/jetbrains-mono` | JetBrains Mono Variable | Showtimes, dates and prices, so digits align | **OFL-1.1** |
+| Package | Family | Axes | Role | Licence |
+| --- | --- | --- | --- | --- |
+| `@fontsource/anton` | Anton | Regular 400 | Display: the venue name, film titles, section headings and screening times — condensed, heavy, uppercase | **OFL-1.1** |
+| `@fontsource/barlow` | Barlow | 400 / 600 / 700 | Interface: eyebrows, navigation, buttons, badges, small labels | **OFL-1.1** |
+| `@fontsource/barlow-condensed` | Barlow Condensed | 600 | Numerals: schedule counts and tabular figures | **OFL-1.1** |
+| `@fontsource-variable/dm-sans` | DM Sans Variable | Weight | Body copy, captions, policy text and everything long | **OFL-1.1** |
 
 Each package carries its own `LICENSE` file inside `node_modules`, and the licence text is available
-at https://openfontlicense.org. The fonts are used unmodified — only the variable axes are set in
-CSS — so no renamed variant needs to be published.
+at https://openfontlicense.org. The fonts are used unmodified — only the variable axis is set in CSS,
+and Anton is used as shipped in its single weight — so no renamed variant needs to be published.
+
+The reference used to choose these faces (see §6) loaded Yatra One and Noto Sans Indic from Google
+Fonts at runtime. **That was not carried over**: this project self-hosts every face, which is why the
+faces above are installed as packages rather than linked.
 
 Replacing them is a two-line change in `app/layout.tsx` plus the `--font-*` tokens in
 `app/globals.css`.
@@ -110,8 +125,11 @@ be replaced by the official logo once the venue supplies it.
 
 ## 3. Required before launch
 
-- [ ] Replace all ten placeholder images with licensed assets, or confirm in writing that the
+- [ ] Replace the ten placeholder images with licensed assets, or confirm in writing that the
       generated placeholders may remain on the public site.
+- [ ] Supply the confirmed trade name as a string and the logo file(s). `siteConfig.brandName` and
+      `public/brand/` are the two places they go; until then a neutral mark is drawn from the first
+      letter of the brand name.
 - [ ] Replace the sample film catalogue (`data/movies.ts`) with the venue's approved programme, and
       record the licence for each poster and still here.
 - [ ] Replace the header mark and `app/icon.svg` with the approved brand logo.
@@ -122,7 +140,8 @@ be replaced by the official logo once the venue supplies it.
 - [ ] If any trailer or video is added: confirm distribution rights, supply captions or a transcript,
       provide a poster fallback, keep it muted and user-initiated, and pause it when it scrolls out of
       view. (This build ships no video at all, because no licensed footage was available.)
-- [ ] If a webfont is introduced: record its licence here and self-host it.
+- [x] Self-hosted, OFL-1.1 licensed webfonts in use (Anton, Barlow, Barlow Condensed, DM Sans
+      Variable) — recorded above. No font is loaded from a CDN.
 - [ ] Confirm that no third-party map embed, analytics script or tag manager is added without the
       corresponding privacy wording and owner approval.
 
@@ -189,3 +208,57 @@ For the avoidance of doubt, this project contains:
 * no scraped or hot-linked images (remote image patterns are disabled in `next.config.ts`);
 * no analytics, advertising or tracking scripts;
 * no credentials, API keys, Firebase configuration or demo user accounts from any source repository.
+
+---
+
+## 6. Design language
+
+The visual system was adapted from a repository owned by the same owner,
+[`gireeshkumarreddy/kingfisher`](https://github.com/gireeshkumarreddy/kingfisher), at the owner's
+direct instruction ("just clone the repo and then customize it"). Because the repository is the
+owner's own work and the adaptation was explicitly requested, it is recorded here as the one case in
+this project where a pattern was taken from an existing source rather than invented.
+
+### What was adapted
+
+| Device in the reference | Reimplemented here as |
+| --- | --- |
+| Cream paper, deep red, near-black ink and a restrained antique gold | The site palette in `app/globals.css`. Red is reserved for the primary action and the footer; gold marks *unconfirmed* states; ink carries structure. The specific hexes were darkened where the reference's values failed WCAG AA as text on paper. |
+| A fixed narrow left rail holding a mark, a scroll-progress rule and a vertical label; the page inset by its width | `components/layout/Rail.tsx`. Percentage of page scrolled is shown as a tabular numeral rather than a decorative rule alone. |
+| Oversized condensed uppercase display type over a small body size | Anton for display, DM Sans at 14px for body, Barlow for labels. All sizing is in `clamp()` so the display voice scales from 320px to a wide desktop. |
+| Full-viewport opening scene with the title set as large as the viewport allows and a ruled overline and footer | `components/home/Hero.tsx`. The title lines are derived from the configured brand name rather than hard-coded. |
+| A bordered "spec sheet" of small uppercase labels paired with large display values | `components/cinema/SpecSheet.tsx`, which turns the venue's confirmed/pending fact model into ruled rows. This is the device the honesty system most benefits from: an unconfirmed fact is a visible, designed row rather than an absence. |
+| Text-button filter row with an accent underline on the active item and a superscript count | `components/movies/MovieFilters.tsx`, restyled in `movies.module.css`. |
+| Reveal-on-scroll (opacity and translate, `cubic-bezier(.16,1,.3,1)`), progressive-enhancement gated | `components/layout/RevealProvider.tsx`. Gated behind a `data-reveal="ready"` flag set only when JavaScript is available, so no content can ever be stranded behind an animation. |
+| Full-screen menu that slides down over the page in the accent colour | `components/layout/FullScreenMenu.tsx`, rebuilt as a proper modal: focus trap, Escape to close, focus returned to the toggle, background scroll locked. |
+
+### What was deliberately not taken
+
+The reference is a beer brand concept page, and the parts of it that carry that identity are not
+reusable here:
+
+- **No imagery, product cut-outs or marks.** `dist/assets/*.jpg`, `*-cut.webp`, `premium.png`,
+  `ultra.png`, `max.webp`, `witbier.webp`, `mango.png`, `lemon.png`, `food.jpg`, `glass.jpg` and
+  `brand-stamp.svg` are all excluded. The reference's own README states that all trademarks and
+  images remain the property of their respective owners, and its credits name Kingfisher Drinks /
+  United Breweries and several retail partners. None of that travels with the design system.
+- **No words.** No heading, caption, product name or footer line was carried across.
+- **No Google Fonts.** The reference links Yatra One and Noto Sans Indic from `fonts.googleapis.com`;
+  this project self-hosts instead. See the Typography section above.
+- **No Devanagari display face as a decorative motif.** Different brand, different region, different
+  meaning.
+- **No scroll-driven sticky sequence.** The reference's centrepiece is an element held with
+  `position: sticky` while a long track scrolls past it. That is exactly the "pinned giant scroll
+  experience" the brief prohibits, so it was not rebuilt in any form.
+- **No audio, particles, pointer-only interactions or animated cursor.** The reference's petal
+  shedding, diyas and pour interaction are pointer- and sound-driven; here, motion is limited to
+  CSS opacity and transform effects that the global `prefers-reduced-motion` rule removes entirely.
+
+### Licence position
+
+The repository carries **no LICENSE file** (the same finding as every other repository reviewed for
+this project, recorded in §1). That would normally mean code unavailable for copying, and it is why
+the other repositories contributed ideas only. This one is the owner's own repository and the
+adaptation was explicitly directed by the owner, so it is permitted here — but only for the owner,
+and only for this project. If any part of this codebase is ever reused elsewhere, the design language
+in this section must be re-checked against the same rule.

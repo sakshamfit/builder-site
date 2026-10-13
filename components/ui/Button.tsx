@@ -10,12 +10,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import styles from "./ui.module.css";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "red" | "ink" | "outline" | "ghost";
 type Size = "small" | "medium" | "large";
 
 const variantClass: Record<Variant, string> = {
-  primary: styles.primary,
-  secondary: styles.secondary,
+  red: styles.red,
+  ink: styles.ink,
+  outline: styles.outline,
   ghost: styles.ghost,
 };
 
@@ -50,7 +51,7 @@ type ButtonAsButtonProps = CommonProps & {
 
 export type ButtonProps = ButtonAsLinkProps | ButtonAsButtonProps;
 
-function classesFor({ variant = "primary", size = "medium", block, className }: CommonProps) {
+function classesFor({ variant = "red", size = "medium", block, className }: CommonProps) {
   return [styles.button, variantClass[variant], sizeClass[size], block ? styles.block : "", className]
     .filter(Boolean)
     .join(" ");

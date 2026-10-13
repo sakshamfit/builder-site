@@ -25,7 +25,7 @@ export function DirectionsLink({
 
   return (
     <div>
-      <Button href={directions.href} external variant="primary" size={size}>
+      <Button href={directions.href} external variant="red" size={size}>
         {directions.label}
       </Button>
       {showNote ? (

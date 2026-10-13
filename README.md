@@ -134,7 +134,37 @@ CSS motion is collapsed outright by the existing `prefers-reduced-motion: reduce
 
 ---
 
-## 5. Data: how the schedule works
+## 5. Design language
+
+The site is built as an **editorial poster system** rather than a dark interface: cream paper stock,
+near-black ink, one crimson accent, and an antique gold reserved for information that is still
+unconfirmed. A fixed narrow rail runs down the left edge with the mark, a scroll-progress rule and
+the percentage scrolled; the rest of the page is inset by its width, which is what gives every screen
+a poster margin.
+
+The signature device is the **specification sheet** (`components/cinema/SpecSheet.tsx`): ruled rows
+pairing a small uppercase label with either a confirmed figure set in oversized display type or an
+explicit statement of what is outstanding. It is the honesty model rendered as the visual centrepiece
+— on `/cinema` the venue sheet currently reads *2 of 8 confirmed*, and the six open rows are visible,
+designed, and each names the input that is missing.
+
+Type is the other half of it: **Anton** set very large and very tight for display, against **DM Sans**
+at 14px for body copy, with **Barlow** carrying labels and numerals. Everything above is expressed in
+CSS custom properties in `app/globals.css`, so the palette and type scale can be retuned in one file.
+
+Motion is limited to two things: a slow push on the spotlight image, and reveal-on-scroll for section
+blocks. The reveal is gated behind a `data-reveal="ready"` flag that only JavaScript sets, so if the
+script never runs every section renders fully visible — content is never hidden behind an animation.
+`prefers-reduced-motion: reduce` removes both, and disables the marquee outright.
+
+**Where this came from:** the owner directed that the visual layer follow their own repository,
+`gireeshkumarreddy/kingfisher`. What was adapted, and what was deliberately left behind (its imagery,
+trademarks, wording, Google Fonts links and scroll-driven centrepiece), is set out with reasoning in
+`ASSET_CREDITS.md` §6.
+
+---
+
+## 6. Data: how the schedule works
 
 ```
 data/showtimes.fixture.ts  ──┐
@@ -168,7 +198,7 @@ data/showtimes.fixture.ts  ──┐
 
 ---
 
-## 6. Booking handoff
+## 7. Booking handoff
 
 `lib/ticketing-provider.ts` is the **only** place that knows how a visitor leaves to buy a ticket.
 There is no seat map, no cart, no checkout and no confirmation page anywhere in this project — seat
@@ -202,7 +232,7 @@ the provider's own screening id — verified in `npm run check`.
 
 ---
 
-## 7. Dates, times and timezones
+## 8. Dates, times and timezones
 
 The venue operates in one timezone (`NEXT_PUBLIC_VENUE_TIMEZONE`, default `Asia/Kolkata`) while a
 visitor's device may be in another. Therefore:
@@ -216,7 +246,7 @@ visitor's device may be in another. Therefore:
 
 ---
 
-## 8. Brand, attribution and never-claims
+## 9. Brand, attribution and never-claims
 
 * The public name is configurable (`NEXT_PUBLIC_BRAND_DISPLAY_NAME`) and defaults to the neutral
   working title **"Cinema at Elante Mall"**.
@@ -233,7 +263,7 @@ visitor's device may be in another. Therefore:
 
 ---
 
-## 9. Accessibility and motion
+## 10. Accessibility and motion
 
 * Semantic landmarks, one `h1` per page, a skip link as the first tab stop, and visible focus rings
   that are never removed.
@@ -256,7 +286,7 @@ could overflow a 320 px viewport (none).
 
 ---
 
-## 10. Assets and their rights
+## 11. Assets and their rights
 
 Every image in `public/` — the ten film posters, the hero still and the five cinema-hall showcase
 illustrations plus the auditorium still — is original artwork generated for this project. None is a
@@ -284,13 +314,20 @@ The showcase was therefore built from original imagery, and `data/showcase.ts` i
 venue photography and properly licensed film artwork can be dropped in later. See
 `ASSET_CREDITS.md` §4.
 
-Typography uses a system font stack: no webfont is downloaded, so there is no third-party font
-request and no font licence dependency. Swap in a licensed face in `app/globals.css`
-(`--font-display` / `--font-sans`) when the venue supplies one.
+Those images were generated for an earlier dark theme. When the palette changed to cream poster stock
+they were **reviewed and kept rather than re-shot**: they are warm-toned, the screens in them read as
+cream panels against dark curtains, and a dark plate inside an ink rule on paper is exactly the
+composition the design system is built around. One subtle grade unifies them with the paper. The
+reasoning is recorded in `ASSET_CREDITS.md` §2.
+
+Typography is self-hosted and OFL-1.1 licensed (**Anton** for display, **Barlow** and **Barlow
+Condensed** for interface labels and numerals, **DM Sans Variable** for body copy), installed as npm
+packages so nothing is fetched from a font CDN at runtime. Licences and swap instructions are in
+`ASSET_CREDITS.md`.
 
 ---
 
-## 11. Review of the source repositories
+## 12. Review of the source repositories
 
 The brief asked for specific patterns to be studied in a list of public repositories before building.
 Those repositories were inspected, and the decisive finding is recorded in `ASSET_CREDITS.md`:
@@ -304,9 +341,16 @@ here by not shipping video at all) are reimplemented from scratch in this projec
 visual language. `ASSET_CREDITS.md` lists each repository reviewed and what was taken from it, which
 in every case is "concepts only, no files".
 
+**One documented exception.** The owner subsequently directed that the visual layer follow their own
+repository, `gireeshkumarreddy/kingfisher` ("just clone the repo and then customize it"). Its design
+system — palette, fixed left rail, display-type treatment, bordered specification sheets, filter row,
+full-screen menu and reveal-on-scroll — was therefore adapted into this project. Its imagery,
+trademarks, wording, Google Fonts links and scroll-driven sticky centrepiece were not. What was taken
+and why is itemised in `ASSET_CREDITS.md` §6.
+
 ---
 
-## 12. Owner inputs required before launch
+## 13. Owner inputs required before launch
 
 The full list is published on `/cinema` and `/help` as "Still being confirmed". In summary:
 

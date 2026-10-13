@@ -36,7 +36,7 @@ export function BookTicketsLink({
       <Button
         href={handoff.href}
         external
-        variant="primary"
+        variant="red"
         size={size}
         block={block}
         ariaLabel={`${handoff.label} (opens in a new tab)`}

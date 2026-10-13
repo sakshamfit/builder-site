@@ -23,8 +23,8 @@ export function NowShowing({
   screeningSourceLabel: string;
 }) {
   return (
-    <section className="section" aria-labelledby="now-showing-title">
-      <div className="container">
+    <section className="scene-pad" aria-labelledby="now-showing-title">
+      <div className="wrap reveal">
         <div className="section-head">
           <div>
             <span className="eyebrow">On screen at this cinema</span>
@@ -34,7 +34,7 @@ export function NowShowing({
               window. {screeningSourceLabel}
             </p>
           </div>
-          <Button href="/movies" variant="secondary" size="small">
+          <Button href="/movies" variant="outline" size="small">
             All films
           </Button>
         </div>

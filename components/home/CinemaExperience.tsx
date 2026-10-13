@@ -17,8 +17,8 @@ export function CinemaExperience() {
   const region = confirmed(venue.address.region);
 
   return (
-    <section className="section" aria-labelledby="experience-title">
-      <div className="container">
+    <section className="scene-pad" aria-labelledby="experience-title">
+      <div className="wrap reveal">
         <div className="section-head">
           <div>
             <span className="eyebrow">Inside the venue</span>
@@ -28,13 +28,13 @@ export function CinemaExperience() {
               cinema{region ? ` in ${region}` : ""}.
             </p>
           </div>
-          <Button href="/cinema" variant="secondary" size="small">
+          <Button href="/cinema" variant="outline" size="small">
             Full venue details
           </Button>
         </div>
 
         <div className={cinemaStyles.layout}>
-          <section className={`surface ${cinemaStyles.panel}`} aria-labelledby="exp-screens">
+          <section className={`box ${cinemaStyles.panel}`} aria-labelledby="exp-screens">
             <h3 className={cinemaStyles.panelTitle} id="exp-screens">
               Screens and formats
             </h3>
@@ -55,7 +55,7 @@ export function CinemaExperience() {
             </ul>
           </section>
 
-          <section className={`surface ${cinemaStyles.panel}`} aria-labelledby="exp-access">
+          <section className={`box ${cinemaStyles.panel}`} aria-labelledby="exp-access">
             <h3 className={cinemaStyles.panelTitle} id="exp-access">
               Access and facilities
             </h3>

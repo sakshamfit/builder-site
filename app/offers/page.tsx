@@ -24,7 +24,7 @@ export default function OffersPage() {
   const approved = offers.filter((offer) => offer.approval === "confirmed");
 
   return (
-    <div className="container section">
+    <div className="wrap scene-pad">
       <div className="section-head">
         <div>
           <span className="eyebrow">Promotions</span>
@@ -47,14 +47,14 @@ export default function OffersPage() {
             Cinema promotions are usually announced against the current programme — see what is on,
             or ask at the box office.
           </p>
-          <Button href="/movies" variant="primary" size="small">
+          <Button href="/movies" variant="red" size="small">
             See what is playing
           </Button>
         </EmptyState>
       ) : (
         <ul className="section--tight" style={{ display: "grid", gap: "1rem" }}>
           {approved.map((offer) => (
-            <li className="surface" key={offer.id} style={{ padding: "1.25rem" }}>
+            <li className="box" key={offer.id} style={{ padding: "1.25rem" }}>
               <h2 style={{ fontSize: "1.25rem" }}>{offer.title}</h2>
               <p className="muted" style={{ marginTop: "0.35rem" }}>
                 Valid {formatDateLong(offer.validFrom)} to {formatDateLong(offer.validTo)}

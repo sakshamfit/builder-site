@@ -1,146 +1,182 @@
 /* ==========================================================================
-   Cinema — location, facilities, access, screens
+   Cinema — venue panels, screens, facilities, location
    ========================================================================== */
 
 .layout {
   display: grid;
-  gap: 1.4rem;
+  gap: 1.25rem;
 }
 
+.layoutFull {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* A ruled panel: the workhorse container for venue information. */
 .panel {
   display: grid;
-  gap: 1rem;
   align-content: start;
-  padding: clamp(1.15rem, 3vw, 1.75rem);
+  gap: 0.9rem;
+  padding: 22px;
+  border: 1px solid var(--line-ink);
+  background: var(--paper);
 }
 
 .panelTitle {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 750;
-  letter-spacing: 0.18em;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+  line-height: 1.06;
   text-transform: uppercase;
-  color: var(--gold-400);
+  letter-spacing: -0.022em;
 }
+
+.pendingNote {
+  max-width: 68ch;
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* --- screens -------------------------------------------------------------- */
+
+.screenList {
+  display: grid;
+}
+
+.screenItem {
+  display: grid;
+  gap: 0.5rem;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.screenItem:first-child {
+  border-top: 0;
+}
+
+.screenName {
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+}
+
+.screenFormats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* --- definition lists ----------------------------------------------------- */
+
+.definitionList {
+  display: grid;
+}
+
+.definition {
+  display: grid;
+  gap: 0.25rem;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+}
+
+.definition:first-child {
+  border-top: 0;
+}
+
+.definitionTerm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.definitionValue {
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pendingValue {
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+/* Outstanding items, listed rather than summarised away. */
+.pendingList {
+  display: grid;
+}
+
+.pendingItem {
+  display: grid;
+  gap: 0.15rem;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+
+.pendingItem:first-child {
+  border-top: 0;
+}
+
+.pendingLabel {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* --- location ------------------------------------------------------------- */
 
 .address {
   font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-variation-settings: "wdth" 94, "wght" 600;
-  line-height: 1.45;
-  color: var(--paper);
+  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  font-style: normal;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
-  align-items: flex-start;
+  gap: 10px;
 }
 
-.definitionList {
-  display: grid;
-  gap: 1rem;
-}
-
-.definition {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.definitionTerm {
-  font-weight: 620;
-  color: var(--paper);
-}
-
-.definitionValue {
-  color: var(--paper-dim);
-  font-size: 0.93rem;
-}
-
-.pendingValue {
-  color: var(--muted-2);
-  font-size: 0.93rem;
-}
-
-.pendingList {
-  display: grid;
-  gap: 0.7rem;
-}
-
-.pendingItem {
-  padding-left: 0.95rem;
-  border-left: 2px solid var(--gold-line);
-}
-
-.pendingLabel {
-  font-weight: 620;
-  color: var(--paper-dim);
-  font-size: 0.93rem;
-}
-
-.pendingNote {
-  color: var(--muted-2);
-  font-size: 0.87rem;
-}
-
-.screenList {
-  display: grid;
-  gap: 0.55rem;
-}
-
-.screenItem {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background-color: rgba(255, 255, 255, 0.028);
-  transition:
-    border-color var(--dur) var(--ease),
-    background-color var(--dur) var(--ease);
-}
-
-.screenItem:hover {
-  border-color: var(--gold-line);
-  background-color: rgba(247, 200, 115, 0.05);
-}
-
-.screenName {
-  font-family: var(--font-display);
-  font-size: 1.02rem;
-  font-variation-settings: "wdth" 94, "wght" 680;
-  color: var(--paper);
-}
-
-.screenFormats {
-  display: flex;
-  gap: 0.35rem;
-}
-
+/* Shown when no map embed key is configured: a static, honest fallback rather
+   than an empty frame or a third-party script. */
 .mapFallback {
   display: grid;
-  gap: 0.55rem;
-  padding: 1.1rem;
+  gap: 0.5rem;
+  padding: 20px;
   border: 1px dashed var(--line-strong);
-  border-radius: var(--radius);
-  background:
-    radial-gradient(90% 100% at 0% 0%, rgba(247, 200, 115, 0.055) 0%, transparent 62%),
-    rgba(255, 255, 255, 0.015);
-  color: var(--muted);
-  font-size: 0.89rem;
+  background: var(--paper-2);
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-@media (min-width: 860px) {
+/* --- breakpoints ---------------------------------------------------------- */
+
+@media (min-width: 900px) {
   .layout {
-    grid-template-columns: 1.15fr 1fr;
-    gap: 1.6rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
   }
 
   .layoutFull {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 1.5rem;
   }
 }

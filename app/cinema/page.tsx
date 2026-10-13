@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LocationPanel } from "@/components/cinema/LocationPanel";
+import { VenueSpecSheet } from "@/components/cinema/VenueSpecSheet";
 import { VenueGallery } from "@/components/showcase/VenueGallery";
 import { showcaseCopy, showcaseImages } from "@/data/showcase";
 import { Facilities, ScreenLegend } from "@/components/cinema/Facilities";
@@ -32,7 +33,7 @@ export default function CinemaPage() {
   const outstanding = pendingFacts();
 
   return (
-    <div className="container section">
+    <div className="wrap scene-pad reveal">
       <div className="section-head">
         <div>
           <span className="eyebrow">The venue</span>
@@ -43,7 +44,7 @@ export default function CinemaPage() {
           </p>
         </div>
         {directions ? (
-          <Button href={directions.href} external variant="primary" size="small">
+          <Button href={directions.href} external variant="red" size="small">
             Get directions
           </Button>
         ) : null}
@@ -61,9 +62,13 @@ export default function CinemaPage() {
       </section>
 
       <div className={styles.layout}>
+        <VenueSpecSheet
+          footnote="Every row below is generated from the venue record in data/cinema.ts. A row fills in automatically when the cinema confirms that fact — nothing on this page is estimated from a neighbouring detail."
+        />
+
         <LocationPanel />
 
-        <section className={`surface ${styles.panel}`} aria-labelledby="hours-title">
+        <section className={`box ${styles.panel}`} aria-labelledby="hours-title">
           <h2 className={styles.panelTitle} id="hours-title">
             Opening times
           </h2>
@@ -95,7 +100,7 @@ export default function CinemaPage() {
 
         <ScreenLegend />
 
-        <section className={`surface ${styles.panel}`} aria-labelledby="contact-title">
+        <section className={`box ${styles.panel}`} aria-labelledby="contact-title">
           <h2 className={styles.panelTitle} id="contact-title">
             Contact
           </h2>
@@ -128,7 +133,7 @@ export default function CinemaPage() {
         </section>
 
         <section
-          className={`surface ${styles.panel} ${styles.layoutFull}`}
+          className={`box ${styles.panel} ${styles.layoutFull}`}
           aria-labelledby="outstanding-title"
         >
           <h2 className={styles.panelTitle} id="outstanding-title">
