@@ -117,9 +117,15 @@ Replacing them is a two-line change in `app/layout.tsx` plus the `--font-*` toke
 
 ### Iconography
 
-`app/icon.svg` and the header wordmark are original vector drawings made for this project — a neutral
-"screen light" glyph. They deliberately do not resemble any cinema chain's mark, and are intended to
-be replaced by the official logo once the venue supplies it.
+**This site displays no logo.** It identifies itself with type only — the venue's name set in Anton,
+positioned by the layout. There is no monogram, stamp, seal or drawn mark in the header, the left
+rail, the footer or on share cards. The venue has not supplied a logo, and a neutral mark invented
+here would be a claim about a brand identity the cinema has not approved.
+
+The one exception is `app/icon.svg`, the browser favicon: a plain, identity-free glyph kept because a
+missing favicon renders as a broken-tab icon. It is a browser affordance rather than branding, and it
+is to be replaced with the approved mark in the same step as the logo. `public/brand/README.md`
+documents the handover.
 
 ---
 
@@ -132,7 +138,8 @@ be replaced by the official logo once the venue supplies it.
       letter of the brand name.
 - [ ] Replace the sample film catalogue (`data/movies.ts`) with the venue's approved programme, and
       record the licence for each poster and still here.
-- [ ] Replace the header mark and `app/icon.svg` with the approved brand logo.
+- [ ] Supply the approved logo. Until then the site shows type only and no mark; `app/icon.svg`
+      (favicon) is the sole identity-free glyph, to be replaced at the same time.
 - [ ] Replace the five `public/showcase/` illustrations and the hero still with approved photographs
       of this cinema, and set `depictsVenue: true` in `data/showcase.ts` for each.
 - [ ] If film key art is wanted, obtain each distributor's digital asset kit in writing and record

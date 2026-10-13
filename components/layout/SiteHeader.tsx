@@ -29,9 +29,12 @@ export function SiteHeader() {
 
   return (
     <header className={[styles.header, scrolled ? styles.headerScrolled : ""].join(" ")}>
+      {/*
+        The wordmark is the trade name, set in type — no logo, monogram or stamp
+        is drawn anywhere on this site, because the venue has not supplied one.
+      */}
       <Link href="/" className={styles.brand}>
         <span className={styles.brandText}>{siteConfig.brandName}</span>
-        <span className={styles.brandDot} aria-hidden="true" />
         <span className={styles.brandPlace}>Chandigarh</span>
       </Link>
 

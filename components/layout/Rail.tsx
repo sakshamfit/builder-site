@@ -1,23 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { siteConfig } from "@/lib/site-config";
 import styles from "./layout.module.css";
 
 /**
  * The left navigation rail.
  *
  * The structural signature of the site: a fixed vertical channel down the left
- * edge holding the brand mark, a scroll-progress rule, a vertical section label
- * and the current section number. Everything else in the layout is offset by
- * its width, which is what gives the pages their poster margin.
+ * edge carrying a hairline scroll-progress rule, a vertical venue label and the
+ * percentage of the page read. Everything else in the layout is offset by its
+ * width, which is what gives the pages their poster margin.
  *
- * On narrow screens it narrows rather than disappearing, so the progress and
- * the mark stay with the reader.
+ * **No mark is drawn here.** The site displays no logo, monogram or stamp: the
+ * only identity it carries is the venue's name, set in type. That is deliberate
+ * — the venue has not supplied a logo, and drawing one would be inventing brand
+ * identity the cinema has not approved. If a logo is supplied later it belongs in
+ * `public/brand/` (see the README there).
  *
  * Scroll progress is decorative — it restates position the browser already
- * conveys — so it is hidden from assistive technology and is unnecessary for
- * the page to work.
+ * conveys — so it is hidden from assistive technology and the page works
+ * completely without it.
  */
 export function Rail() {
   const [progress, setProgress] = useState(0);
@@ -50,12 +52,6 @@ export function Rail() {
 
   return (
     <div className={styles.rail}>
-      <span className={styles.railMark} aria-hidden="true">
-        {/* Neutral working mark: the official logo replaces it once approved. */}
-        {siteConfig.brandName.charAt(0)}
-        <span>.</span>
-      </span>
-
       <div className={styles.railProgress} aria-hidden="true">
         <span style={{ transform: `scaleY(${progress})` }} />
       </div>

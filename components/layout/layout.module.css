@@ -9,38 +9,28 @@
   inset: 0 auto 0 0;
   z-index: 80;
   width: var(--rail);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-block: 14px 18px;
   border-right: 1px solid var(--line-ink);
   background: var(--paper);
 }
 
-.railMark {
-  font-family: var(--font-display);
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-
-.railMark span {
-  color: var(--red);
-}
-
-/* Scroll progress, drawn as a thin rule. Decorative. */
+/*
+ * A hairline progress rule running the full height of the rail and sitting on
+ * top of its border, so the page's position is legible from anywhere without a
+ * separate control. Purely decorative.
+ */
 .railProgress {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: -1px;
+  bottom: 0;
   width: 2px;
-  height: 68px;
-  margin-top: 18px;
-  background: var(--paper-3);
+  pointer-events: none;
 }
 
 .railProgress span {
-  position: absolute;
-  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   background: var(--red);
   transform-origin: top;
   transform: scaleY(0);
@@ -62,7 +52,10 @@
 }
 
 .railNumber {
-  margin-top: auto;
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: var(--font-condensed);
   font-size: 13px;
   font-weight: 600;
@@ -104,7 +97,7 @@
 .brand {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.55rem;
+  gap: 0.7rem;
   min-width: 0;
 }
 
@@ -117,15 +110,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.brandDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--red);
-  flex: none;
-  align-self: center;
 }
 
 .brandPlace {
@@ -422,14 +406,6 @@
 @media (max-width: 700px) {
   :root {
     --rail: 40px;
-  }
-
-  .railMark {
-    font-size: 17px;
-  }
-
-  .railProgress {
-    height: 54px;
   }
 
   .railLabel {
