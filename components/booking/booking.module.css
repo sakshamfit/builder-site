@@ -1,0 +1,43 @@
+/* ==========================================================================
+   Booking handoff
+   ========================================================================== */
+
+.handoff {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.handoffNote {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* The unavailable state is deliberately not styled as a broken button: it is a
+   statement about what this site cannot do, so it reads as information. */
+.unavailableBlock {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.unavailableTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--paper);
+}
+
+.unavailableDetail {
+  max-width: 66ch;
+  color: var(--muted);
+  font-size: 0.87rem;
+}
+
+.inline {
+  display: grid;
+  gap: 0.5rem;
+}

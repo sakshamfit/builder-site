@@ -1,0 +1,384 @@
+/* ==========================================================================
+   Cinema at Elante Mall — design system
+   --------------------------------------------------------------------------
+   Direction: "premium cinema at the mall". Deep ink surfaces, a warm
+   screen-light highlight, one restrained coral accent, and high-contrast
+   booking actions. All tokens below are original to this project.
+
+   Typography uses a system stack on purpose: no webfont is fetched, so the
+   site has no third-party font request, no external licence dependency and no
+   render-blocking network hop. Swap in a licensed webfont here when the venue
+   supplies one (see README "Typography").
+   ========================================================================== */
+
+:root {
+  /* --- surfaces ---------------------------------------------------------- */
+  --ink-900: #07080c;
+  --ink-850: #0a0c11;
+  --ink-800: #0e1116;
+  --ink-700: #141821;
+  --ink-600: #1c212c;
+  --ink-500: #262d3a;
+
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  /* --- text ------------------------------------------------------------- */
+  --paper: #f5f2ec;
+  --paper-dim: #d3cfc7;
+  --muted: #9aa1ad;
+  --muted-2: #767d8a;
+
+  /* --- highlights ------------------------------------------------------- */
+  /* Warm "screen light" used for glows, hints and pending-state accents. */
+  --amber: #f0c486;
+  --amber-soft: rgba(240, 196, 134, 0.13);
+  --amber-line: rgba(240, 196, 134, 0.32);
+
+  /* The single restrained accent. */
+  --accent: #e2554e;
+  --accent-bright: #ff6f63;
+  --accent-soft: rgba(226, 85, 78, 0.14);
+  --accent-line: rgba(226, 85, 78, 0.4);
+
+  --ok: #74d3a4;
+  --ok-soft: rgba(116, 211, 164, 0.13);
+  --ok-line: rgba(116, 211, 164, 0.32);
+
+  --focus: #ffd7a3;
+
+  /* --- type ------------------------------------------------------------- */
+  --font-display: ui-serif, Georgia, "Times New Roman", Times, serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* --- geometry --------------------------------------------------------- */
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --section-y: clamp(2.75rem, 6vw, 5rem);
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --maxw: 1200px;
+
+  /* --- motion ----------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+}
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--ink-900);
+  /* A single soft warm wash from the top, like light spilling off a screen.
+     Purely decorative; never carries information. */
+  background-image: radial-gradient(
+      100% 60% at 50% 0%,
+      rgba(240, 196, 134, 0.06) 0%,
+      rgba(240, 196, 134, 0) 60%
+    ),
+    radial-gradient(
+      80% 50% at 85% 5%,
+      rgba(226, 85, 78, 0.05) 0%,
+      rgba(226, 85, 78, 0) 70%
+    );
+  background-repeat: no-repeat;
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2rem, 6.2vw, 3.5rem);
+}
+
+h2 {
+  font-size: clamp(1.5rem, 3.6vw, 2.125rem);
+}
+
+h3 {
+  font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+}
+
+h4 {
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* ==========================================================================
+   Focus — visible on every interactive element, never removed
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Skip link: first tab stop on every page. */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink-900);
+  font-weight: 600;
+  transition: transform var(--dur) var(--ease);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Layout primitives
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--section-y);
+}
+
+.section--tight {
+  padding-block: clamp(1.75rem, 4vw, 3rem);
+}
+
+/* ==========================================================================
+   Shared text patterns
+   ========================================================================== */
+
+.eyebrow {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.lede {
+  max-width: 62ch;
+  color: var(--paper-dim);
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+/* Practical data (times, dates, prices) is monospaced + tabular so digits
+   line up column-wise and stay scannable when the showtime grid is dense. */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Section headings
+   ========================================================================== */
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.section-head > div {
+  min-width: 0;
+}
+
+.section-head h2 {
+  margin-top: 0.4rem;
+}
+
+.section-head p {
+  max-width: 58ch;
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   Surfaces
+   ========================================================================== */
+
+.surface {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035) 0%,
+    rgba(255, 255, 255, 0.012) 100%
+  );
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.note {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--amber-line);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  background: var(--amber-soft);
+  color: var(--paper-dim);
+  font-size: 0.9rem;
+}
+
+.note strong {
+  color: var(--paper);
+}
+
+/* ==========================================================================
+   Motion — short, useful, and always defeatable
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Print — a printable "what's on" view, mostly one column, no chrome
+   ========================================================================== */
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+}
+
+/* ==========================================================================
+   Development notice bar
+   Rendered only while NEXT_PUBLIC_DATA_MODE=fixture (see app/layout.tsx).
+   ========================================================================== */
+
+.fixture-banner {
+  border-bottom: 1px solid var(--amber-line);
+  background: linear-gradient(90deg, rgba(226, 85, 78, 0.16) 0%, rgba(240, 196, 134, 0.12) 100%);
+  color: var(--paper-dim);
+  font-size: 0.82rem;
+}
+
+.fixture-banner p {
+  padding-block: 0.55rem;
+}
+
+.fixture-banner strong {
+  color: var(--amber);
+}

@@ -1,0 +1,227 @@
+/* ==========================================================================
+   Movies — grid, poster card, filters
+   ========================================================================== */
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* --- card ----------------------------------------------------------------- */
+
+.card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+/* The whole card is clickable via the title link's stretched hit area, while
+   focus still lands on a real, focusable link. */
+.cardLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+}
+
+.cardLink {
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+}
+
+.cardLink:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+}
+
+.card:focus-within {
+  outline: none;
+}
+
+.card:focus-within .posterWrap {
+  border-color: var(--focus);
+}
+
+.posterWrap {
+  transition: border-color var(--dur) var(--ease);
+}
+
+.cardBody {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: clamp(0.98rem, 2.4vw, 1.1rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.4rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.cardBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.cardNext {
+  color: var(--amber);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Marks artwork that is a development fixture rather than a licensed poster. */
+.placeholderTag {
+  color: var(--muted-2);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* --- filters -------------------------------------------------------------- */
+
+.filters {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.filterGroup {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.filterLegend {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.filterList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.filterPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--paper-dim);
+  font-size: 0.85rem;
+  transition:
+    border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.filterPill:hover {
+  border-color: var(--line-strong);
+  color: var(--paper);
+}
+
+.filterPill:where([aria-current]) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--paper);
+}
+
+.filterCount {
+  color: var(--muted-2);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.filterFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1000px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .filters {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+  }
+
+  .filterFooter {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- film detail ---------------------------------------------------------- */
+
+.detail {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.detailBody {
+  min-width: 0;
+}
+
+.detailPoster {
+  width: 100%;
+  max-width: 15rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 720px) {
+  .detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detailBody {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .detailPoster {
+    margin-bottom: 0;
+  }
+}

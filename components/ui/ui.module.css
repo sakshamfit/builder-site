@@ -1,0 +1,180 @@
+/* ==========================================================================
+   UI primitives — Button, Badge, PosterImage, EmptyState
+   ========================================================================== */
+
+/* --- Button --------------------------------------------------------------- */
+
+.button {
+  --btn-bg: transparent;
+  --btn-fg: var(--paper);
+  --btn-border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem; /* 44px minimum touch target */
+  padding: 0.6rem 1.15rem;
+  border: 1px solid var(--btn-border);
+  border-radius: var(--radius);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.block {
+  width: 100%;
+}
+
+/* The single high-contrast action colour. Used for booking-related actions. */
+.primary {
+  --btn-bg: var(--accent);
+  --btn-fg: #1a0806;
+  --btn-border: var(--accent);
+  font-weight: 700;
+}
+
+.primary:hover {
+  --btn-bg: var(--accent-bright);
+  --btn-border: var(--accent-bright);
+}
+
+.secondary {
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-fg: var(--paper);
+  --btn-border: var(--line-strong);
+}
+
+.secondary:hover {
+  --btn-bg: rgba(255, 255, 255, 0.1);
+}
+
+.ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--paper-dim);
+  --btn-border: transparent;
+  padding-inline: 0.65rem;
+}
+
+.ghost:hover {
+  --btn-fg: var(--paper);
+  --btn-bg: rgba(255, 255, 255, 0.05);
+}
+
+.small {
+  min-height: 2.25rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.875rem;
+}
+
+.large {
+  min-height: 3.15rem;
+  padding: 0.85rem 1.6rem;
+  font-size: 1rem;
+}
+
+/* --- Badge ---------------------------------------------------------------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--paper-dim);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badgeAmber {
+  border-color: var(--amber-line);
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.badgeAccent {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+}
+
+.badgeOk {
+  border-color: var(--ok-line);
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+
+.badgePlain {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  padding-inline: 0;
+}
+
+/* --- PosterImage ---------------------------------------------------------- */
+
+.poster {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, var(--ink-700) 0%, var(--ink-800) 100%);
+  border: 1px solid var(--line);
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- EmptyState ----------------------------------------------------------- */
+
+.empty {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.emptyTitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.emptyBody {
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.emptyAction {
+  margin-top: 0.35rem;
+}

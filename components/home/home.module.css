@@ -1,0 +1,184 @@
+/* ==========================================================================
+   Home — hero and supporting sections
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  display: grid;
+  align-items: end;
+  min-height: clamp(21rem, 58vh, 33rem);
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  isolation: isolate;
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.heroMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 45%;
+}
+
+/* Two-layer scrim: the lower band guarantees text contrast at every width,
+   the top-right wash keeps the image from looking like a flat overlay. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7, 8, 12, 0.42) 0%,
+      rgba(7, 8, 12, 0.72) 45%,
+      rgba(7, 8, 12, 0.95) 100%
+    ),
+    radial-gradient(70% 55% at 78% 12%, rgba(240, 196, 134, 0.14) 0%, rgba(240, 196, 134, 0) 70%);
+}
+
+.heroInner {
+  display: grid;
+  gap: 1rem;
+  padding-block: clamp(1.75rem, 6vw, 3.5rem);
+}
+
+.heroEyebrow {
+  color: var(--amber);
+}
+
+.heroTitle {
+  max-width: 22ch;
+}
+
+.heroLede {
+  max-width: 54ch;
+  color: var(--paper-dim);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.heroImageNote {
+  color: var(--muted-2);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+/* --- generic section layout --------------------------------------------- */
+
+.sectionAlt {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.022) 0%, rgba(255, 255, 255, 0) 100%);
+  border-block: 1px solid var(--line);
+}
+
+/* --- coming soon --------------------------------------------------------- */
+
+.comingGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.comingItem {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.comingTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.comingMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.comingDate {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+/* --- visit panel --------------------------------------------------------- */
+
+.visitGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.visitPanel {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.visitAddress {
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+
+.visitList {
+  display: grid;
+  gap: 0.5rem;
+  color: var(--paper-dim);
+  font-size: 0.9rem;
+}
+
+.visitListTerm {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.visitPending {
+  color: var(--muted-2);
+  font-size: 0.85rem;
+}
+
+@media (min-width: 720px) {
+  .visitGrid {
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .comingGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1000px) {
+  .comingGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 62rem;
+  }
+}

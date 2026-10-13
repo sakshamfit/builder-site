@@ -1,0 +1,29 @@
+{
+  "name": "elante-cinema-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mobile-first venue website for the cinema at Elante Mall, Chandigarh (working title; brand configurable).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "tsx scripts/checks.mts"
+  },
+  "dependencies": {
+    "next": "16.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}
