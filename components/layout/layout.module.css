@@ -290,18 +290,31 @@
   position: relative;
   z-index: 5;
   margin-top: clamp(2.5rem, 6vw, 5rem);
-  padding-block: clamp(2.5rem, 5vw, 4rem) 0;
+  /* The bottom padding is the crowd's floor: the figures stand there, under the copy. */
+  padding-block: clamp(2.5rem, 5vw, 4rem) clamp(170px, 24vw, 260px);
   background: var(--red);
   color: var(--paper);
   overflow: hidden;
 }
 
-/* The crowd's floor: a full-width strip under the footer copy. */
+/* The crowd stands in the footer's bottom padding, drawn on the red itself, so it never
+   reaches the copy. Its top fades out, so the figures dissolve into the background. */
 .footerCrowd {
-  position: relative;
-  height: clamp(150px, 22vw, 240px);
-  margin-top: 2.5rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(170px, 24vw, 260px);
+  z-index: 0;
   pointer-events: none;
+  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent);
+  mask-image: linear-gradient(to top, #000 55%, transparent);
+}
+
+/* The copy sits above the crowd and stays clickable. */
+.footerContent {
+  position: relative;
+  z-index: 1;
 }
 
 .footerEyebrow {
@@ -378,7 +391,6 @@
 .footerBottom {
   display: grid;
   gap: 0.9rem;
-  margin-bottom: 2.5rem;
   padding-top: 22px;
   border-top: 1px solid rgba(244, 241, 230, 0.4);
   font-size: 10.5px;

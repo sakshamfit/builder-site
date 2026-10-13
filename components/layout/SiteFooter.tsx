@@ -22,7 +22,19 @@ export function SiteFooter() {
 
   return (
     <footer className={styles.footer}>
-      <div className="wrap">
+      {/* A crowd walking the footer's floor. It is the footer's background layer, not a
+          separate band: decorative only, hidden from assistive tech, and still for visitors
+          who ask for reduced motion. The copy sits above it. */}
+      <div className={styles.footerCrowd} aria-hidden="true">
+        <CrowdCanvas
+          src="https://cdn.21st.dev/assets/localized/abdb8990a7bef8c2f5af3e45f0a3c969c4b0603fba8be92e81347de4ea4e1ed7.png"
+          rows={15}
+          cols={7}
+          height="100%"
+        />
+      </div>
+
+      <div className={`wrap ${styles.footerContent}`}>
         <span className={`eyebrow ${styles.footerEyebrow}`}>Madhuban · Bihar · India</span>
 
         <p className={styles.footerTitle}>
@@ -102,17 +114,6 @@ export function SiteFooter() {
               : "Film release dates are sourced from published release calendars, with the sources listed on each film. Screening times, prices and seat availability come from a cinema's own ticketing system; they appear here once the venue connects it."}
           </p>
         </div>
-      </div>
-
-      {/* A crowd walking the footer's floor. Decorative only: hidden from assistive tech, and
-          the canvas stays still for visitors who ask for reduced motion. */}
-      <div className={styles.footerCrowd} aria-hidden="true">
-        <CrowdCanvas
-          src="https://cdn.21st.dev/assets/localized/abdb8990a7bef8c2f5af3e45f0a3c969c4b0603fba8be92e81347de4ea4e1ed7.png"
-          rows={15}
-          cols={7}
-          height="100%"
-        />
       </div>
     </footer>
   );
