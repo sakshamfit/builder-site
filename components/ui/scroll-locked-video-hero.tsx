@@ -54,6 +54,17 @@ const EXIT_PUSH_PX = 360
 /** If the video has not loaded by then, stop blocking the page. */
 const LOAD_TIMEOUT_MS = 12000
 const FADE_MS = 700
+/**
+ * Smoothing time constant (ms) for the scrub. Time-based rather than per-frame,
+ * so the motion takes the same time on 60Hz and 120Hz screens.
+ */
+const EASE_MS = 90
+/**
+ * Minimum video movement (seconds) worth a seek. Seeking on every animation
+ * frame is what made scrubbing stutter; ~1/30s is the smallest step a 30fps clip
+ * can show anyway.
+ */
+const SEEK_STEP = 1 / 30
 const END_HINT = "KEEP SCROLLING TO ENTER"
 
 const KEY_DELTAS: Record<string, number> = {
@@ -123,6 +134,9 @@ export default function MetroHero({
     let overscroll = 0
     let fadeTimer = 0
     let loadTimer = 0
+    let lastSeekTarget = -1
+    let lastRendered = -1
+    let lastFrameTs = 0
 
     const onLoadedData = () => {
       duration = video.duration || 0
@@ -285,13 +299,29 @@ export default function MetroHero({
 
     let lastHintEnd = false
 
-    function frame() {
-      currentProgress += (targetProgress - currentProgress) * 0.18
+    function frame(now: number) {
+      const dt = lastFrameTs ? Math.min(now - lastFrameTs, 100) : 16.7
+      lastFrameTs = now
+      currentProgress += (targetProgress - currentProgress) * (1 - Math.exp(-dt / EASE_MS))
+      if (Math.abs(targetProgress - currentProgress) < 0.0005) currentProgress = targetProgress
       atEnd = targetProgress >= 0.999 && currentProgress >= 0.985
 
+      // Seek only when the picture would actually change. Once settled, snap to the exact end point.
       if (duration > 0) {
-        seekTo(currentProgress * duration)
+        const settled = currentProgress === targetProgress
+        const wantTime = (settled ? targetProgress : currentProgress) * duration
+        if (Math.abs(wantTime - lastSeekTarget) >= (settled ? 0.001 : SEEK_STEP)) {
+          lastSeekTarget = wantTime
+          seekTo(wantTime)
+        }
       }
+
+      // Nothing moved this frame: skip the DOM writes entirely.
+      if (currentProgress === lastRendered) {
+        rafId = requestAnimationFrame(frame)
+        return
+      }
+      lastRendered = currentProgress
 
       if (videoRef.current) {
         const scale = 1 + currentProgress * 0.06
@@ -301,7 +331,6 @@ export default function MetroHero({
         const t = 1 - clamp(currentProgress / 0.35, 0, 1)
         titleRef.current.style.opacity = String(t)
         titleRef.current.style.transform = `translateY(${(1 - t) * -24}px) scale(${0.96 + t * 0.04})`
-        titleRef.current.style.filter = `blur(${(1 - t) * 10}px)`
       }
       if (hintRef.current) {
         hintRef.current.style.opacity = !hasStartedScrolling || atEnd ? "1" : "0"
@@ -312,12 +341,11 @@ export default function MetroHero({
         if (hintEndRef.current) hintEndRef.current.style.opacity = atEnd ? "1" : "0"
       }
       if (taglineRef.current) {
-        // Mirrors the title's blur-focus treatment, timed as the payoff
-        // once the reveal is nearly complete — not a background afterthought.
+        // Arrives as the payoff once the reveal is nearly complete. Opacity and
+        // transform only: animating blur() on text every frame is what stutters on phones.
         const t = clamp((currentProgress - 0.82) / 0.18, 0, 1)
         taglineRef.current.style.opacity = String(t)
         taglineRef.current.style.transform = `translateY(${(1 - t) * 20}px) scale(${0.97 + t * 0.03})`
-        taglineRef.current.style.filter = `blur(${(1 - t) * 8}px)`
       }
       if (progressBarRef.current) {
         progressBarRef.current.style.transform = `scaleX(${currentProgress})`
