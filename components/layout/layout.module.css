@@ -290,31 +290,29 @@
   position: relative;
   z-index: 5;
   margin-top: clamp(2.5rem, 6vw, 5rem);
-  /* The bottom padding is the crowd's floor: the figures stand there, under the copy. */
-  padding-block: clamp(2.5rem, 5vw, 4rem) clamp(170px, 24vw, 260px);
+  padding-block: clamp(2.5rem, 5vw, 4rem) 2.5rem;
   background: var(--red);
   color: var(--paper);
   overflow: hidden;
 }
 
-/* The crowd stands in the footer's bottom padding, drawn on the red itself, so it never
-   reaches the copy. Its top fades out, so the figures dissolve into the background. */
+/* The crowd covers the whole footer background, drawn on the red itself. */
 .footerCrowd {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: clamp(170px, 24vw, 260px);
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent);
-  mask-image: linear-gradient(to top, #000 55%, transparent);
 }
 
-/* The copy sits above the crowd and stays clickable. */
+/* The copy sits above the crowd and stays clickable. A red halo behind each letter keeps
+   the text readable where the figures pass behind it, without boxing the copy in. */
 .footerContent {
   position: relative;
   z-index: 1;
+  text-shadow:
+    0 0 3px var(--red),
+    0 0 8px var(--red),
+    0 0 14px var(--red);
 }
 
 .footerEyebrow {
@@ -398,9 +396,14 @@
   color: rgba(244, 241, 230, 0.92);
 }
 
+/* Small print sits on a solid red backing so attribution and legal lines stay readable
+   where the crowd passes behind them. */
 .footerBottom p {
   max-width: 62ch;
   margin: 0;
+  background: var(--red);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 /* --- breakpoints ---------------------------------------------------------- */
