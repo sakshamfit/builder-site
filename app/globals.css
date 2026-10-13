@@ -433,3 +433,73 @@ p:last-child {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Films hero — the curved band of cover plates at the top of the programme.
+   Wide screens: the copy panel sits over the band. Phones: the copy stacks
+   above the band, so the row is never hidden behind it.
+   ========================================================================== */
+
+.films-hero {
+  position: relative;
+  height: min(600px, 78vh);
+  min-height: 440px;
+  overflow: hidden;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.films-hero__band {
+  position: absolute;
+  inset: 0;
+}
+
+.films-hero__copy {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--pad);
+  pointer-events: none;
+}
+
+.films-hero__panel {
+  max-width: 620px;
+  padding: clamp(22px, 3vw, 40px) clamp(22px, 4vw, 52px);
+  background: var(--paper);
+  border: 1px solid var(--line-ink);
+  box-shadow: 0 18px 50px rgba(28, 26, 23, 0.18);
+  text-align: center;
+  pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+  .films-hero {
+    height: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .films-hero__copy {
+    order: 1;
+    height: auto;
+    /* Clears the fixed site header, which sits over the top of the page. */
+    padding: 6.5rem var(--pad) 1.25rem;
+  }
+
+  .films-hero__band {
+    order: 2;
+    position: relative;
+    inset: auto;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  .films-hero__panel {
+    padding: 20px 22px;
+  }
+}
