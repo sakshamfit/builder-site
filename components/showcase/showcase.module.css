@@ -2,24 +2,39 @@
    Venue showcase — spotlight viewer, highlights, gallery grid
    ========================================================================== */
 
-.showcase {
-  position: relative;
-}
-
 /* --- spotlight ------------------------------------------------------------ */
 
 .spotlight {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.9rem;
 }
 
 .stage {
   position: relative;
   overflow: hidden;
   aspect-ratio: 16 / 9;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
-  background: var(--ink-800);
+  background: var(--ink-850);
+  box-shadow:
+    0 34px 70px -40px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(247, 200, 115, 0.06);
+}
+
+/* A warm rim along the top edge: light catching the frame. */
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(247, 200, 115, 0.6) 22%,
+    rgba(255, 92, 114, 0.45) 58%,
+    transparent 100%
+  );
+  z-index: 3;
 }
 
 .stage img {
@@ -27,7 +42,7 @@
   height: 100%;
   object-fit: cover;
   /* Ambient drift, decorative only. Collapsed by prefers-reduced-motion. */
-  animation: stageDrift 40s ease-in-out infinite alternate;
+  animation: stageDrift 44s ease-in-out infinite alternate;
 }
 
 @keyframes stageDrift {
@@ -35,57 +50,69 @@
     transform: scale(1.01);
   }
   to {
-    transform: scale(1.07) translate3d(1%, -1%, 0);
+    transform: scale(1.075) translate3d(1.1%, -1%, 0);
   }
 }
 
-/* Scrim exists so the caption stays legible over any image. */
 .stageScrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(7, 8, 12, 0) 32%,
-    rgba(7, 8, 12, 0.55) 62%,
-    rgba(7, 8, 12, 0.94) 100%
-  );
+  z-index: 1;
+  background: var(--grad-poster);
 }
 
 .stageOverlay {
   position: absolute;
   inset: auto 0 0 0;
+  z-index: 2;
   display: grid;
-  gap: 0.3rem;
-  padding: clamp(0.85rem, 2.4vw, 1.5rem);
+  gap: 0.4rem;
+  padding: clamp(1rem, 2.6vw, 1.75rem);
 }
 
 .stageTitle {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 3vw, 1.6rem);
-  font-weight: 600;
+  font-size: clamp(1.35rem, 3.4vw, 2.1rem);
+  font-variation-settings: "wdth" 88, "wght" 780;
   color: var(--paper);
+  text-shadow: 0 2px 20px rgba(4, 4, 10, 0.85);
 }
 
 .stageCaption {
   max-width: 62ch;
   color: var(--paper-dim);
-  font-size: clamp(0.82rem, 1.6vw, 0.95rem);
+  font-size: clamp(0.83rem, 1.6vw, 0.96rem);
 }
 
 /* Everyone sees where the image came from, not just a footnote. */
 .stageProvenance {
-  color: var(--muted-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
+  color: var(--gold-400);
   font-size: 0.7rem;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.stageProvenance::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex: none;
+  transform: rotate(45deg);
+  background: var(--gold-400);
 }
 
 /* --- tabs ----------------------------------------------------------------- */
 
 .tabs {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.5rem;
   overflow-x: auto;
-  padding-bottom: 0.25rem;
+  padding-bottom: 0.3rem;
   scroll-snap-type: x proximity;
 }
 
@@ -93,42 +120,46 @@
   display: flex;
   flex: none;
   align-items: center;
-  gap: 0.55rem;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  gap: 0.6rem;
+  min-height: 2.85rem;
+  padding: 0.36rem 0.95rem 0.36rem 0.36rem;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.035);
+  background-color: rgba(255, 255, 255, 0.04);
   color: var(--paper-dim);
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.86rem;
+  font-weight: 560;
   white-space: nowrap;
   scroll-snap-align: start;
   transition:
     border-color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease);
+    color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
 }
 
 .tab:hover {
-  border-color: var(--line-strong);
+  border-color: var(--gold-line);
+  background-color: rgba(247, 200, 115, 0.06);
   color: var(--paper);
 }
 
 .tab:where([aria-selected="true"]) {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--gold-line);
+  background-image: linear-gradient(96deg, rgba(247, 200, 115, 0.18) 0%, rgba(255, 92, 114, 0.14) 100%);
   color: var(--paper);
+  box-shadow: 0 8px 22px -14px rgba(247, 200, 115, 0.7);
 }
 
 .tabThumb {
   position: relative;
   flex: none;
-  width: 2rem;
-  height: 2rem;
+  width: 2.1rem;
+  height: 2.1rem;
   overflow: hidden;
   border-radius: 50%;
-  background: var(--ink-700);
+  background: var(--ink-750);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .tabThumb img {
@@ -141,51 +172,72 @@
 
 .highlights {
   display: grid;
-  gap: 0.75rem;
-  margin-top: clamp(1.25rem, 3vw, 2rem);
+  gap: 0.85rem;
+  margin-top: clamp(1.5rem, 3.5vw, 2.5rem);
 }
 
 .highlight {
+  position: relative;
   display: grid;
-  gap: 0.25rem;
-  padding: 0.85rem 1rem;
+  gap: 0.35rem;
+  padding: 1.05rem 1.15rem;
   border: 1px solid var(--line);
-  border-left-width: 3px;
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.025);
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 60%),
+    var(--ink-900);
+  overflow: hidden;
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 
-.highlightConfirmed {
-  border-left-color: var(--ok-line);
+.highlight:hover {
+  transform: translateY(-2px);
 }
 
-.highlightPending {
-  border-left-color: var(--amber-line);
+/* A thin coloured spine on the left edge carries the verification state. It is
+   never the only signal — the badge below states it in words. */
+.highlight::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+}
+
+.highlightConfirmed::before {
+  background: linear-gradient(180deg, var(--ok-300), rgba(126, 226, 176, 0.15));
+}
+
+.highlightPending::before {
+  background: linear-gradient(180deg, var(--gold-400), rgba(247, 200, 115, 0.15));
 }
 
 .highlightLabel {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  font-weight: 650;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-variation-settings: "wdth" 94, "wght" 700;
+  letter-spacing: -0.015em;
   color: var(--paper);
 }
 
 .highlightDetail {
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: 0.87rem;
 }
 
-/* --- gallery grid (used on the cinema page) ------------------------------- */
+/* --- gallery grid --------------------------------------------------------- */
 
 .gallery {
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .galleryItem {
   display: grid;
-  gap: 0.4rem;
+  align-content: start;
+  gap: 0.45rem;
   min-width: 0;
 }
 
@@ -195,24 +247,38 @@
   aspect-ratio: 16 / 10;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--ink-800);
+  background: var(--ink-850);
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.galleryItem:hover .galleryFrame {
+  border-color: var(--gold-line);
+  box-shadow: 0 22px 44px -30px rgba(0, 0, 0, 0.95);
 }
 
 .galleryFrame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.galleryItem:hover .galleryFrame img {
+  transform: scale(1.045);
 }
 
 .galleryTitle {
   font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-variation-settings: "wdth" 92, "wght" 700;
+  color: var(--paper);
 }
 
 .galleryCaption {
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: 0.85rem;
 }
 
 .galleryProvenance {
@@ -222,10 +288,12 @@
 }
 
 .galleryNote {
-  margin-top: 1rem;
+  margin-top: 1.15rem;
   color: var(--muted-2);
   font-size: 0.82rem;
 }
+
+/* --- breakpoints --------------------------------------------------------- */
 
 @media (min-width: 640px) {
   .highlights {
@@ -240,6 +308,10 @@
 
   .gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.25rem;
+    gap: 1.4rem;
+  }
+
+  .spotlight {
+    gap: 1.1rem;
   }
 }

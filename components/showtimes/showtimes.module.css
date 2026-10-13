@@ -5,16 +5,16 @@
 /* --- date selector -------------------------------------------------------- */
 
 .dateNav {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
 }
 
 .dateStrip {
   display: flex;
-  gap: 0.5rem;
-  /* Horizontal strip on small screens: the row can be swiped or scrolled with
-     arrow keys, and each chip stays a comfortable tap target. */
+  gap: 0.55rem;
+  /* Horizontal strip on small screens: swipeable, arrow-key scrollable, and
+     every chip stays a comfortable tap target. */
   overflow-x: auto;
-  padding-bottom: 0.35rem;
+  padding-bottom: 0.4rem;
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
 }
@@ -22,73 +22,79 @@
 .dateChip {
   display: grid;
   justify-items: center;
-  gap: 0.05rem;
-  min-width: 4.25rem;
-  min-height: 4.5rem;
-  padding: 0.45rem 0.6rem 0.4rem;
+  gap: 0.06rem;
+  min-width: 4.6rem;
+  min-height: 5rem;
+  padding: 0.55rem 0.7rem 0.5rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.035);
   color: var(--paper-dim);
   scroll-snap-align: start;
   transition:
     border-color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease);
+    color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease);
 }
 
 .dateChip:hover {
-  border-color: var(--line-strong);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--gold-line);
+  background-color: rgba(247, 200, 115, 0.06);
   color: var(--paper);
+  transform: translateY(-2px);
 }
 
 .dateChip:where([aria-current]) {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--gold-400);
+  background-image: linear-gradient(168deg, rgba(247, 200, 115, 0.22) 0%, rgba(255, 92, 114, 0.14) 100%);
   color: var(--paper);
-  box-shadow: inset 0 0 0 1px var(--accent-line);
+  box-shadow:
+    0 14px 30px -18px rgba(247, 200, 115, 0.85),
+    inset 0 0 0 1px rgba(255, 221, 164, 0.28);
 }
 
 .dateChipWeekday {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .dateChip:where([aria-current]) .dateChipWeekday {
-  color: var(--accent-bright);
+  color: var(--gold-200);
 }
 
 .dateChipDay {
   font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-variation-settings: "wdth" 88, "wght" 780;
   line-height: 1;
   color: var(--paper);
 }
 
 .dateChipMonth {
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted-2);
 }
 
 .dateChipRelative {
-  margin-top: 0.15rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--rose-300);
 }
 
 .dateChipCount {
-  margin-top: 0.15rem;
-  font-size: 0.65rem;
+  margin-top: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
   color: var(--muted-2);
 }
 
@@ -96,48 +102,73 @@
 
 .status {
   display: grid;
-  gap: 0.4rem;
-  margin-bottom: 1.25rem;
+  gap: 0.5rem;
+  margin-bottom: 1.4rem;
 }
 
 .statusRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 0.75rem;
+  gap: 0.5rem 0.8rem;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: -0.02em;
 }
 
 /* --- film group ----------------------------------------------------------- */
 
 .groups {
   display: grid;
-  gap: 1rem;
+  gap: 1.15rem;
 }
 
 .group {
+  position: relative;
   display: grid;
-  gap: 0.9rem;
-  padding: clamp(0.9rem, 2.5vw, 1.25rem);
+  gap: 1.05rem;
+  padding: clamp(1.05rem, 2.8vw, 1.5rem);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
+  overflow: hidden;
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 62%),
+    var(--ink-900);
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.group:hover {
+  border-color: rgba(247, 200, 115, 0.22);
+  box-shadow: 0 26px 56px -40px rgba(0, 0, 0, 0.95);
+}
+
+.group::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
   background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.035) 0%,
-    rgba(255, 255, 255, 0.01) 100%
+    90deg,
+    transparent 0%,
+    rgba(247, 200, 115, 0.5) 28%,
+    rgba(255, 92, 114, 0.35) 62%,
+    transparent 100%
   );
 }
 
 .groupHead {
   display: flex;
   align-items: flex-start;
-  gap: 0.9rem;
+  gap: 1rem;
 }
 
 .groupPoster {
   flex: none;
-  width: 3.4rem;
+  width: 3.9rem;
+  border-radius: var(--radius-sm);
 }
 
 .groupTitles {
@@ -146,27 +177,32 @@
 
 .groupTitle {
   font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 600;
-  line-height: 1.2;
+  font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+  font-variation-settings: "wdth" 88, "wght" 760;
+  line-height: 1.12;
 }
 
 .groupTitleLink {
+  color: var(--paper);
+  text-underline-offset: 5px;
   text-decoration-color: transparent;
-  text-underline-offset: 4px;
+  transition:
+    color var(--dur) var(--ease),
+    text-decoration-color var(--dur) var(--ease);
 }
 
 .groupTitleLink:hover {
+  color: var(--gold-200);
   text-decoration: underline;
-  text-decoration-color: var(--line-strong);
+  text-decoration-color: var(--gold-line);
 }
 
 .groupMeta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.3rem 0.5rem;
-  margin-top: 0.35rem;
+  gap: 0.35rem 0.55rem;
+  margin-top: 0.45rem;
   color: var(--muted);
   font-size: 0.82rem;
 }
@@ -179,63 +215,67 @@
 
 .screens {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .screenRow {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .screenLabel {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--paper-dim);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  gap: 0.55rem;
+  color: var(--gold-400);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .chipRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
-/* A screening chip. It is an <a> when a ticket can be bought and a <span>
-   otherwise, so it never looks clickable when it is not. */
+/* A screening chip. An <a> when a ticket can be bought, a <span> otherwise, so
+   it never looks clickable when it is not. */
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  min-height: 2.75rem; /* 44px touch target */
-  padding: 0.45rem 0.75rem;
+  gap: 0.45rem;
+  min-height: 2.8rem; /* 45px touch target */
+  padding: 0.48rem 0.8rem;
   border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--paper);
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
   transition:
     border-color var(--dur) var(--ease),
     background-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
     transform var(--dur-fast) var(--ease);
 }
 
 a.chip:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  transform: translateY(-1px);
+  border-color: var(--gold-400);
+  background-color: rgba(247, 200, 115, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px -16px rgba(247, 200, 115, 0.85);
 }
 
 .chipStatic {
   border-style: dashed;
+  border-color: var(--line);
   color: var(--paper-dim);
-  background: transparent;
+  background-color: transparent;
 }
 
 .chipStarted {
@@ -244,12 +284,19 @@ a.chip:hover {
   text-decoration-color: var(--muted-2);
 }
 
+.chipPrice {
+  color: var(--gold-300);
+  font-family: var(--font-mono);
+  font-size: 0.83rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .chipFlag {
-  color: var(--amber);
+  color: var(--gold-400);
   font-family: var(--font-sans);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -260,22 +307,14 @@ a.chip:hover {
   font-size: 0.78rem;
 }
 
+.destinationNote {
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+
 /* --- unavailable schedule ------------------------------------------------- */
 
 .unavailable {
   display: grid;
-  gap: 0.75rem;
-}
-
-.chipPrice {
-  color: var(--paper-dim);
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Names the destination of a ticket link, visibly, once per film group. */
-.destinationNote {
-  color: var(--muted);
-  font-size: 0.82rem;
+  gap: 0.85rem;
 }

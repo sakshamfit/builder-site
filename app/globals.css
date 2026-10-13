@@ -1,72 +1,105 @@
 /* ==========================================================================
    Cinema at Elante Mall — design system
    --------------------------------------------------------------------------
-   Direction: "premium cinema at the mall". Deep ink surfaces, a warm
-   screen-light highlight, one restrained coral accent, and high-contrast
-   booking actions. All tokens below are original to this project.
+   Direction: "premium cinema after dark". Deep midnight ink with a violet
+   undertone, warm screen-light gold, and one vivid coral-rose for actions.
+   Light, heat, depth — three colours doing three jobs, nothing more.
 
-   Typography uses a system stack on purpose: no webfont is fetched, so the
-   site has no third-party font request, no external licence dependency and no
-   render-blocking network hop. Swap in a licensed webfont here when the venue
-   supplies one (see README "Typography").
+   Typography is self-hosted and OFL-1.1 licensed:
+     Archivo Variable  — display. Its width axis (62–125) gives headings the
+                         condensed, heavy look of a film one-sheet.
+     Inter Variable    — interface, captions, policy text and anything long.
+     JetBrains Mono    — showtimes, dates and prices, so digits align.
+
+   Original to this project. The palette deliberately differs from every source
+   repository that was reviewed for ideas (notably the neon-green fan treatment)
+   as well as from any cinema chain's brand colours.
    ========================================================================== */
 
 :root {
-  /* --- surfaces ---------------------------------------------------------- */
-  --ink-900: #07080c;
-  --ink-850: #0a0c11;
-  --ink-800: #0e1116;
-  --ink-700: #141821;
-  --ink-600: #1c212c;
-  --ink-500: #262d3a;
+  /* --- midnight ink surfaces -------------------------------------------- */
+  --ink-1000: #04040a;
+  --ink-950: #07070f;
+  --ink-900: #0b0a16;
+  --ink-850: #100e1e;
+  --ink-800: #171329;
+  --ink-750: #1e1935;
+  --ink-700: #272042;
 
-  --line: rgba(255, 255, 255, 0.09);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --line-warm: rgba(247, 200, 115, 0.22);
 
   /* --- text ------------------------------------------------------------- */
-  --paper: #f5f2ec;
-  --paper-dim: #d3cfc7;
-  --muted: #9aa1ad;
-  --muted-2: #767d8a;
+  --paper: #f8f5f0;
+  --paper-dim: #cec8c4;
+  --muted: #9c95a8;
+  --muted-2: #8b849b; /* AA-verified: 5.05:1 on the lightest surface it sits on */
 
-  /* --- highlights ------------------------------------------------------- */
-  /* Warm "screen light" used for glows, hints and pending-state accents. */
-  --amber: #f0c486;
-  --amber-soft: rgba(240, 196, 134, 0.13);
-  --amber-line: rgba(240, 196, 134, 0.32);
+  /* --- light: warm screen-light gold ------------------------------------ */
+  --gold-200: #ffeec8;
+  --gold-300: #ffdda4;
+  --gold-400: #f7c873;
+  --gold-500: #eda84c;
+  --gold-600: #c4822a;
+  --gold-soft: rgba(247, 200, 115, 0.12);
+  --gold-line: rgba(247, 200, 115, 0.32);
 
-  /* The single restrained accent. */
-  --accent: #e2554e;
-  --accent-bright: #ff6f63;
-  --accent-soft: rgba(226, 85, 78, 0.14);
-  --accent-line: rgba(226, 85, 78, 0.4);
+  /* --- heat: the single action accent ----------------------------------- */
+  --rose-300: #ff8fa3;
+  --rose-400: #ff5c72;
+  --rose-500: #f43f5e;
+  --rose-600: #cf2b48;
+  --rose-soft: rgba(255, 92, 114, 0.13);
+  --rose-line: rgba(255, 92, 114, 0.4);
+  /* Text that sits on the rose fill. Near-black for a 5.2:1 ratio. */
+  --on-accent: #1c0510;
 
-  --ok: #74d3a4;
-  --ok-soft: rgba(116, 211, 164, 0.13);
-  --ok-line: rgba(116, 211, 164, 0.32);
+  /* --- depth: violet, used only in ambient glows ------------------------ */
+  --plum-400: #a855f7;
+  --plum-500: #7c3aed;
+  --plum-600: #5b21b6;
 
-  --focus: #ffd7a3;
+  /* --- status ----------------------------------------------------------- */
+  --ok-300: #7ee2b0;
+  --ok-soft: rgba(126, 226, 176, 0.12);
+  --ok-line: rgba(126, 226, 176, 0.34);
+
+  --focus: #ffdda4;
+
+  /* --- signature gradients ---------------------------------------------- */
+  --grad-gold: linear-gradient(96deg, #ffdda4 0%, #f7c873 42%, #e0a03f 100%);
+  --grad-heat: linear-gradient(96deg, #ffdda4 0%, #ff5c72 60%, #f43f5e 100%);
+  --grad-dusk: linear-gradient(120deg, #a855f7 0%, #ff5c72 58%, #f7c873 100%);
+  --grad-poster: linear-gradient(
+    180deg,
+    rgba(4, 4, 10, 0) 0%,
+    rgba(4, 4, 10, 0.35) 45%,
+    rgba(4, 4, 10, 0.92) 100%
+  );
+
+  /* --- film grain, drawn inline so it costs no request ------------------- */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
 
   /* --- type ------------------------------------------------------------- */
-  --font-display: ui-serif, Georgia, "Times New Roman", Times, serif;
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, "Noto Sans", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
-    "Liberation Mono", monospace;
+  --font-display: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* --- geometry --------------------------------------------------------- */
-  --gutter: clamp(1rem, 4vw, 2rem);
-  --section-y: clamp(2.75rem, 6vw, 5rem);
-  --radius-sm: 6px;
-  --radius: 10px;
-  --radius-lg: 16px;
-  --maxw: 1200px;
+  --gutter: clamp(1rem, 4.2vw, 2.5rem);
+  --section-y: clamp(3rem, 7vw, 5.75rem);
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --maxw: 1240px;
 
   /* --- motion ----------------------------------------------------------- */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 120ms;
-  --dur: 200ms;
-  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 130ms;
+  --dur: 240ms;
+  --dur-slow: 420ms;
 }
 
 /* ==========================================================================
@@ -86,31 +119,60 @@
 html {
   -webkit-text-size-adjust: 100%;
   color-scheme: dark;
+  scroll-behavior: smooth;
 }
 
 body {
+  position: relative;
   min-height: 100dvh;
-  background-color: var(--ink-900);
-  /* A single soft warm wash from the top, like light spilling off a screen.
-     Purely decorative; never carries information. */
-  background-image: radial-gradient(
-      100% 60% at 50% 0%,
-      rgba(240, 196, 134, 0.06) 0%,
-      rgba(240, 196, 134, 0) 60%
-    ),
-    radial-gradient(
-      80% 50% at 85% 5%,
-      rgba(226, 85, 78, 0.05) 0%,
-      rgba(226, 85, 78, 0) 70%
-    );
-  background-repeat: no-repeat;
+  background-color: var(--ink-1000);
   color: var(--paper);
   font-family: var(--font-sans);
   font-size: 1rem;
-  line-height: 1.6;
-  letter-spacing: -0.005em;
+  line-height: 1.62;
+  letter-spacing: -0.008em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/*
+ * Ambient light. Three fixed radial washes — warm gold from above, coral on the
+ * right, violet low-left — approximating light spilling off a screen into a
+ * dark room. Purely decorative and never carries information.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 42% at 50% -6%, rgba(247, 200, 115, 0.11) 0%, rgba(247, 200, 115, 0) 68%),
+    radial-gradient(46% 38% at 92% 12%, rgba(244, 63, 94, 0.09) 0%, rgba(244, 63, 94, 0) 70%),
+    radial-gradient(52% 44% at 4% 68%, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0) 72%);
+}
+
+/* Film grain over everything, below interactive layers. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.032;
+  background-image: var(--grain);
+  background-repeat: repeat;
+}
+
+/* Keep real content above the texture layers. */
+.skip-link,
+header,
+main,
+footer,
+.fixture-banner {
+  position: relative;
+  z-index: 2;
 }
 
 img,
@@ -155,55 +217,90 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  font-weight: 600;
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  /* Condensed and heavy: the proportions of a film one-sheet. */
+  font-variation-settings: "wdth" 90, "wght" 700;
+  line-height: 1.03;
+  letter-spacing: -0.028em;
   text-wrap: balance;
 }
 
 h1 {
-  font-size: clamp(2rem, 6.2vw, 3.5rem);
+  font-size: clamp(2.5rem, 8.4vw, 5rem);
+  font-variation-settings: "wdth" 84, "wght" 800;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
 }
 
 h2 {
-  font-size: clamp(1.5rem, 3.6vw, 2.125rem);
+  font-size: clamp(1.85rem, 4.6vw, 2.9rem);
+  font-variation-settings: "wdth" 86, "wght" 780;
 }
 
 h3 {
-  font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+  font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+  font-variation-settings: "wdth" 92, "wght" 700;
 }
 
 h4 {
-  font-size: 1rem;
-  letter-spacing: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
 }
 
 p {
   text-wrap: pretty;
 }
 
+/* Display sizes for poster titles and hero-adjacent text. */
+.display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 9vw, 5.5rem);
+  font-variation-settings: "wdth" 80, "wght" 800;
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+/* Gold-gradient text. Falls back to flat gold where background-clip is
+   unsupported, so the heading is never invisible. */
+.grad-text {
+  color: var(--gold-400);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .grad-text {
+    background: var(--grad-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+.accent-text {
+  color: var(--rose-400);
+}
+
 /* ==========================================================================
-   Focus — visible on every interactive element, never removed
+   Focus — visible everywhere, never removed
    ========================================================================== */
 
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
-/* Skip link: first tab stop on every page. */
 .skip-link {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 100;
-  transform: translateY(-200%);
-  padding: 0.65rem 1rem;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 120;
+  transform: translateY(-220%);
+  padding: 0.7rem 1.1rem;
   border-radius: var(--radius-sm);
   background: var(--paper);
-  color: var(--ink-900);
-  font-weight: 600;
+  color: var(--ink-1000);
+  font-weight: 650;
   transition: transform var(--dur) var(--ease);
 }
 
@@ -227,7 +324,7 @@ p {
 }
 
 .section--tight {
-  padding-block: clamp(1.75rem, 4vw, 3rem);
+  padding-block: clamp(2rem, 4.5vw, 3.25rem);
 }
 
 /* ==========================================================================
@@ -235,19 +332,31 @@ p {
    ========================================================================== */
 
 .eyebrow {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--gold-400);
+}
+
+/* A short gold rule before the eyebrow — a cheap, precise way to signal
+   "section start" without adding bulk. */
+.eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: var(--grad-gold);
 }
 
 .lede {
   max-width: 62ch;
   color: var(--paper-dim);
-  font-size: clamp(1rem, 1.6vw, 1.125rem);
+  font-size: clamp(1.02rem, 1.7vw, 1.18rem);
+  line-height: 1.6;
 }
 
 .muted {
@@ -255,15 +364,14 @@ p {
 }
 
 .small {
-  font-size: 0.85rem;
+  font-size: 0.86rem;
 }
 
-/* Practical data (times, dates, prices) is monospaced + tabular so digits
-   line up column-wise and stay scannable when the showtime grid is dense. */
+/* Practical data stays monospaced and tabular so times and prices line up. */
 .tabular {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .visually-hidden {
@@ -287,8 +395,8 @@ p {
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 0.75rem 1.5rem;
-  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  gap: 1rem 1.75rem;
+  margin-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
 }
 
 .section-head > div {
@@ -296,14 +404,14 @@ p {
 }
 
 .section-head h2 {
-  margin-top: 0.4rem;
+  margin-top: 0.7rem;
 }
 
 .section-head p {
-  max-width: 58ch;
-  margin-top: 0.5rem;
+  max-width: 60ch;
+  margin-top: 0.7rem;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 0.97rem;
 }
 
 /* ==========================================================================
@@ -311,74 +419,116 @@ p {
    ========================================================================== */
 
 .surface {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.035) 0%,
-    rgba(255, 255, 255, 0.012) 100%
-  );
+  position: relative;
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 58%),
+    var(--ink-900);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
 }
 
+/* Gradient hairline along the top edge of a surface — reads as light catching
+   a raised edge. */
+.surface::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(247, 200, 115, 0.45) 30%,
+    rgba(255, 92, 114, 0.35) 65%,
+    transparent 100%
+  );
+  opacity: 0.7;
+}
+
 .note {
   display: flex;
-  gap: 0.7rem;
+  gap: 0.8rem;
   align-items: flex-start;
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--amber-line);
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--gold-line);
   border-left-width: 3px;
   border-radius: var(--radius);
-  background: var(--amber-soft);
+  background: linear-gradient(96deg, var(--gold-soft) 0%, rgba(247, 200, 115, 0.03) 100%);
   color: var(--paper-dim);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
 
 .note strong {
-  color: var(--paper);
+  color: var(--gold-300);
+  font-weight: 650;
 }
 
 /* ==========================================================================
-   Motion — short, useful, and always defeatable
+   Film-strip divider
+   Perforated 35mm edge, drawn with repeating gradients. Decorative only.
+   ========================================================================== */
+
+.filmstrip {
+  height: 26px;
+  border-block: 1px solid var(--line);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(247, 200, 115, 0.28) 0 10px,
+      transparent 10px 26px
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0));
+  background-size: 26px 8px, 100% 100%;
+  background-position: 0 50%, 0 0;
+  background-repeat: repeat-x, no-repeat;
+}
+
+/* ==========================================================================
+   Motion — short, purposeful, and always defeatable
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* ==========================================================================
-   Print — a printable "what's on" view, mostly one column, no chrome
-   ========================================================================== */
-
-@media print {
-  body {
-    background: #fff;
-    color: #000;
   }
 }
 
 /* ==========================================================================
    Development notice bar
-   Rendered only while NEXT_PUBLIC_DATA_MODE=fixture (see app/layout.tsx).
    ========================================================================== */
 
 .fixture-banner {
-  border-bottom: 1px solid var(--amber-line);
-  background: linear-gradient(90deg, rgba(226, 85, 78, 0.16) 0%, rgba(240, 196, 134, 0.12) 100%);
+  border-bottom: 1px solid var(--rose-line);
+  background: linear-gradient(96deg, rgba(244, 63, 94, 0.18) 0%, rgba(168, 85, 247, 0.14) 55%, rgba(247, 200, 115, 0.14) 100%);
   color: var(--paper-dim);
-  font-size: 0.82rem;
+  font-size: 0.83rem;
 }
 
 .fixture-banner p {
-  padding-block: 0.55rem;
+  padding-block: 0.6rem;
 }
 
 .fixture-banner strong {
-  color: var(--amber);
+  color: var(--gold-300);
+}
+
+/* ==========================================================================
+   Print
+   ========================================================================== */
+
+@media print {
+  body,
+  body::before,
+  body::after {
+    background: #fff;
+    color: #000;
+  }
 }

@@ -80,6 +80,26 @@ served through `next/image` with explicit `sizes` and are converted to AVIF/WebP
 That conversion runs on `sharp`, which is therefore a production dependency rather than a build-time
 extra.
 
+### Typography
+
+Three self-hosted variable fonts, all under the **SIL Open Font License 1.1**, which permits
+commercial use, modification and redistribution provided the licence travels with the font files.
+They are installed as npm packages and bundled by Next.js, so no third-party font request is made at
+runtime and no licence obligation is left behind in a CDN.
+
+| Package | Family | Role | Licence |
+| --- | --- | --- | --- |
+| `@fontsource-variable/archivo` | Archivo Variable (width + weight axes) | Display: headings and film titles, set condensed and heavy | **OFL-1.1** |
+| `@fontsource-variable/inter` | Inter Variable | Interface, captions and policy text | **OFL-1.1** |
+| `@fontsource-variable/jetbrains-mono` | JetBrains Mono Variable | Showtimes, dates and prices, so digits align | **OFL-1.1** |
+
+Each package carries its own `LICENSE` file inside `node_modules`, and the licence text is available
+at https://openfontlicense.org. The fonts are used unmodified — only the variable axes are set in
+CSS — so no renamed variant needs to be published.
+
+Replacing them is a two-line change in `app/layout.tsx` plus the `--font-*` tokens in
+`app/globals.css`.
+
 ### Iconography
 
 `app/icon.svg` and the header wordmark are original vector drawings made for this project — a neutral

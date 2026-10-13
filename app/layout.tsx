@@ -2,6 +2,20 @@ import type { Metadata, Viewport } from "next";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { siteConfig } from "@/lib/site-config";
+
+/*
+ * Self-hosted, OFL-1.1 licensed fonts (see ASSET_CREDITS.md).
+ * Archivo ships a width axis, which is what gives the headings their condensed
+ * poster feel; Inter carries the interface; JetBrains Mono keeps showtimes and
+ * prices aligned column-wise.
+ *
+ * Imported here rather than fetched from a font CDN: no third-party request, no
+ * layout shift, and the licence travels with the repository.
+ */
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
+
 import "./globals.css";
 
 export const metadata: Metadata = {

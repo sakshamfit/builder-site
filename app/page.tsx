@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
 import { Showcase } from "@/components/home/Showcase";
+import { MarqueeTicker } from "@/components/showcase/MarqueeTicker";
 import { NowShowing } from "@/components/home/NowShowing";
 import { ComingSoon } from "@/components/home/ComingSoon";
 import { CinemaExperience } from "@/components/home/CinemaExperience";
@@ -43,9 +44,27 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
   const dateISO =
     requestedDate && isValidCalendarDate(requestedDate) ? requestedDate : clock.todayISO;
 
+  const summaryForMarquee = snapshot.state === "ready"
+    ? summariseSchedule(snapshot.showtimes, venue.timezone, clock.todayISO)
+    : null;
+
   const place = [confirmed(venue.address.locality), confirmed(venue.address.region)]
     .filter(Boolean)
     .join(", ");
+
+  /*
+   * Marquee content. Only true, useful statements: the venue, where it is, the
+   * date and what the schedule actually contains. No invented urgency.
+   */
+  const marqueeItems = [
+    siteConfig.brandName,
+    place || "Chandigarh",
+    summaryForMarquee?.totalScreenings
+      ? `${summaryForMarquee.totalScreenings} screenings listed`
+      : null,
+    summaryForMarquee?.lastDateLabel ? `Listings to ${summaryForMarquee.lastDateLabel}` : null,
+    siteConfig.isFixtureMode ? "Sample schedule — not a real programme" : null,
+  ].filter((item): item is string => Boolean(item));
 
   if (snapshot.state !== "ready") {
     return (
@@ -56,6 +75,12 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           place={place}
           isFixture={siteConfig.isFixtureMode}
         />
+        <MarqueeTicker
+          items={marqueeItems}
+          label={`${siteConfig.brandName}, ${place || "Chandigarh"}. Schedule currently unavailable.`}
+        />
+        <div className="filmstrip" aria-hidden="true" />
+
         <Showcase />
 
         <section className="section section--tight" id="showtimes">
@@ -99,6 +124,12 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         place={place}
         isFixture={siteConfig.isFixtureMode}
       />
+
+      <MarqueeTicker
+        items={marqueeItems}
+        label={`${siteConfig.brandName}, ${place || "Chandigarh"}. ${summaryForMarquee?.totalScreenings ?? 0} screenings listed.`}
+      />
+      <div className="filmstrip" aria-hidden="true" />
 
       <Showcase />
 

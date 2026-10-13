@@ -4,84 +4,89 @@
 
 .layout {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.4rem;
 }
 
 .panel {
   display: grid;
-  gap: 0.85rem;
+  gap: 1rem;
   align-content: start;
-  padding: clamp(1rem, 3vw, 1.5rem);
+  padding: clamp(1.15rem, 3vw, 1.75rem);
 }
 
 .panelTitle {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--gold-400);
 }
 
 .address {
-  font-size: 1.05rem;
-  line-height: 1.5;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-variation-settings: "wdth" 94, "wght" 600;
+  line-height: 1.45;
+  color: var(--paper);
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.55rem;
+  align-items: flex-start;
 }
 
 .definitionList {
   display: grid;
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
 .definition {
   display: grid;
-  gap: 0.15rem;
+  gap: 0.2rem;
 }
 
 .definitionTerm {
-  font-weight: 600;
+  font-weight: 620;
   color: var(--paper);
 }
 
 .definitionValue {
   color: var(--paper-dim);
-  font-size: 0.92rem;
+  font-size: 0.93rem;
 }
 
 .pendingValue {
   color: var(--muted-2);
-  font-size: 0.92rem;
+  font-size: 0.93rem;
 }
 
 .pendingList {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.7rem;
 }
 
 .pendingItem {
-  padding-left: 0.85rem;
-  border-left: 2px solid var(--amber-line);
+  padding-left: 0.95rem;
+  border-left: 2px solid var(--gold-line);
 }
 
 .pendingLabel {
-  font-weight: 600;
+  font-weight: 620;
   color: var(--paper-dim);
-  font-size: 0.92rem;
+  font-size: 0.93rem;
 }
 
 .pendingNote {
   color: var(--muted-2);
-  font-size: 0.86rem;
+  font-size: 0.87rem;
 }
 
 .screenList {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.55rem;
 }
 
 .screenItem {
@@ -89,15 +94,26 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.6rem 0.75rem;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.025);
+  background-color: rgba(255, 255, 255, 0.028);
+  transition:
+    border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+}
+
+.screenItem:hover {
+  border-color: var(--gold-line);
+  background-color: rgba(247, 200, 115, 0.05);
 }
 
 .screenName {
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-variation-settings: "wdth" 94, "wght" 680;
+  color: var(--paper);
 }
 
 .screenFormats {
@@ -107,19 +123,21 @@
 
 .mapFallback {
   display: grid;
-  gap: 0.5rem;
-  padding: 1rem;
+  gap: 0.55rem;
+  padding: 1.1rem;
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.02);
+  background:
+    radial-gradient(90% 100% at 0% 0%, rgba(247, 200, 115, 0.055) 0%, transparent 62%),
+    rgba(255, 255, 255, 0.015);
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.89rem;
 }
 
 @media (min-width: 860px) {
   .layout {
     grid-template-columns: 1.15fr 1fr;
-    gap: 1.5rem;
+    gap: 1.6rem;
   }
 
   .layoutFull {
