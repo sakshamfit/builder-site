@@ -293,6 +293,26 @@
   padding-block: clamp(2.5rem, 5vw, 4rem) 2.5rem;
   background: var(--red);
   color: var(--paper);
+  overflow: hidden;
+}
+
+/* The crowd covers the whole footer background, drawn on the red itself. */
+.footerCrowd {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* The copy sits above the crowd and stays clickable. A red halo behind each letter keeps
+   the text readable where the figures pass behind it, without boxing the copy in. */
+.footerContent {
+  position: relative;
+  z-index: 1;
+  text-shadow:
+    0 0 3px var(--red),
+    0 0 8px var(--red),
+    0 0 14px var(--red);
 }
 
 .footerEyebrow {
@@ -376,9 +396,14 @@
   color: rgba(244, 241, 230, 0.92);
 }
 
+/* Small print sits on a solid red backing so attribution and legal lines stay readable
+   where the crowd passes behind them. */
 .footerBottom p {
   max-width: 62ch;
   margin: 0;
+  background: var(--red);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 /* --- breakpoints ---------------------------------------------------------- */

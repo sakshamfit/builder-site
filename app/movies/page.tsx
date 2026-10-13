@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MovieFilters } from "@/components/movies/MovieFilters";
+import { FilmsHero } from "@/components/movies/FilmsHero";
 import { ProgrammeBoard } from "@/components/programme/ProgrammeBoard";
 import { ScheduleWait } from "@/components/programme/ScheduleWait";
 import { ScheduleStatus } from "@/components/showtimes/ScheduleStatus";
@@ -73,36 +74,33 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
     const upcoming = catalogue.filter((movie) => movie.status === "coming_soon").length;
 
     return (
-      <div className="wrap scene-pad">
-        <div className="section-head">
-          <div>
-            <span className="eyebrow">Programme</span>
-            <h1>Films</h1>
-            <p>
-              {catalogue.length} film{catalogue.length === 1 ? "" : "s"} — {released} in cinemas,{" "}
-              {upcoming} announced. Every release date is taken from a published release calendar
-              and cited on the film, so you can check any of them.
-            </p>
-          </div>
-        </div>
-
-        <ProgrammeBoard
+      <>
+        <FilmsHero
           movies={catalogue}
-          caveat={snapshot.notice}
-          citations={programme?.citations ?? []}
-          showCitations={programme !== null}
+          total={catalogue.length}
+          released={released}
+          upcoming={upcoming}
         />
 
-        <div style={{ marginTop: "2.5rem" }}>
-          <ScheduleWait variant="page" />
-        </div>
+        <div className="wrap scene-pad" style={{ paddingTop: "clamp(2.5rem, 5vw, 4rem)" }}>
+          <ProgrammeBoard
+            movies={catalogue}
+            caveat={snapshot.notice}
+            citations={programme?.citations ?? []}
+            showCitations={programme !== null}
+          />
 
-        <p className="small muted" style={{ marginTop: "1.5rem" }}>
-          <Button href="/cinema" variant="ghost" size="small">
-            Venue, location and access information
-          </Button>
-        </p>
-      </div>
+          <div style={{ marginTop: "2.5rem" }}>
+            <ScheduleWait variant="page" />
+          </div>
+
+          <p className="small muted" style={{ marginTop: "1.5rem" }}>
+            <Button href="/cinema" variant="ghost" size="small">
+              Venue, location and access information
+            </Button>
+          </p>
+        </div>
+      </>
     );
   }
 
