@@ -11,8 +11,7 @@ import { formatDateLong, formatRuntime, isValidCalendarDate } from "@/lib/date-f
 import { buildMetadata } from "@/lib/metadata";
 import { getScheduleSnapshot } from "@/lib/schedule-source";
 import { readFilterParams } from "@/lib/share-url";
-import { getMovieBySlug, movies } from "@/data/movies";
-import { venue } from "@/data/cinema";
+import { findMovie, loadCatalogue } from "@/lib/catalogue";
 import { siteConfig } from "@/lib/site-config";
 import styles from "@/components/movies/movies.module.css";
 
@@ -21,13 +20,23 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export function generateStaticParams() {
-  return movies.map((movie) => ({ slug: movie.slug }));
-}
+/*
+ * No `generateStaticParams` here, deliberately.
+ *
+ * A film page reads `searchParams` (the selected date) and shows a schedule that
+ * changes through the day, so it is a dynamic route in both data modes. Declaring
+ * static params — even an empty list — makes Next attempt on-demand static
+ * generation for unknown slugs, and a static render may not read `searchParams`;
+ * in live mode that surfaced as DYNAMIC_SERVER_USAGE and a 500 on the film page.
+ *
+ * Rendering on demand also means a visitor never sees a frozen schedule from an
+ * earlier build.
+ */
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const movie = getMovieBySlug(slug);
+  const catalogue = await loadCatalogue();
+  const movie = findMovie(catalogue, slug);
 
   if (!movie) {
     return buildMetadata({
@@ -62,9 +71,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  */
 export default async function MoviePage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const movie = getMovieBySlug(slug);
+  const catalogue = await loadCatalogue();
+  const movie = findMovie(catalogue, slug);
 
   if (!movie) notFound();
+  if (!catalogue.available) notFound();
+
+  const { venue } = catalogue;
 
   const query = await searchParams;
   const clock = readClock();
@@ -177,7 +190,7 @@ export default async function MoviePage({ params, searchParams }: Props) {
 
           <ShowtimeBoard
             snapshot={snapshot}
-            movies={movies}
+            movies={catalogue.movies}
             venue={venue}
             dateISO={dateISO}
             todayISO={clock.todayISO}

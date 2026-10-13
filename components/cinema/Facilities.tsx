@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { venue } from "@/data/cinema";
+import { getVenueWithScreens } from "@/lib/schedule-source";
 import { SCREEN_NAMING_NOTE, confirmed } from "@/lib/cinema-content";
 import type { Facility } from "@/lib/types";
 import styles from "./cinema.module.css";
@@ -77,20 +78,47 @@ export function Facilities() {
 }
 
 /**
- * Screen list. Screen names are working labels until the venue confirms how it
- * names its auditoriums, and this component says so rather than presenting
- * "Screen 1" as though it were the venue's own naming.
+ * Screen list.
+ *
+ * The auditoriums named here are the ones the *active* programme assigns
+ * screenings to. In live mode that is the partner payload, so visitors see the
+ * cinema's real auditorium names; in development it is the working labels, and
+ * the component says so rather than presenting "Screen 1" as the venue's naming.
+ *
+ * When the programme feed is unreachable, the list is empty and says why — it
+ * never falls back to sample auditoriums, which would show a visitor a layout
+ * the venue may not have.
  */
-export function ScreenLegend() {
+export async function ScreenLegend() {
+  const { venue: resolved, screensFrom } = await getVenueWithScreens();
+  const screens = resolved.screens;
+
+  if (screens.length === 0) {
+    return (
+      <section className={`box ${styles.panel}`} aria-labelledby="screens-title">
+        <h2 className={styles.panelTitle} id="screens-title">
+          Screens
+        </h2>
+        <p className={styles.pendingValue}>
+          {screensFrom === "unavailable"
+            ? "Auditorium details come from the cinema's scheduling system, which is not responding right now. Please check with the cinema directly."
+            : "No auditorium details have been supplied."}
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className={`box ${styles.panel}`} aria-labelledby="screens-title">
       <h2 className={styles.panelTitle} id="screens-title">
         Screens
       </h2>
-      <p className={styles.pendingValue}>{SCREEN_NAMING_NOTE}</p>
+      {screensFrom === "sample" ? (
+        <p className={styles.pendingValue}>{SCREEN_NAMING_NOTE}</p>
+      ) : null}
 
       <ul className={styles.screenList}>
-        {venue.screens.map((screen) => (
+        {screens.map((screen) => (
           <li className={styles.screenItem} key={screen.id}>
             <span className={styles.screenName}>{screen.name}</span>
             <span className={styles.screenFormats}>

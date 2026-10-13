@@ -9,8 +9,8 @@ import { buildMetadata } from "@/lib/metadata";
 import { describeHealth, getScheduleSnapshot } from "@/lib/schedule-source";
 import { readFilterParams } from "@/lib/share-url";
 import { nextScreeningByFilm } from "@/lib/showtime-view";
-import { languageLabel, movies } from "@/data/movies";
-import { venue } from "@/data/cinema";
+import { languageLabel } from "@/data/movies";
+import { loadCatalogue } from "@/lib/catalogue";
 import type { Movie } from "@/lib/types";
 import { siteConfig } from "@/lib/site-config";
 
@@ -33,9 +33,9 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 export default async function MoviesPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const clock = readClock();
-  const snapshot = await getScheduleSnapshot();
+  const source = await loadCatalogue();
 
-  if (snapshot.state !== "ready") {
+  if (!source.available) {
     return (
       <div className="wrap scene-pad">
         <div className="section-head">
@@ -45,20 +45,26 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
           </div>
         </div>
         <EmptyState title="The film list is unavailable right now">
-          <p>{snapshot.reason}</p>
+          <p>{source.reason}</p>
           <p>
             We would rather show you nothing than a list that might be out of date. Please try again
             shortly, or check the cinema&rsquo;s location and opening details in the meantime.
           </p>
           {process.env.NODE_ENV !== "production" ? (
-            <p className="small muted">Diagnostic: {snapshot.detail}</p>
+            <p className="small muted">Diagnostic: {source.detail}</p>
           ) : null}
         </EmptyState>
       </div>
     );
   }
 
-  const { showtimes, lastUpdated, sourceLabel, notice, health } = snapshot;
+  const venue = source.venue;
+  const catalogue: Movie[] = source.movies;
+  const snapshot = await getScheduleSnapshot();
+  const { showtimes, lastUpdated, sourceLabel, notice, health } =
+    snapshot.state === "ready"
+      ? snapshot
+      : { showtimes: [], lastUpdated: null, sourceLabel: source.sourceLabel, notice: null, health: null };
   const upcoming = showtimes.filter(
     (showtime) => Date.parse(showtime.startsAt) >= Date.parse(clock.nowISO),
   );
@@ -74,8 +80,6 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
     entry.formats.add(showtime.format);
     offerBySlug.set(showtime.movieSlug, entry);
   }
-
-  const catalogue: Movie[] = movies.filter((movie) => offerBySlug.has(movie.slug));
 
   const facetCount = (
     group: "languages" | "formats",
@@ -107,7 +111,7 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
     clock.nowISO,
   );
 
-  const healthReport = describeHealth(health);
+  const healthReport = health ? describeHealth(health) : null;
 
   return (
     <div className="wrap scene-pad">

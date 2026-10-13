@@ -26,10 +26,22 @@ Other commands:
 
 | Command | What it does |
 | --- | --- |
-| `npm run check` | Runs the project's self-checks (31 assertions) covering timezone maths, schedule validation and the ticketing handoff rules. |
+| `npm run check` | Runs the project's self-checks (64 assertions) covering timezone maths, schedule validation, the ticketing handoff rules and the venue feed contract. |
+| `npm run feed:serve` | Starts a stand-in partner feed on `http://127.0.0.1:4100` so live mode can be exercised without a partner account. |
 | `npm run build` | Production build. |
 | `npm run lint` | ESLint (`eslint-config-next`). |
 | `npm run typecheck` | `tsc --noEmit`. |
+
+To run the site against a feed rather than the sample data:
+
+```bash
+npm run feed:serve     # terminal 1
+
+NEXT_PUBLIC_DATA_MODE=live \
+SCHEDULE_FEED_URL=http://127.0.0.1:4100/programme.json \
+POSTER_HOST_ALLOWLIST=127.0.0.1 \
+npm run dev            # terminal 2
+```
 
 Always run `npm run check` before changing anything in `lib/` — the rules it protects are not all
 reachable through the UI while the project is in fixture mode.
@@ -167,10 +179,16 @@ trademarks, wording, Google Fonts links and scroll-driven centrepiece), is set o
 ## 6. Data: how the schedule works
 
 ```
-data/showtimes.fixture.ts  ──┐
-                             ├─► validateSchedule() ─► ScheduleSnapshot ─► view models ─► UI
-(live operator feed) ────────┘        (lib/schedule.ts)   (lib/schedule-source.ts)
+data/showtimes.fixture.ts ─┐
+                           ├─► validateSchedule() ─► ScheduleSnapshot ─► view models ─► UI
+lib/feed-source.ts ────────┘      (lib/schedule.ts)     (lib/schedule-source.ts)
+  │  fetch + 8s timeout
+  └─► lib/feed.ts  (the contract, and the validator that enforces it)
 ```
+
+Both branches are implemented and tested. The fixture branch runs the samples
+through exactly the same validator the live branch uses, so the validation code is
+exercised on every build rather than lying dormant until launch.
 
 * **A showtime is only rendered if it passes validation.** `validateShowtime` requires an ISO 8601
   timestamp **with an explicit UTC offset**, a known format, a known availability state, and a price
@@ -184,17 +202,45 @@ data/showtimes.fixture.ts  ──┐
   render as soon as a validated live feed supplies them.
 * **Staleness is stated, not hidden.** `ScheduleStatus` shows the source and when the snapshot was
   produced, and escalates to "times may have changed — confirm with the cinema" once a snapshot is
-  more than a day old.
+  older than `SCHEDULE_STALE_AFTER_HOURS` (default 12). A stale schedule is labelled, not withdrawn.
+* **Unlicensed artwork cannot reach a page.** A poster URL is accepted only from an allow-listed
+  host, only when the payload declares the licence covering it, and only with alt text. Fail any of
+  the three and the image is dropped, the film still lists, and the reason is logged. With an empty
+  allow-list — the default — no remote artwork is accepted at all. `next.config.ts` derives its image
+  `remotePatterns` from the same list, so the two cannot drift apart.
 
 ### Going live
 
-1. Implement `loadLiveSchedule()` in `lib/schedule-source.ts` (the stub is deliberately unfinished —
-   a half-written integration that could return invented data would be worse than none).
-2. Validate every record through `validateSchedule` before it reaches the UI.
-3. Set `NEXT_PUBLIC_DATA_MODE=live` and `SCHEDULE_FEED_URL` (server-only). With `live` and no feed,
-   the site renders an honest "we cannot show times right now" state while the rest of the site keeps
-   working — that state is implemented, not theoretical.
-4. The development banner and the "Sample" tags disappear automatically.
+There is no integration code left to write. Going live is configuration:
+
+```bash
+NEXT_PUBLIC_DATA_MODE=live
+SCHEDULE_FEED_URL=https://<partner host>/<venue>/programme.json
+POSTER_HOST_ALLOWLIST=<partner artwork CDN host>
+SCHEDULE_FEED_TOKEN=<bearer token>        # only if the endpoint needs one
+```
+
+When `live` is set:
+
+* the sample catalogue, the sample screens and the sample screenings are **not read at all** — the
+  films, auditoriums and screenings all come from the payload, so there is no path by which a sample
+  film can appear beside a real one;
+* the site-wide development banner and every "Sample" badge disappear;
+* `robots.txt` switches from `Disallow: /` to allowing crawlers, and the sitemap is built from the
+  real catalogue;
+* the film pages render on demand rather than being frozen into a build.
+
+The payload shape, every enforced rule, the allowed enum values and the failure
+behaviour are specified in **[`FEED_CONTRACT.md`](./FEED_CONTRACT.md)** — that is
+the document to send to the ticketing partner. `lib/feed.ts` is its executable
+form, and `scripts/feed-fixtures.mts` contains one deliberately broken payload per
+rule so every rejection path has a test.
+
+If the feed is unreachable, returns a non-200, times out after 8 seconds, or fails
+validation, the site renders "we could not read the cinema's schedule" while the
+venue information, showcase and everything else keep working. It never falls back
+to sample data, and it never shows the last payload forever without saying how old
+it is.
 
 ---
 
@@ -350,7 +396,41 @@ and why is itemised in `ASSET_CREDITS.md` §6.
 
 ---
 
-## 13. Owner inputs required before launch
+## 13. Production configuration
+
+Every value below is an owner or operator decision. The defaults are chosen so the
+site fails closed rather than guessing. `lib/site-config.ts` reads them; `.env.example`
+is the template.
+
+| Variable | Default | What it controls |
+| --- | --- | --- |
+| `NEXT_PUBLIC_BRAND_DISPLAY_NAME` | `Cinema at Elante Mall` | The working display name. One string — it flows into the header, hero, footer, page titles and metadata. |
+| `NEXT_PUBLIC_BRAND_ATTRIBUTION` | empty | Operator/mall attribution. Empty means no attribution line is shown, because an unapproved one implies a relationship the venue has not granted. |
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Canonical URLs, sitemap and social previews. **Must be set before launch or the sitemap advertises the wrong domain.** |
+| `NEXT_PUBLIC_VENUE_TIMEZONE` | `Asia/Kolkata` | How screening times are displayed. Not a data field — records carry their own offset. |
+| `NEXT_PUBLIC_DATA_MODE` | `fixture` | `fixture` shows labelled sample data and disables the booking handoff. `live` renders the partner feed. |
+| `SCHEDULE_FEED_URL` | empty | **Server-only.** The partner payload. See `FEED_CONTRACT.md`. |
+| `SCHEDULE_FEED_TOKEN` | empty | **Server-only.** Bearer token, if the endpoint needs one. Never reaches the browser. |
+| `POSTER_HOST_ALLOWLIST` | empty | Comma-separated artwork hosts. Empty means **no remote artwork is accepted**. Also drives next/image `remotePatterns`, so the two cannot disagree. |
+| `SCHEDULE_STALE_AFTER_HOURS` | `12` | Age at which a payload is labelled stale. |
+| `SCHEDULE_REVALIDATE_SECONDS` | `300` | How long a fetched payload may be reused before re-fetching. |
+| `NEXT_PUBLIC_TICKETING_PROVIDER_NAME` | empty | The provider's name on the handoff button. Empty means **no booking button is rendered at all**. |
+| `NEXT_PUBLIC_TICKETING_URL_TEMPLATE` | empty | Deep-link template with `{movieId}`, `{date}` and `{venueId}`. Must be `https`. |
+| `NEXT_PUBLIC_TICKETING_ALLOWED_HOSTS` | empty | Hosts the template may resolve to. A link resolving anywhere else is refused. |
+
+### Deployment order
+
+1. Set `NEXT_PUBLIC_SITE_URL` to the real domain. Until then the sitemap and canonical links point at
+   `localhost`, which is wrong in public.
+2. Keep `NEXT_PUBLIC_DATA_MODE=fixture` while the site is being reviewed. In this mode `robots.txt`
+   is `Disallow: /`, so the sample programme cannot be indexed.
+3. Connect the ticketing provider last: `SCHEDULE_FEED_URL`, `POSTER_HOST_ALLOWLIST`, then flip
+   `NEXT_PUBLIC_DATA_MODE=live`. Flip it only when the payload passes validation — a live banner over
+   a broken feed is worse than a labelled one.
+
+---
+
+## 14. Owner inputs required before launch
 
 The full list is published on `/cinema` and `/help` as "Still being confirmed". In summary:
 

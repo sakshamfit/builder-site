@@ -535,6 +535,164 @@ check("fixture showtimes are offset correctly for the venue's timezone", () => {
 });
 
 /* -------------------------------------------------------------------------- */
+/* Venue feed contract                                                        */
+/* -------------------------------------------------------------------------- */
+
+section("Venue feed contract");
+
+const { parseVenueFeed, feedAgeHours } = await import("../lib/feed.ts");
+const { buildValidFeed, buildInvalidFeeds, TEST_VENUE_ID, TEST_TIMEZONE, TEST_ARTWORK_HOST } =
+  await import("./feed-fixtures.mts");
+
+/** The options the app itself passes when it validates a live payload. */
+const feedOptions = {
+  expectedVenueId: TEST_VENUE_ID,
+  timezone: TEST_TIMEZONE,
+  artworkHostAllowlist: [TEST_ARTWORK_HOST],
+};
+
+check("a well-formed partner payload is accepted in full", () => {
+  const result = parseVenueFeed(buildValidFeed(), feedOptions);
+  assert.equal(result.ok, true, result.ok ? "" : result.errors.join("; "));
+  if (!result.ok) return;
+
+  assert.equal(result.feed.movies.length, 3);
+  assert.equal(result.feed.screens.length, 2);
+  assert.ok(result.feed.showtimes.length >= 30, `expected a full window of screenings, got ${result.feed.showtimes.length}`);
+});
+
+check("every accepted screening is marked as live data, not a fixture", () => {
+  const result = parseVenueFeed(buildValidFeed(), feedOptions);
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  for (const showtime of result.feed.showtimes) {
+    assert.equal(showtime.source, "live");
+  }
+});
+
+check("the parser decides provenance, so a feed cannot downgrade itself", () => {
+  const payload = buildValidFeed();
+  for (const record of payload.showtimes as Record<string, unknown>[]) {
+    record.source = "live";
+    record.provenance = "";
+  }
+  const result = parseVenueFeed(payload, feedOptions);
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  // An empty provenance string is filled from the feed's own source label rather
+  // than being left blank in the UI.
+  assert.ok(
+    result.feed.showtimes.every((showtime) => showtime.provenance.length > 0),
+    "provenance must never be empty",
+  );
+});
+
+check("a payload for a different venue is refused outright", () => {
+  const result = parseVenueFeed(buildValidFeed(), { ...feedOptions, expectedVenueId: "another-cinema" });
+  assert.equal(result.ok, false);
+});
+
+for (const testCase of buildInvalidFeeds()) {
+  check(`rejects: ${testCase.name}`, () => {
+    const result = parseVenueFeed(testCase.payload, feedOptions);
+    // Errors only exist on a failed parse, and assertion messages are built
+    // eagerly, so collect both defensively before asserting anything.
+    const errors = result.ok ? [] : result.errors;
+    const warnings = result.warnings;
+
+    if (testCase.channel === "error") {
+      assert.equal(result.ok, false, "expected the payload to be refused, but it was accepted");
+      const messages = [...errors, ...warnings];
+      assert.ok(
+        messages.some((message) => message.toLowerCase().includes(testCase.expects.toLowerCase())),
+        `expected a message containing ${JSON.stringify(testCase.expects)}, got:\n${messages.join("\n")}`,
+      );
+      return;
+    }
+
+    // A warning-level defect must be survivable: the payload still parses, the
+    // bad record is dropped, and the reason is recorded rather than swallowed.
+    assert.equal(
+      result.ok,
+      true,
+      `expected the payload to survive, got: ${errors.join("; ")}`,
+    );
+    assert.ok(
+      warnings.some((warning) => warning.toLowerCase().includes(testCase.expects.toLowerCase())),
+      `expected a warning containing ${JSON.stringify(testCase.expects)}, got:\n${warnings.join("\n")}`,
+    );
+  });
+}
+
+check("artwork from a host that is not allow-listed is dropped, not rendered", () => {
+  const payload = buildValidFeed();
+  (payload.movies as Record<string, unknown>[])[0].posterUrl = "https://unlicensed-cdn.example.com/a.jpg";
+  const result = parseVenueFeed(payload, feedOptions);
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+
+  const affected = result.feed.movies.find((movie) => movie.slug === "placeholder-film-a");
+  assert.equal(affected?.posterPath, "", "the poster must be dropped");
+  assert.equal(affected?.posterAlt, "");
+  // The film itself is still listed — losing artwork must not lose the programme.
+  assert.equal(result.feed.movies.length, 3);
+});
+
+check("with no allow-list configured, no remote artwork is accepted at all", () => {
+  const result = parseVenueFeed(buildValidFeed(), { ...feedOptions, artworkHostAllowlist: [] });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.ok(
+    result.feed.movies.every((movie) => movie.posterPath === ""),
+    "an empty allow-list must fail closed",
+  );
+});
+
+check("a payload with no artwork needs no artwork licence", () => {
+  const result = parseVenueFeed(buildValidFeed({ includeArtwork: false }), {
+    ...feedOptions,
+    artworkHostAllowlist: [],
+  });
+  assert.equal(result.ok, true, result.ok ? "" : result.errors.join("; "));
+});
+
+check("a subdomain of an allow-listed host is accepted", () => {
+  const payload = buildValidFeed();
+  (payload.movies as Record<string, unknown>[])[0].posterUrl = "https://cdn.partner.example.com/poster.jpg";
+  const result = parseVenueFeed(payload, { ...feedOptions, artworkHostAllowlist: ["partner.example.com"] });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.feed.movies[0].posterPath, "https://cdn.partner.example.com/poster.jpg");
+});
+
+check("a lookalike host cannot smuggle artwork past the allow-list", () => {
+  // `partner.example.com.evil.example` ends with the allow-listed domain but is
+  // a different origin, which is precisely the case a naive `includes` check
+  // would let through.
+  const payload = buildValidFeed();
+  (payload.movies as Record<string, unknown>[])[0].posterUrl =
+    "https://partner.example.com.evil.example/poster.jpg";
+  const result = parseVenueFeed(payload, { ...feedOptions, artworkHostAllowlist: ["partner.example.com"] });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.feed.movies[0].posterPath, "", "lookalike domain must be refused");
+});
+
+check("feed age is computed for the staleness warning", () => {
+  const generated = "2026-10-13T09:00:00+05:30";
+  assert.equal(Math.round(feedAgeHours(generated, "2026-10-13T12:00:00+05:30") ?? -1), 3);
+  assert.equal(Math.round(feedAgeHours(generated, "2026-10-15T09:00:00+05:30") ?? -1), 48);
+  assert.equal(feedAgeHours("not a date", "2026-10-13T12:00:00+05:30"), null);
+});
+
+check("a malformed payload degrades to an honest unavailable state, never to samples", () => {
+  const result = parseVenueFeed({ version: 1, venueId: TEST_VENUE_ID }, feedOptions);
+  assert.equal(result.ok, false);
+  if (result.ok) return;
+  assert.ok(result.errors.length > 0);
+});
+
+/* -------------------------------------------------------------------------- */
 
 console.log(
   `\n${failures === 0 ? "All checks passed" : `${failures} check(s) failed`} — ${checksRun} run.\n`,

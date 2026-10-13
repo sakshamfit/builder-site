@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { venue } from "@/data/cinema";
+import { getVenueWithScreens } from "@/lib/schedule-source";
 import { SCREEN_NAMING_NOTE, confirmed } from "@/lib/cinema-content";
 import cinemaStyles from "@/components/cinema/cinema.module.css";
 
@@ -12,7 +13,8 @@ import cinemaStyles from "@/components/cinema/cinema.module.css";
  * No superlatives, no certifications, no claimed equipment specs — those would
  * be claims the venue has not made.
  */
-export function CinemaExperience() {
+export async function CinemaExperience() {
+  const { venue: resolved, screensFrom } = await getVenueWithScreens();
   const accessibilityPending = venue.accessibility.filter((item) => item.status !== "confirmed");
   const region = confirmed(venue.address.region);
 
@@ -38,9 +40,11 @@ export function CinemaExperience() {
             <h3 className={cinemaStyles.panelTitle} id="exp-screens">
               Screens and formats
             </h3>
-            <p className={cinemaStyles.pendingNote}>{SCREEN_NAMING_NOTE}</p>
+            {screensFrom === "sample" ? (
+              <p className={cinemaStyles.pendingNote}>{SCREEN_NAMING_NOTE}</p>
+            ) : null}
             <ul className={cinemaStyles.screenList}>
-              {venue.screens.map((screen) => (
+              {resolved.screens.map((screen) => (
                 <li className={cinemaStyles.screenItem} key={screen.id}>
                   <span className={cinemaStyles.screenName}>{screen.name}</span>
                   <span className={cinemaStyles.screenFormats}>

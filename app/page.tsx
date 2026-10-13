@@ -16,7 +16,6 @@ import { readFilterParams } from "@/lib/share-url";
 import { confirmed } from "@/lib/cinema-content";
 import { nextScreeningByFilm, summariseSchedule } from "@/lib/showtime-view";
 import { venue } from "@/data/cinema";
-import { comingSoon, nowShowing } from "@/data/movies";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = buildMetadata({
@@ -99,7 +98,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
             </EmptyState>
           </div>
         </section>
-        <ComingSoon movies={comingSoon} isFixture={siteConfig.isFixtureMode} />
+        <ComingSoon movies={[]} isFixture={siteConfig.isFixtureMode} />
         <CinemaExperience />
         <VenueInfo />
       </>
@@ -113,7 +112,18 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
     clock.todayISO,
     clock.nowISO,
   );
-  const showingNow = nowShowing.filter((movie) => nextScreenings.has(movie.slug));
+  /*
+   * The catalogue comes from whichever source is active — the partner payload in
+   * live mode, the labelled fixtures in development. A film is "now showing" only
+   * when it also has a screening in the published window.
+   */
+  const catalogue = snapshot.catalogue;
+  const showingNow = catalogue.filter(
+    (movie) => movie.status === "now_showing" && nextScreenings.has(movie.slug),
+  );
+  const upcoming = catalogue
+    .filter((movie) => movie.status === "coming_soon")
+    .sort((a, b) => (a.releaseDate ?? "").localeCompare(b.releaseDate ?? ""));
 
   return (
     <>
@@ -156,8 +166,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
 
           <ShowtimeBoard
             snapshot={snapshot}
-            movies={nowShowing}
-            venue={venue}
+            movies={catalogue}
+            venue={snapshot.venue}
             dateISO={dateISO}
             todayISO={clock.todayISO}
             nowISO={clock.nowISO}
@@ -168,7 +178,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         </div>
       </section>
 
-      <ComingSoon movies={comingSoon} isFixture={siteConfig.isFixtureMode} />
+      <ComingSoon movies={upcoming} isFixture={siteConfig.isFixtureMode} />
       <CinemaExperience />
       <VenueInfo />
     </>

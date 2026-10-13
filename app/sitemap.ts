@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/metadata";
-import { movies } from "@/data/movies";
+import { loadCatalogue } from "@/lib/catalogue";
 import { readClock } from "@/lib/clock";
 
 /**
@@ -13,7 +13,7 @@ import { readClock } from "@/lib/clock";
  * If the site is served before launch from a non-production host, set
  * NEXT_PUBLIC_SITE_URL so these entries do not advertise the wrong domain.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const clock = readClock();
   const lastModified = new Date(clock.nowISO);
 
@@ -25,6 +25,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/help", priority: 0.5, changeFrequency: "weekly" },
   ];
 
+  /*
+   * Film pages are listed only when the catalogue is actually available, so a
+   * live site whose feed is down does not advertise URLs it cannot serve.
+   */
+  const catalogue = await loadCatalogue();
+  const movieRoutes = catalogue.available
+    ? catalogue.movies.map((movie) => ({
+        url: absoluteUrl(`/movies/${movie.slug}`),
+        lastModified,
+        changeFrequency: "daily" as const,
+        priority: 0.6,
+      }))
+    : [];
+
   return [
     ...staticRoutes.map((route) => ({
       url: absoluteUrl(route.path),
@@ -32,11 +46,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: route.changeFrequency,
       priority: route.priority,
     })),
-    ...movies.map((movie) => ({
-      url: absoluteUrl(`/movies/${movie.slug}`),
-      lastModified,
-      changeFrequency: "daily" as const,
-      priority: 0.6,
-    })),
+    ...movieRoutes,
   ];
 }
