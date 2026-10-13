@@ -1,0 +1,55 @@
+/* ==========================================================================
+   Booking handoff
+   --------------------------------------------------------------------------
+   The only place on the site that can lead to a ticket. It must always say
+   where it goes, and when the venue's partner is not connected it must say so
+   rather than render a dead control.
+   ========================================================================== */
+
+.handoff {
+  display: grid;
+  gap: 0.75rem;
+  padding: 18px 20px;
+  border: 1px solid var(--line-ink);
+  background: var(--paper-2);
+}
+
+/* A ruled line under the accent colour, so the handoff reads as the one
+   outbound action on a page. */
+.handoff::before {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 3px;
+  background: var(--red);
+}
+
+.handoffNote {
+  max-width: 62ch;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.unavailableBlock {
+  display: grid;
+  gap: 0.6rem;
+  padding: 18px 20px;
+  border: 1px dashed var(--line-strong);
+  background: var(--paper);
+}
+
+.unavailableTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+  line-height: 1.08;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.unavailableDetail {
+  max-width: 64ch;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.6;
+}

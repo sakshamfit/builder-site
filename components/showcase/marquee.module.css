@@ -1,0 +1,68 @@
+/* ==========================================================================
+   Marquee — a printed facts strip
+   --------------------------------------------------------------------------
+   A ruled band carrying true statements about the venue, set in condensed
+   display caps and scrolled slowly enough to read.
+   ========================================================================== */
+
+.marquee {
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  border-block: 1px solid var(--line-ink);
+  background: var(--red);
+  color: var(--paper);
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  /* Duration is set from the item count in the component, so the speed stays
+     constant however many facts there are. */
+  animation: marqueeScroll var(--marquee-duration, 42s) linear infinite;
+}
+
+.marquee:hover .track,
+.marquee:focus-within .track {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 11px 1.1rem;
+  font-family: var(--font-label);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.item::after {
+  content: "✳";
+  font-size: 9px;
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}

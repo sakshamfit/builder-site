@@ -1,0 +1,182 @@
+/* ==========================================================================
+   Cinema — venue panels, screens, facilities, location
+   ========================================================================== */
+
+.layout {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.layoutFull {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* A ruled panel: the workhorse container for venue information. */
+.panel {
+  display: grid;
+  align-content: start;
+  gap: 0.9rem;
+  padding: 22px;
+  border: 1px solid var(--line-ink);
+  background: var(--paper);
+}
+
+.panelTitle {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+  line-height: 1.06;
+  text-transform: uppercase;
+  letter-spacing: -0.022em;
+}
+
+.pendingNote {
+  max-width: 68ch;
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* --- screens -------------------------------------------------------------- */
+
+.screenList {
+  display: grid;
+}
+
+.screenItem {
+  display: grid;
+  gap: 0.5rem;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.screenItem:first-child {
+  border-top: 0;
+}
+
+.screenName {
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+}
+
+.screenFormats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* --- definition lists ----------------------------------------------------- */
+
+.definitionList {
+  display: grid;
+}
+
+.definition {
+  display: grid;
+  gap: 0.25rem;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+}
+
+.definition:first-child {
+  border-top: 0;
+}
+
+.definitionTerm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.definitionValue {
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pendingValue {
+  color: var(--ink-3);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+/* Outstanding items, listed rather than summarised away. */
+.pendingList {
+  display: grid;
+}
+
+.pendingItem {
+  display: grid;
+  gap: 0.15rem;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+
+.pendingItem:first-child {
+  border-top: 0;
+}
+
+.pendingLabel {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* --- location ------------------------------------------------------------- */
+
+.address {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  font-style: normal;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Shown when no map embed key is configured: a static, honest fallback rather
+   than an empty frame or a third-party script. */
+.mapFallback {
+  display: grid;
+  gap: 0.5rem;
+  padding: 20px;
+  border: 1px dashed var(--line-strong);
+  background: var(--paper-2);
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* --- breakpoints ---------------------------------------------------------- */
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .layoutFull {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}

@@ -1,0 +1,227 @@
+/* ==========================================================================
+   Movies — poster grid, cards, filters, film detail
+   ========================================================================== */
+
+/* --- grid ----------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  gap: 1.75rem 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.posterWrap {
+  position: relative;
+}
+
+.card:hover .posterWrap {
+  transform: translateY(-5px);
+  transition: transform var(--dur) var(--ease);
+}
+
+.posterWrap img {
+  transition: transform 700ms var(--ease);
+}
+
+/* Matching warm grade, applied once per poster frame. */
+.posterWrap > div {
+  filter: saturate(0.95) contrast(1.03);
+}
+
+.card:hover .posterWrap img {
+  transform: scale(1.035);
+}
+
+/* The title block reads like a printed caption under a poster. */
+.cardBody {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.1vw, 1.5rem);
+  line-height: 1.06;
+  text-transform: uppercase;
+  letter-spacing: -0.022em;
+}
+
+.cardLink {
+  transition: color var(--dur) var(--ease);
+}
+
+.card:hover .cardLink {
+  color: var(--red);
+}
+
+/* A wide link target over the poster, so the whole artwork is clickable. */
+.cardLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.cardBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* The next screening, set in condensed type so it reads as a schedule line. */
+.cardNext {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-condensed);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.placeholderTag {
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* --- filters -------------------------------------------------------------- */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2.5rem;
+  padding: 16px 0;
+  border-block: 1px solid var(--line);
+}
+
+.filterGroup {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.filterLegend {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.filterList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+}
+
+/* Text buttons with an accent underline when active — cleaner than pills and
+   it keeps long language names readable at 320px. */
+.filterPill {
+  position: relative;
+  padding-bottom: 2px;
+  font-family: var(--font-label);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  transition: color var(--dur) var(--ease);
+}
+
+.filterPill:hover {
+  color: var(--ink);
+}
+
+.filterPill[aria-pressed="true"] {
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 0 var(--red);
+}
+
+.filterCount {
+  margin-left: 0.35rem;
+  font-family: var(--font-condensed);
+  font-size: 10px;
+  vertical-align: super;
+  color: var(--red);
+}
+
+.filterFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1.5rem;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+/* --- film detail ---------------------------------------------------------- */
+
+.detail {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.detailPoster {
+  max-width: 280px;
+}
+
+.detailBody {
+  display: grid;
+  gap: 1.1rem;
+  align-content: start;
+  max-width: 68ch;
+}
+
+/* --- breakpoints ---------------------------------------------------------- */
+
+@media (min-width: 560px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.25rem 1.25rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2.75rem 1.5rem;
+  }
+
+  .detail {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .detailPoster {
+    max-width: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
