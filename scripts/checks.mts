@@ -781,6 +781,34 @@ check("the programme file declares no runtime, certification, synopsis or artwor
   }
 });
 
+check("no page greets the visitor with a warning bar", () => {
+  /* The state of the timetable is stated where the timetable would be, not in a
+     banner above every page. A negative refrain repeated across the site reads as
+     a broken build, and it buries the part that is real. */
+  const layout = readFileSync("app/layout.tsx", "utf8");
+  assert.doesNotMatch(
+    layout,
+    /Screening times not published yet|not connected to the cinema/,
+    "the site-wide notice is back",
+  );
+
+  const files = [
+    "app/page.tsx",
+    "app/movies/page.tsx",
+    "app/movies/[slug]/page.tsx",
+    "app/help/page.tsx",
+    "components/layout/SiteFooter.tsx",
+    "components/programme/ScheduleWait.tsx",
+  ];
+  for (const file of files) {
+    assert.doesNotMatch(
+      readFileSync(file, "utf8"),
+      /not published yet/i,
+      `${file} repeats the negative refrain instead of stating the position`,
+    );
+  }
+});
+
 section("Venue facts");
 
 check("the venue is in Madhuban, Bihar and nothing below that is invented", () => {

@@ -65,11 +65,11 @@ export default function HelpPage() {
         {!siteConfig.hasScreeningSchedule ? (
           <p className="note" style={{ marginTop: "1.25rem" }}>
             <span>
-              <strong>Right now, the last step is not available.</strong> This site is not connected
-              to the cinema&rsquo;s ticketing system, so it publishes no screening times and no
-              ticket links. The film programme is real and sourced — the timetable is the part that
-              is missing. Once the venue&rsquo;s provider is connected, each screening becomes a
-              link that says <em>Continue to [ticketing partner]</em>.
+              <strong>The last step switches on with the venue&rsquo;s booking system.</strong> The
+              site is built to hand you to the cinema&rsquo;s ticketing partner at exactly this point —
+              a link that says <em>Continue to [ticketing partner]</em>, where you pick your seats and
+              pay. That link appears once the venue confirms its provider. Everything before it is
+              already live: the films, their release dates, and the sources for each one.
             </span>
           </p>
         ) : null}

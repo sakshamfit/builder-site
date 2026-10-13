@@ -80,8 +80,8 @@ export default async function MoviesPage({ searchParams }: { searchParams: Searc
             <h1>Films</h1>
             <p>
               {catalogue.length} film{catalogue.length === 1 ? "" : "s"} — {released} in cinemas,{" "}
-              {upcoming} announced. Release dates are sourced and cited; screening times at this
-              cinema are not published yet.
+              {upcoming} announced. Every release date is taken from a published release calendar
+              and cited on the film, so you can check any of them.
             </p>
           </div>
         </div>

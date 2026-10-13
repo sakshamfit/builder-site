@@ -407,34 +407,6 @@ p:last-child {
 }
 
 /* ==========================================================================
-   Development notice
-   ========================================================================== */
-
-.fixture-banner {
-  position: relative;
-  z-index: 90;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-label);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-}
-
-.fixture-banner .wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1rem;
-  padding-block: 9px;
-}
-
-.fixture-banner strong {
-  color: var(--gold-bright);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-/* ==========================================================================
    Print
    ========================================================================== */
 
@@ -446,8 +418,7 @@ p:last-child {
 
   .grain,
   .rail,
-  .site-header,
-  .fixture-banner {
+  .site-header {
     display: none !important;
   }
 }

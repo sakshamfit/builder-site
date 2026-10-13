@@ -94,7 +94,7 @@ export function SiteFooter() {
           <p>
             {siteConfig.hasScreeningSchedule
               ? "Screening times are supplied by the venue's ticketing partner. Release dates in the film programme are sourced from published release calendars and cited on each film."
-              : "Film release dates are sourced from published release calendars, with the sources listed on each film. Screening times, prices and seat availability are supplied by a cinema only, and this site is not connected to that system yet."}
+              : "Film release dates are sourced from published release calendars, with the sources listed on each film. Screening times, prices and seat availability come from a cinema's own ticketing system; they appear here once the venue connects it."}
           </p>
         </div>
       </div>

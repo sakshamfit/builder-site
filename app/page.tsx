@@ -123,7 +123,6 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
     place || "Bihar",
     `${catalogue.length} film${catalogue.length === 1 ? "" : "s"} listed`,
     leading?.releaseDate ? `Next release ${formatDateLong(leading.releaseDate)}` : null,
-    snapshot.scheduleAvailable ? null : "Screening times not connected yet",
   ].filter((item): item is string => Boolean(item));
 
   return (

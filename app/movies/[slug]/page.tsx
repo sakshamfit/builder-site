@@ -253,7 +253,7 @@ export default async function MoviePage({ params, searchParams }: Props) {
             variant="page"
             title={
               released
-                ? "This cinema's times are not published yet"
+                ? "Screening times for this cinema"
                 : "Tickets are not on sale for this film yet"
             }
             reason={

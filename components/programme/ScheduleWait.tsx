@@ -3,20 +3,20 @@ import { siteConfig } from "@/lib/site-config";
 import styles from "./programme.module.css";
 
 /**
- * The state of the timetable when there is no timetable.
+ * Where the timetable sits until the cinema's own timetable is connected.
  *
- * Screening times can only come from the venue's own ticketing feed. Until that
- * feed is connected there is no honest way to show when a film plays, so this
- * section says exactly that — what is missing, why, and what a visitor can do
- * instead — rather than rendering an empty grid or a placeholder time.
+ * Screening times can only come from the venue's ticketing system. Until that is
+ * connected there is no honest way to say when a film plays, so this section
+ * states the position once — plainly, in the venue's voice, without apologising
+ * for it — and then gets out of the way of the programme, which is real.
  *
- * This is the state most visitors to a pre-launch build will see, so it is
- * designed rather than tolerated: a bordered panel, a labelled list of the
- * facts that *are* known, and a route onward that leads somewhere real.
+ * It is deliberately not a warning. Nothing is broken; a connection has not been
+ * made yet, and there is a difference between those two things on a site whose
+ * whole point is not overstating what it knows.
  */
 export function ScheduleWait({
   variant,
-  title = "Screening times are not connected yet",
+  title = "Screening times for this cinema",
   reason,
 }: {
   /** "home" is the compact version under the programme; "page" is full width. */
@@ -34,23 +34,23 @@ export function ScheduleWait({
         <h3 className={styles.waitTitle}>{title}</h3>
         <p className={styles.waitLede}>
           {reason ??
-            "This site publishes screening times only when the cinema's own ticketing feed supplies them. That feed is not connected to this build, so there are no times to show — and there is no version of this page that invents them."}
+            "The cinema's timetable comes here from its own ticketing system once the venue connects it. Until then this site lists no times, prices or seat availability, and invents none. The programme above is the part that is already complete: real films, published release dates, each one cited."}
         </p>
       </div>
 
       <dl className={styles.waitFacts}>
         <div className={styles.waitFact}>
-          <dt>What you can see</dt>
+          <dt>Already here</dt>
           <dd>
-            The film programme: real titles with their announced release dates, in cinemas and
-            coming up.
+            The film programme: every released and announced title with its published release date
+            and the sources it came from.
           </dd>
         </div>
         <div className={styles.waitFact}>
-          <dt>What is missing</dt>
+          <dt>With the venue</dt>
           <dd>
-            Dates, times, screens, formats and prices at this cinema. These are the venue&rsquo;s
-            own operational data.
+            Dates, times, screens, formats and seat prices for this cinema. Those are a venue&rsquo;s
+            own operational facts, and only the venue can supply them.
           </dd>
         </div>
         <div className={styles.waitFact}>

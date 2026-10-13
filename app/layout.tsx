@@ -55,27 +55,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
 
-        {/*
-          Status notice. Renders while the cinema's own screening times are not
-          connected, and disappears the moment its feed is configured.
-
-          This is not a development warning any more — the film programme below
-          it is real and sourced. What is missing is the venue's own timetable,
-          and a visitor is told that before they go looking for it.
-        */}
-        {!siteConfig.hasScreeningSchedule ? (
-          <div className="fixture-banner">
-            <div className="wrap">
-              <strong>Screening times not published yet</strong>
-              <span>
-                This site is not connected to the cinema&rsquo;s ticketing system, so it shows no
-                times, prices or seat availability — and never a guess at them. The film programme
-                below is real and sourced.
-              </span>
-            </div>
-          </div>
-        ) : null}
-
         <Rail />
         <SiteHeader />
 
