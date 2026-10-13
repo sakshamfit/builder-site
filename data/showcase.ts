@@ -79,7 +79,7 @@ export type ShowcaseHighlight = {
 export const showcaseHighlights: ShowcaseHighlight[] = [
   {
     id: "location",
-    label: "Inside Elante Mall, Chandigarh",
+    label: "Inside Madhuban, Bihar",
     detail: "On Purv Marg, Industrial Area Phase I — a cinema inside the mall, not a standalone site.",
     status: "confirmed",
   },

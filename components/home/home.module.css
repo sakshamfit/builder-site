@@ -65,7 +65,7 @@
   color: var(--red);
   /*
    * As large as the viewport reasonably allows — the whole point of the
-   * treatment. The lower bound is set by the longest expected line ("Elante
+   * treatment. The lower bound is set by the longest expected line ("Madhuban
    * Mall" is 11 characters of Anton, which at 2.5rem fits the 240px available
    * at a 320px viewport inside the rail and the page gutter) and the upper by a
    * comfortable desktop width.

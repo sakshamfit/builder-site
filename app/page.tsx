@@ -23,7 +23,7 @@ import programmeStyles from "@/components/programme/programme.module.css";
 export const metadata: Metadata = buildMetadata({
   title: `${siteConfig.brandName} — programme, location and visiting information`,
   description:
-    "The film programme, venue location, directions and visiting information for the cinema at Elante Mall, Chandigarh.",
+    "The film programme, venue location, directions and visiting information for the cinema at Madhuban, Bihar.",
   path: "/",
 });
 
@@ -47,6 +47,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
   const clock = readClock();
   const snapshot = await getScheduleSnapshot();
 
+  /* Where the cinema is, read from the venue record rather than typed again.
+     The town and state were supplied by the owner, so this is never a guess. */
   const place = [confirmed(venue.address.locality), confirmed(venue.address.region)]
     .filter(Boolean)
     .join(", ");
@@ -62,8 +64,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           upcomingCount={0}
         />
         <MarqueeTicker
-          items={[siteConfig.brandName, place || "Chandigarh"]}
-          label={`${siteConfig.brandName}, ${place || "Chandigarh"}. The film programme could not be read.`}
+          items={[siteConfig.brandName, place || "Bihar"]}
+          label={`${siteConfig.brandName}, ${place || "Bihar"}. The film programme could not be read.`}
         />
 
         <Showcase />
@@ -118,7 +120,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
   /* Only true, useful statements: the venue, where it is, and what is listed. */
   const marqueeItems = [
     siteConfig.brandName,
-    place || "Chandigarh",
+    place || "Bihar",
     `${catalogue.length} film${catalogue.length === 1 ? "" : "s"} listed`,
     leading?.releaseDate ? `Next release ${formatDateLong(leading.releaseDate)}` : null,
     snapshot.scheduleAvailable ? null : "Screening times not connected yet",
@@ -136,7 +138,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
 
       <MarqueeTicker
         items={marqueeItems}
-        label={`${siteConfig.brandName}, ${place || "Chandigarh"}. ${catalogue.length} films in the programme.`}
+        label={`${siteConfig.brandName}, ${place || "Bihar"}. ${catalogue.length} films in the programme.`}
       />
 
       <Showcase />

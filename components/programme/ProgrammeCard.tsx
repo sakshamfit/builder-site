@@ -10,12 +10,16 @@ import styles from "./programme.module.css";
  *
  * Shows the facts the record actually holds and nothing else. A sourced release
  * record holds a title, its languages, its genres and an announced release date;
- * it holds no runtime, no certification, no synopsis and no artwork, so none of
- * those appear — the plate takes the artwork's place and the metadata row simply
- * gets shorter. That is the honest shape of the data, rendered honestly.
+ * it holds no runtime, no certification and no synopsis, so none of those appear
+ * and the metadata row simply gets shorter. That is the honest shape of the data,
+ * rendered honestly.
  *
- * The date is labelled with the word "releases" or "released", never "now
- * showing", because this card cannot know what this cinema is screening.
+ * The date is labelled "Releasing" or "Released", never "now showing", because
+ * this card cannot know what this cinema is screening.
+ *
+ * On the artwork: when a plate is shown, the caption under it says what the plate
+ * is. A visitor should never have to wonder whether a generated image is the
+ * film's own poster, and the answer is printed rather than implied.
  */
 export function ProgrammeCard({
   movie,
@@ -45,7 +49,7 @@ export function ProgrammeCard({
 
       <div className={styles.cardBody}>
         <p className={styles.cardStatus}>
-          {released ? "In cinemas" : "Releases"}
+          {released ? "Released" : "Releasing"}
           {dateLabel ? <span className={styles.cardStatusDate}>{dateLabel}</span> : null}
         </p>
 
@@ -67,6 +71,12 @@ export function ProgrammeCard({
             <span className={styles.cardGenres}>{movie.genres.join(" · ")}</span>
           ) : null}
         </p>
+
+        {movie.artwork ? (
+          <p className={styles.cardArtNote}>Original cover art, not the film&rsquo;s poster</p>
+        ) : (
+          <p className={styles.cardArtNote}>Artwork not supplied yet</p>
+        )}
 
         {movie.runtimeMinutes || movie.certification ? (
           <p className={styles.cardMeta}>

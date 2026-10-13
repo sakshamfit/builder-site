@@ -58,7 +58,7 @@ export function ProgrammeBoard({
       {released.length > 0 ? (
         <Group
           id="released"
-          title="In cinemas"
+          title="Recently released"
           note="Announced as released in cinemas. Each film carries its own release date."
         >
           {released.map((movie) => (
@@ -68,7 +68,7 @@ export function ProgrammeBoard({
       ) : null}
 
       {upcoming.length > 0 ? (
-        <Group id="upcoming" title="Upcoming releases" note="Announced dates. Dates can move.">
+        <Group id="upcoming" title="Releasing soon" note="Announced dates. Dates can move.">
           {upcoming.map((movie) => (
             <ProgrammeCard key={movie.slug} movie={movie} />
           ))}

@@ -37,7 +37,7 @@ The request is made **server-side only**. The token never reaches a browser.
 ```jsonc
 {
   "version": 1,                                  // required, must be 1
-  "venueId": "elante-chandigarh",                // required, must match this site's venue
+  "venueId": "madhuban-bihar",                // required, must match this site's venue
   "generatedAt": "2026-10-13T09:15:00+05:30",    // required, ISO 8601 WITH offset
   "sourceLabel": "Nameless Ticketing partner feed", // shown to visitors as the data's origin
   "artworkLicence": "Asset kit ref #1234, licensed to the venue", // required if you send posters
@@ -78,7 +78,7 @@ The request is made **server-side only**. The token never reaches a browser.
     {
       "id": "some-film-2026-10-13-1915",   // stable and unique
       "movieSlug": "some-film",
-      "venueId": "elante-chandigarh",
+      "venueId": "madhuban-bihar",
       "screenId": "audi-1",
       "startsAt": "2026-10-13T19:15:00+05:30",  // ISO 8601 WITH an explicit offset
       "timezone": "Asia/Kolkata",

@@ -61,7 +61,7 @@ export const siteConfig = {
    * official trade name — this site must not imply an official relationship
    * with the mall or with any ticketing company.
    */
-  brandName: readEnv(process.env.NEXT_PUBLIC_BRAND_DISPLAY_NAME) || "Cinema at Elante Mall",
+  brandName: readEnv(process.env.NEXT_PUBLIC_BRAND_DISPLAY_NAME) || "Cinema at Madhuban",
 
   /**
    * Operator / mall attribution line. Empty until approved in writing.

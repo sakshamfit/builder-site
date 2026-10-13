@@ -75,7 +75,7 @@ export function Hero({
 
         <div className={styles.heroBottom}>
           <div className={styles.heroMeta}>
-            <p>Inside Elante Mall, Chandigarh</p>
+            <p>Inside Madhuban, Bihar</p>
             <p className={styles.heroImageNote}>
               Venue photography is pending. This page states only what the venue has confirmed.
             </p>

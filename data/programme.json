@@ -16,10 +16,20 @@
     "ticketing feed (see FEED_CONTRACT.md). The site says so on every surface",
     "that shows these titles.",
     "",
-    "WHAT IS DELIBERATELY ABSENT PER TITLE: runtime, certification, synopsis and",
     "artwork. Those were not published by the sources used here, and inventing",
     "them would be exactly the kind of invented fact this project forbids. They",
     "appear automatically once a feed or the venue supplies them.",
+    "",
+    "WHAT IS STILL DELIBERATELY ABSENT PER TITLE: runtime, certification and",
+    "synopsis. Those were not published by the sources used here, and inventing",
+    "them would be exactly the kind of invented fact this project forbids. They",
+    "appear automatically once a feed or the venue supplies them.",
+    "",
+    "ARTWORK: this file holds no image URLs, on purpose. A film's poster belongs to",
+    "its studio, so the site never borrows one; the picture on a card is an original",
+    "abstract plate generated for this project, listed in data/cover-art.json, and",
+    "the card says so in words. A licensed poster from the venue or the partner feed",
+    "always takes precedence over a plate.",
     "",
     "EDITING RULES: add a film only with a published release date and at least",
     "one source. Never add a runtime, certification, synopsis or image URL by",
@@ -32,8 +42,17 @@
       "slug": "drishyam-the-conclusion",
       "title": "Drishyam: The Conclusion",
       "originalTitle": "Drishyam 3",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Crime", "Drama", "Thriller"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Crime",
+        "Drama",
+        "Thriller"
+      ],
       "releaseDate": "2026-10-02",
       "sources": [
         {
@@ -49,8 +68,16 @@
     {
       "slug": "prem-keetanu",
       "title": "Prem Keetanu",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Drama", "Romance"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
       "releaseDate": "2026-10-02",
       "sources": [
         {
@@ -67,11 +94,23 @@
       "slug": "bokshi",
       "title": "Bokshi",
       "languages": [
-        { "code": "hi", "label": "Hindi" },
-        { "code": "en", "label": "English" },
-        { "code": "ne", "label": "Nepali" }
+        {
+          "code": "hi",
+          "label": "Hindi"
+        },
+        {
+          "code": "en",
+          "label": "English"
+        },
+        {
+          "code": "ne",
+          "label": "Nepali"
+        }
       ],
-      "genres": ["Horror", "Drama"],
+      "genres": [
+        "Horror",
+        "Drama"
+      ],
       "releaseDate": "2026-10-09",
       "sources": [
         {
@@ -87,8 +126,16 @@
     {
       "slug": "reporting-live",
       "title": "Reporting Live",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Crime", "Thriller"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Crime",
+        "Thriller"
+      ],
       "releaseDate": "2026-10-09",
       "sources": [
         {
@@ -104,8 +151,17 @@
     {
       "slug": "other-mommy",
       "title": "Other Mommy",
-      "languages": [{ "code": "en", "label": "English" }],
-      "genres": ["Horror", "Mystery", "Thriller"],
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Horror",
+        "Mystery",
+        "Thriller"
+      ],
       "releaseDate": "2026-10-09",
       "sources": [
         {
@@ -121,8 +177,17 @@
     {
       "slug": "the-social-reckoning",
       "title": "The Social Reckoning",
-      "languages": [{ "code": "en", "label": "English" }],
-      "genres": ["Biography", "Drama", "Thriller"],
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Biography",
+        "Drama",
+        "Thriller"
+      ],
       "releaseDate": "2026-10-09",
       "sources": [
         {
@@ -138,8 +203,17 @@
     {
       "slug": "jailer-2",
       "title": "Jailer 2",
-      "languages": [{ "code": "ta", "label": "Tamil" }],
-      "genres": ["Action", "Comedy", "Crime"],
+      "languages": [
+        {
+          "code": "ta",
+          "label": "Tamil"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Comedy",
+        "Crime"
+      ],
       "releaseDate": "2026-10-15",
       "sources": [
         {
@@ -159,8 +233,16 @@
     {
       "slug": "prahaar-the-untold-story-of-ujjwal-nikam",
       "title": "Prahaar: The Untold Story of Ujjwal Nikam",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Biography", "Drama"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Biography",
+        "Drama"
+      ],
       "releaseDate": "2026-10-16",
       "sources": [
         {
@@ -176,8 +258,17 @@
     {
       "slug": "nayyi-navelli",
       "title": "Nayyi Navelli",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Comedy", "Drama", "Fantasy"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Fantasy"
+      ],
       "releaseDate": "2026-10-16",
       "sources": [
         {
@@ -193,8 +284,16 @@
     {
       "slug": "raftaar",
       "title": "Raftaar",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Drama", "Thriller"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Drama",
+        "Thriller"
+      ],
       "releaseDate": "2026-10-16",
       "sources": [
         {
@@ -210,8 +309,17 @@
     {
       "slug": "ranabaali",
       "title": "Ranabaali",
-      "languages": [{ "code": "te", "label": "Telugu" }],
-      "genres": ["Action", "Drama", "History"],
+      "languages": [
+        {
+          "code": "te",
+          "label": "Telugu"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Drama",
+        "History"
+      ],
       "releaseDate": "2026-10-16",
       "sources": [
         {
@@ -227,8 +335,15 @@
     {
       "slug": "street-fighter",
       "title": "Street Fighter",
-      "languages": [{ "code": "en", "label": "English" }],
-      "genres": ["Action"],
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Action"
+      ],
       "releaseDate": "2026-10-16",
       "sources": [
         {
@@ -244,8 +359,16 @@
     {
       "slug": "udta-teer",
       "title": "Udta Teer",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Action", "Comedy"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Comedy"
+      ],
       "releaseDate": "2026-10-23",
       "sources": [
         {
@@ -261,8 +384,17 @@
     {
       "slug": "tu-hai-meri-kiran",
       "title": "Tu Hai Meri Kiran",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Mystery", "Romance", "Thriller"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Mystery",
+        "Romance",
+        "Thriller"
+      ],
       "releaseDate": "2026-10-23",
       "sources": [
         {
@@ -278,8 +410,16 @@
     {
       "slug": "main-na-raha-mera",
       "title": "Main Na Raha Mera",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Musical", "Romance"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Musical",
+        "Romance"
+      ],
       "releaseDate": "2026-10-23",
       "sources": [
         {
@@ -295,8 +435,16 @@
     {
       "slug": "pehla-pyaar-doosri-baar",
       "title": "Pehla Pyaar Doosri Baar",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Comedy", "Romance"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
       "releaseDate": "2026-10-23",
       "sources": [
         {
@@ -312,8 +460,17 @@
     {
       "slug": "little-thomas",
       "title": "Little Thomas",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Comedy", "Drama", "Family"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Family"
+      ],
       "releaseDate": "2026-10-23",
       "sources": [
         {
@@ -329,8 +486,16 @@
     {
       "slug": "tum-mere-ho",
       "title": "Tum Mere Ho",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Drama", "Romance"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
       "releaseDate": "2026-10-23",
       "sources": [
         {
@@ -346,8 +511,17 @@
     {
       "slug": "ramayana-part-one",
       "title": "Ramayana: Part One",
-      "languages": [{ "code": "hi", "label": "Hindi" }],
-      "genres": ["Action", "Drama", "Fantasy"],
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Drama",
+        "Fantasy"
+      ],
       "releaseDate": "2026-11-06",
       "sources": [
         {
@@ -361,6 +535,477 @@
         {
           "label": "Movie Release Date India — 2026 calendar",
           "url": "https://moviereleasedate.in/"
+        }
+      ]
+    },
+    {
+      "slug": "lal-dana",
+      "title": "Lal Dana",
+      "languages": [
+        {
+          "code": "bho",
+          "label": "Bhojpuri"
+        }
+      ],
+      "genres": [
+        "Drama"
+      ],
+      "releaseDate": "2026-10-09",
+      "sources": [
+        {
+          "label": "Times of India — upcoming Bhojpuri movies",
+          "url": "https://timesofindia.indiatimes.com/entertainment/upcoming-movies/upcoming-bhojpuri-movies"
+        }
+      ]
+    },
+    {
+      "slug": "doraemon-castle-of-the-undersea-devil",
+      "title": "Doraemon: Castle of the Undersea Devil",
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        },
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "releaseDate": "2026-10-01",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "Sacnilk — daily box office",
+          "url": "https://www.sacnilk.com/"
+        }
+      ]
+    },
+    {
+      "slug": "bohurupi-the-golden-daku",
+      "title": "Bohurupi: The Golden Daku",
+      "languages": [
+        {
+          "code": "bn",
+          "label": "Bengali"
+        }
+      ],
+      "genres": [
+        "Crime",
+        "Drama",
+        "Thriller"
+      ],
+      "releaseDate": "2026-10-15",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        }
+      ]
+    },
+    {
+      "slug": "klara-and-the-sun",
+      "title": "Klara and the Sun",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Drama",
+        "Science Fiction"
+      ],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "district.in — Bengaluru listings",
+          "url": "https://www.district.in/movies/upcoming-movies-in-bengaluru"
+        }
+      ]
+    },
+    {
+      "slug": "clayface",
+      "title": "Clayface",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Horror",
+        "Thriller"
+      ],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "district.in — Bengaluru listings",
+          "url": "https://www.district.in/movies/upcoming-movies-in-bengaluru"
+        }
+      ]
+    },
+    {
+      "slug": "wildwood",
+      "title": "Wildwood",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Fantasy"
+      ],
+      "releaseDate": "2026-10-23",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        }
+      ]
+    },
+    {
+      "slug": "nakhrewaalii",
+      "title": "Nakhrewaalii",
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "releaseDate": "2026-10-30",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "district.in — Bengaluru listings",
+          "url": "https://www.district.in/movies/upcoming-movies-in-bengaluru"
+        }
+      ]
+    },
+    {
+      "slug": "wicker",
+      "title": "Wicker",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Fantasy"
+      ],
+      "releaseDate": "2026-10-30",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "Esquire India — October releases",
+          "url": "https://www.esquireindia.co.in/entertainment/at-the-movies/october-2026-theatrical-releases-from-drishyam-3-to-vishwambhara-book-your-tickets-now"
+        }
+      ]
+    },
+    {
+      "slug": "the-mongoose",
+      "title": "The Mongoose",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Thriller"
+      ],
+      "releaseDate": "2026-10-30",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        }
+      ]
+    },
+    {
+      "slug": "sense-and-sensibility",
+      "title": "Sense and Sensibility",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "releaseDate": "2026-10-30",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        }
+      ]
+    },
+    {
+      "slug": "cult",
+      "title": "#CULT",
+      "languages": [
+        {
+          "code": "te",
+          "label": "Telugu"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Horror"
+      ],
+      "releaseDate": "2026-10-30",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "B4U Entertainment — October releases",
+          "url": "https://b4uentertainment.com/blogs/october-2026-movie-releases-india"
+        }
+      ]
+    },
+    {
+      "slug": "godzilla-minus-zero",
+      "title": "Godzilla Minus Zero",
+      "languages": [
+        {
+          "code": "ja",
+          "label": "Japanese"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Adventure",
+        "Drama"
+      ],
+      "releaseDate": "2026-11-06",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "iforher — festive season releases",
+          "url": "https://www.iforher.com/news/entertainment-news/diwali-movie-releases/"
+        }
+      ]
+    },
+    {
+      "slug": "the-cat-in-the-hat",
+      "title": "The Cat in the Hat",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Comedy"
+      ],
+      "releaseDate": "2026-11-06",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        },
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        }
+      ]
+    },
+    {
+      "slug": "i-play-rocky",
+      "title": "I Play Rocky",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Biography",
+        "Drama",
+        "Sport"
+      ],
+      "releaseDate": "2026-11-06",
+      "sources": [
+        {
+          "label": "Box Office India 24 — release dates",
+          "url": "https://www.boxofficeindia24.com/upcoming/movie-release-dates"
+        }
+      ]
+    },
+    {
+      "slug": "the-hunger-games-sunrise-on-the-reaping",
+      "title": "The Hunger Games: Sunrise on the Reaping",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Adventure",
+        "Drama",
+        "Science Fiction"
+      ],
+      "releaseDate": "2026-11-20",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "iforher — festive season releases",
+          "url": "https://www.iforher.com/news/entertainment-news/diwali-movie-releases/"
+        }
+      ]
+    },
+    {
+      "slug": "coco-2",
+      "title": "Coco 2",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "releaseDate": "2026-11-21",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        }
+      ]
+    },
+    {
+      "slug": "frozen-iii",
+      "title": "Frozen III",
+      "languages": [
+        {
+          "code": "en",
+          "label": "English"
+        }
+      ],
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "releaseDate": "2026-11-24",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        }
+      ]
+    },
+    {
+      "slug": "yeh-prem-mol-liya",
+      "title": "Yeh Prem Mol Liya",
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Drama",
+        "Musical",
+        "Romance"
+      ],
+      "releaseDate": "2026-11-27",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "91mobiles — upcoming Hindi movies",
+          "url": "https://www.91mobiles.com/entertainment/upcoming-bollywood-hindi-movies"
+        }
+      ]
+    },
+    {
+      "slug": "gunmaaster-g9",
+      "title": "Gunmaaster G9",
+      "languages": [
+        {
+          "code": "hi",
+          "label": "Hindi"
+        }
+      ],
+      "genres": [
+        "Action",
+        "Drama",
+        "Thriller"
+      ],
+      "releaseDate": "2026-11-27",
+      "sources": [
+        {
+          "label": "district.in — upcoming movies",
+          "url": "https://www.district.in/movies/upcoming-movies"
+        },
+        {
+          "label": "91mobiles — upcoming Hindi movies",
+          "url": "https://www.91mobiles.com/entertainment/upcoming-bollywood-hindi-movies"
         }
       ]
     }

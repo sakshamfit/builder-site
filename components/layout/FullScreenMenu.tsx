@@ -123,7 +123,7 @@ export function FullScreenMenu({ items, brandName }: { items: NavItem[]; brandNa
           </nav>
 
           <p className={styles.menuFoot}>
-            A showcase of the cinema hall at Elante Mall, Chandigarh. Ticket links appear once the
+            A showcase of the cinema hall at Madhuban, Bihar. Ticket links appear once the
             venue&rsquo;s ticketing partner is confirmed.
           </p>
         </div>

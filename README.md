@@ -1,6 +1,6 @@
-# Cinema at Elante Mall — venue website
+# Cinema at Madhuban — venue website
 
-A mobile-first website that **showcases the cinema hall** at Elante Mall, Chandigarh — the
+A mobile-first website that **showcases the cinema hall** at Madhuban, Bihar — the
 auditorium, the screen, the seating, the foyer and the route from the mall to your seat — with the
 film programme supporting that, rather than the other way round.
 
@@ -55,16 +55,17 @@ reachable through the UI until a feed is connected, so the checks are the only t
 | Content | State |
 | --- | --- |
 | Films, languages, genres, release dates | **Real and sourced.** Held in `data/programme.json`, each entry citing at least one published release calendar. `npm run check` fails if any entry loses its sources. |
-| Runtimes, certifications, synopses, posters | **Absent, deliberately.** The sources used publish no runtime, certification, synopsis or artwork, so the record holds `null` rather than a plausible guess. These appear when a feed or the venue supplies them. |
+| Runtimes, certifications, synopses | **Absent, deliberately.** The sources used publish no runtime, certification or synopsis, so the record holds `null` rather than a plausible guess. These appear when a feed or the venue supplies them. |
 | Screening times, screens, formats, prices | **Not available.** These are the venue's own operational data. They arrive only from its ticketing feed (`FEED_CONTRACT.md`). Until then the site says so, and shows nothing. |
-| Mall-level address (178-178A, Purv Marg, Industrial Area Phase I, Chandigarh 160002) | Confirmed — publicly listed mall address |
+| Town and state (Madhuban, Bihar) | **Confirmed — supplied by the venue owner.** This is the only address-level fact the site states plainly. |
+| Street address, landmark and PIN code | **Not supplied** — rendered as an open question, never guessed. An address that stops at the town name will not get a visitor to the right door, and the site says so. |
 | Google Maps search link for that address | Confirmed — a text search, **not** a pinned cinema entrance |
-| Cinema trade name, logo, brand colours | **Not confirmed** — the site uses the working name "Cinema at Elante Mall" and draws no logo |
+| Cinema trade name, logo, brand colours | **Not confirmed** — the site uses the working name "Cinema at Madhuban" and draws no logo |
 | Screen names and count | **Not confirmed** — no auditorium list is published |
 | Box office hours, phone, email, parking, transit, entrances | **Not confirmed** — rendered as "awaiting venue", never guessed |
 | Accessibility provision | **Not confirmed** — listed item by item with its own verification state |
 | Photographs of this cinema | **Not supplied** — the site therefore shows none, and substitutes none |
-| Poster artwork | **Not licensed** — so cards carry a typographic plate that states artwork is pending |
+| Film artwork | **Original cover plates, generated for this project** (`data/cover-art.json`). Never a studio poster: no film's own key art appears anywhere on this site. |
 
 ### Why the gaps are published rather than filled
 
@@ -136,12 +137,13 @@ render. Two properties matter more than the others:
 * **Nothing is filled in.** The record type has no field for runtime, certification, synopsis or
   artwork values that a release calendar does not publish. A check asserts that `data/programme.json`
   contains none of those keys at all, and that no parsed film claims a runtime, certification,
-  synopsis, format or artwork. Adding a runtime by hand is not a shortcut here — it is a build
+  synopsis or screening format. Adding a runtime by hand is not a shortcut here — it is a build
   failure, because it would be an unsourced claim about someone else's film.
 
-Films are grouped by whether their release date has passed: *In cinemas* and *Upcoming releases*.
-Both groups are statements about cinemas in India, not about this venue, and the board says so once at
-the top rather than relying on the reader to infer it.
+Films are grouped by whether their release date has passed: *Recently released* and *Releasing soon*.
+Both groups are statements about cinemas in India, not about this venue — the wording was chosen so
+that neither can be read as "this cinema is showing this film" — and the board says so once at the top
+rather than relying on the reader to infer it.
 
 The check suite also guards the boundaries of the whole approach: it fails if `data/movies.ts`,
 `data/showtimes.fixture.ts` or any of the placeholder image directories reappear, and if any app file
@@ -149,14 +151,26 @@ starts importing sample data again.
 
 ### Artwork
 
-None of the films has licensed artwork, so none is shown. Each card carries a **typographic plate**
-(`components/programme/ProgrammePlate.tsx`): the title set in the display face over one of four flat
-brand treatments, chosen deterministically from the slug, labelled *Artwork pending* on its face. It
-carries no imagery, no studio mark and no title treatment, so it cannot be mistaken for key art.
+A film's poster belongs to the studio or distributor that commissioned it. Buying a ticket does not
+buy a licence to reproduce one, and neither does a search result — so this site does not reproduce
+any film's key art, and the card art you see is ours.
 
-When the venue supplies licensed artwork — through its own asset kit, or from the partner feed's
-allow-listed CDN — `Movie.artwork` is populated and the plate is replaced by the real poster. Both
-paths are already rendered by the same component.
+Each film either carries an **original cover plate** — an abstract composition in the site's own
+palette, made for this project, listed in `data/cover-art.json`, sitting in `public/cover-art/` — or,
+until its plate exists, a **typographic plate** (`components/programme/ProgrammePlate.tsx`) setting
+the title in the display face over one of four flat brand treatments chosen deterministically from the
+slug. Neither carries imagery, lettering, a logo, a likeness or a title treatment, so neither can be
+mistaken for key art, and both are labelled in the interface and in their alt text.
+
+The plate is a stand-in, and it admits it. When the venue supplies licensed artwork — through its own
+asset kit, or from the partner feed's allow-listed CDN — `Movie.artwork` is set from that instead and
+the plate disappears for that film. `ProgrammeCard` already prefers real artwork, so the swap needs no
+code change, only a licence.
+
+`npm run check` keeps the two halves of the arrangement honest: every slug in the manifest must have a
+file, every file must be in the manifest, plates must stay inside a size budget, a programme film's
+artwork must point at its own `public/cover-art/` path, and the alt text must say in words that the
+image is not the film's poster. A remote poster URL on a programme film fails the build.
 
 ---
 
@@ -334,7 +348,7 @@ visitor's device may be in another. Therefore:
 ## 10. Brand, attribution and never-claims
 
 * The public name is configurable (`NEXT_PUBLIC_BRAND_DISPLAY_NAME`) and defaults to the neutral
-  working title **"Cinema at Elante Mall"**.
+  working title **"Cinema at Madhuban"**.
 * **This site does not imply an official relationship** with the mall, any cinema chain or any
   operator. That is stated in the footer. An attribution line renders only when the operator supplies
   approved wording (`NEXT_PUBLIC_BRAND_ATTRIBUTION`).
@@ -448,7 +462,7 @@ rather than guessing. `lib/site-config.ts` reads them; `.env.example` is the tem
 
 | Variable | Default | What it controls |
 | --- | --- | --- |
-| `NEXT_PUBLIC_BRAND_DISPLAY_NAME` | `Cinema at Elante Mall` | The working display name. One string — it flows into the header, hero, footer, page titles and metadata. |
+| `NEXT_PUBLIC_BRAND_DISPLAY_NAME` | `Cinema at Madhuban` | The working display name. One string — it flows into the header, hero, footer, page titles and metadata. |
 | `NEXT_PUBLIC_BRAND_ATTRIBUTION` | empty | Operator/mall attribution. Empty means no attribution line is shown, because an unapproved one implies a relationship the venue has not granted. |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Canonical URLs, sitemap and social previews. **Must be set before launch or the sitemap advertises the wrong domain.** |
 | `NEXT_PUBLIC_VENUE_TIMEZONE` | `Asia/Kolkata` | How screening times are displayed. Not a data field — records carry their own offset. |

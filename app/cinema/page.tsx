@@ -13,9 +13,9 @@ import { buildMetadata } from "@/lib/metadata";
 import styles from "@/components/cinema/cinema.module.css";
 
 export const metadata: Metadata = buildMetadata({
-  title: "The cinema at Elante Mall",
+  title: "The cinema at Madhuban",
   description:
-    "Location, directions, access and facilities for the cinema at Elante Mall, Chandigarh, including which details are still being confirmed with the venue.",
+    "Location, directions, access and facilities for the cinema at Madhuban, Bihar, including which details are still being confirmed with the venue.",
   path: "/cinema",
 });
 
@@ -39,7 +39,7 @@ export default function CinemaPage() {
       <div className="section-head">
         <div>
           <span className="eyebrow">The venue</span>
-          <h1>The cinema at Elante Mall</h1>
+          <h1>The cinema at Madhuban</h1>
           <p>
             Everything below is either confirmed by the venue or labelled as still being checked.
             Nothing here is estimated.

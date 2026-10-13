@@ -25,8 +25,9 @@ export function VenueInfo() {
             <span className="eyebrow">Getting here</span>
             <h2 id="visit-title">Visit the cinema</h2>
             <p>
-              The cinema is inside Elante Mall on Purv Marg, Chandigarh. Confirm your entrance and
-              parking before you set off — see the notes below.
+              The cinema is in Madhuban, Bihar. The street address, the entrance to use and
+              where to park are still being confirmed by the venue, so allow a little extra time
+              to find the building — the notes below say exactly what is known.
             </p>
           </div>
           <Button href="/cinema" variant="outline" size="small">

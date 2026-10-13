@@ -1,5 +1,5 @@
 /**
- * Venue facts for the cinema at Elante Mall, Chandigarh.
+ * Venue facts for the cinema at Madhuban, Bihar.
  *
  * HOW TO READ THIS FILE
  * ---------------------
@@ -13,13 +13,21 @@
  * deliberate: an empty slot that the owner can fill is honest, whereas a
  * plausible-looking guess is a public claim the venue never made.
  *
- * Currently confirmed facts are limited to the mall-level location, which is
- * publicly documented. Everything specific to the cinema operation — its trade
- * name, hours, phone, screen names, accessibility provision, parking and
- * concession arrangements — is pending owner confirmation.
+ * WHERE THESE FACTS CAME FROM
+ * ---------------------------
+ * The town and state below were supplied directly by the venue owner
+ * ("the cinema is in Madhuban, Bihar"). That is the strongest kind of evidence
+ * this project accepts — the owner stating their own venue — and it is recorded
+ * as such rather than dressed up as a public listing.
  *
- * Attribution: this site does not imply an official relationship with the mall
- * or with any cinema operator. See README "Brand and attribution".
+ * Everything below the town level is still open: the street, the PIN code, the
+ * entrance, hours, phone, screen names, accessibility provision, parking and
+ * concessions have not been supplied, so each one renders as an open question.
+ * A visitor travelling to a cinema needs the last two hundred metres right, and
+ * those are exactly the facts this file does not yet have.
+ *
+ * Attribution: this site does not imply an official relationship with any mall,
+ * chain or operator. See README "Brand and attribution".
  */
 
 import type { ExternalLink, Venue } from "@/lib/types";
@@ -30,31 +38,38 @@ export function factValue<T>(fact: { value: T | null; status: string }): T | nul
 }
 
 export const venue: Venue = {
-  id: "elante-chandigarh",
+  id: "madhuban-bihar",
   /** Working name. Swap for the confirmed trade name when approved. */
-  name: "Cinema at Elante Mall",
+  name: "Cinema at Madhuban",
   timezone: "Asia/Kolkata",
 
   address: {
+    /**
+     * The street address has not been supplied. Madhuban is a town, not a
+     * building, and "Madhuban, Bihar" alone will not get someone to the right
+     * door — so the street stays an open question rather than a guess.
+     */
     street: {
-      value: "178-178A, Purv Marg",
-      status: "confirmed",
-      source: "Publicly listed mall address",
+      value: null,
+      status: "pending",
+      pendingNote:
+        "The street address of the cinema has not been supplied yet. The town and state are confirmed; the road and landmark still need confirming so visitors can find the building.",
     },
     locality: {
-      value: "Industrial Area Phase I",
+      value: "Madhuban",
       status: "confirmed",
-      source: "Publicly listed mall address",
+      source: "Supplied by the venue owner",
     },
     region: {
-      value: "Chandigarh",
+      value: "Bihar",
       status: "confirmed",
-      source: "Publicly listed mall address",
+      source: "Supplied by the venue owner",
     },
     postalCode: {
-      value: "160002",
-      status: "confirmed",
-      source: "Publicly listed mall address",
+      value: null,
+      status: "pending",
+      pendingNote:
+        "The PIN code for the cinema's address has not been supplied. It is deliberately not guessed, because it is used for navigation and for post.",
     },
     country: {
       value: "India",
@@ -62,19 +77,19 @@ export const venue: Venue = {
     },
     /**
      * A text query, NOT a coordinate pair. Publishing an exact pin before the
-     * venue confirms which entrance serves the cinema would send visitors to
-     * the wrong door — so no latitude/longitude ships in this project.
+     * venue confirms its entrance would send visitors to the wrong door — so no
+     * latitude/longitude ships in this project.
      */
     mapQuery: {
-      value: "Elante Mall, Purv Marg, Industrial Area Phase I, Chandigarh 160002",
+      value: "Madhuban, Bihar, India",
       status: "confirmed",
-      source: "Derived from the confirmed mall address",
+      source: "Derived from the confirmed town and state",
     },
     planningNote: {
       value: null,
       status: "pending",
       pendingNote:
-        "Which mall entrance to use, and which level the cinema sits on, still needs confirmation from the venue. Allow extra time for the walk from parking.",
+        "Which road the cinema is on, which entrance to use and where to park still need confirmation from the venue. Allow extra time to find the building until this is supplied.",
     },
   },
 
@@ -101,36 +116,15 @@ export const venue: Venue = {
   /**
    * Working screen labels.
    *
-   * The fixture schedule has to be assigned to *some* screen ids, but the venue
-   * has not yet confirmed how its screens are named or how many it operates.
-   * These labels are placeholders and the UI says so wherever they appear
-   * (see components/cinema/ScreenLegend.tsx).
+   * The venue has not confirmed how its screens are named or how many it
+   * operates, so this list is unused by the UI: `lib/schedule-source.ts` renders
+   * no screens at all until a feed supplies real ones. It is kept as the shape a
+   * feed's screen records take.
    */
   screens: [
-    {
-      id: "screen-1",
-      name: "Screen 1",
-      formats: ["2D"],
-      accessibleFeatures: [],
-    },
-    {
-      id: "screen-2",
-      name: "Screen 2",
-      formats: ["2D"],
-      accessibleFeatures: [],
-    },
-    {
-      id: "screen-3",
-      name: "Screen 3",
-      formats: ["2D"],
-      accessibleFeatures: [],
-    },
-    {
-      id: "screen-4",
-      name: "Screen 4",
-      formats: ["2D", "3D"],
-      accessibleFeatures: [],
-    },
+    { id: "screen-1", name: "Screen 1", formats: ["2D"], accessibleFeatures: [] },
+    { id: "screen-2", name: "Screen 2", formats: ["2D"], accessibleFeatures: [] },
+    { id: "screen-3", name: "Screen 3", formats: ["2D"], accessibleFeatures: [] },
   ],
 
   facilities: [
@@ -142,9 +136,9 @@ export const venue: Venue = {
     },
     {
       id: "parking",
-      label: "Mall parking",
+      label: "Parking",
       status: "pending",
-      detail: "Charges, validation and cinema-specific parking are unconfirmed.",
+      detail: "Parking provision, charges and proximity to the cinema entrance are unconfirmed.",
     },
     {
       id: "ticketing-desk",
@@ -164,7 +158,7 @@ export const venue: Venue = {
       id: "step-free",
       label: "Step-free access to the cinema",
       status: "pending",
-      detail: "Lift and ramp provision from the mall levels is unconfirmed.",
+      detail: "Lift, ramp and ground-level access provision are unconfirmed.",
     },
     {
       id: "wheelchair-spaces",
@@ -189,14 +183,12 @@ export const venue: Venue = {
     parking: {
       value: null,
       status: "pending",
-      pendingNote:
-        "Mall parking charges and the closest parking to the cinema entrance are not yet confirmed.",
+      pendingNote: "Parking arrangements and the closest drop-off point are not yet confirmed.",
     },
     transit: {
       value: null,
       status: "pending",
-      pendingNote:
-        "Nearest bus stops and the recommended drop-off point are not yet confirmed.",
+      pendingNote: "Nearest bus stops and the recommended drop-off point are not yet confirmed.",
     },
     entrance: {
       value: null,
@@ -221,12 +213,11 @@ export const venue: Venue = {
       {
         id: "directions",
         label: "Get directions",
-        href: "https://www.google.com/maps/search/?api=1&query=Elante%20Mall%2C%20Purv%20Marg%2C%20Industrial%20Area%20Phase%20I%2C%20Chandigarh%20160002",
-        description: "Opens Google Maps with a search for the mall address.",
+        href: "https://www.google.com/maps/search/?api=1&query=Madhuban%2C%20Bihar%2C%20India",
+        description: "Opens Google Maps with a search for Madhuban, Bihar.",
         /**
-         * The search link itself is well-formed and points at the mall address.
-         * It is not a venue-pinned location, and the site says so in the copy
-         * that sits next to it.
+         * A search for the town, not a pinned cinema entrance, and the copy next
+         * to it says so.
          */
         status: "confirmed",
       },
@@ -242,10 +233,11 @@ export const venueLinks: ExternalLink[] = venue.contact.links;
  * rather than hidden. Owner sees the same list in the README.
  */
 export function pendingFacts(): { label: string; note: string }[] {
-  const fromAddress = [venue.address.planningNote].map((fact) => ({
-    label: "Arrival and entrances",
-    note: fact.pendingNote ?? "",
-  }));
+  const fromAddress = [
+    { label: "Street address", note: venue.address.street.pendingNote ?? "" },
+    { label: "PIN code", note: venue.address.postalCode.pendingNote ?? "" },
+    { label: "Arrival and entrances", note: venue.address.planningNote.pendingNote ?? "" },
+  ];
 
   const fromHours = venue.hours.map((hour) => ({
     label: hour.label,
@@ -266,11 +258,10 @@ export function pendingFacts(): { label: string; note: string }[] {
       note: item.detail ?? "Awaiting confirmation from the venue.",
     }));
 
-  const fromContact = [venue.contact.phone, venue.contact.email]
-    .map((fact) => ({
-      label: "Contact details",
-      note: fact.pendingNote ?? "",
-    }));
+  const fromContact = [venue.contact.phone, venue.contact.email].map((fact) => ({
+    label: "Contact details",
+    note: fact.pendingNote ?? "",
+  }));
 
   const fromArrival = [venue.arrival.parking, venue.arrival.transit, venue.arrival.entrance].map(
     (fact) => ({
@@ -279,5 +270,12 @@ export function pendingFacts(): { label: string; note: string }[] {
     }),
   );
 
-  return [...fromAddress, ...fromHours, ...fromFacilities, ...fromAccessibility, ...fromArrival, ...fromContact];
+  return [
+    ...fromAddress,
+    ...fromHours,
+    ...fromFacilities,
+    ...fromAccessibility,
+    ...fromArrival,
+    ...fromContact,
+  ];
 }

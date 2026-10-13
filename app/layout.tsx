@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: `%s · ${siteConfig.brandName}`,
   },
   description:
-    "Showtimes, dates and venue information for the cinema at Elante Mall, Chandigarh. Find what is playing, plan your visit, and continue to the venue's ticketing partner to book.",
+    "Showtimes, dates and venue information for the cinema at Madhuban, Bihar. Find what is playing, plan your visit, and continue to the venue's ticketing partner to book.",
   applicationName: siteConfig.brandName,
   formatDetection: { telephone: false },
 };

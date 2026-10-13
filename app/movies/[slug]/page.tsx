@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     movie.releaseDate
       ? `${movie.status === "coming_soon" ? "releases" : "released"} ${formatDateLong(movie.releaseDate)}`
       : null,
-    "at the cinema at Elante Mall, Chandigarh",
+    "at the cinema at Madhuban, Bihar",
   ].filter(Boolean);
 
   return buildMetadata({

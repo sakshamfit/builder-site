@@ -55,8 +55,11 @@ build, and nothing in them was executed or obeyed.
 
 ## 2. Image provenance
 
-**This build ships no images.** `public/` contains no posters, no cinema illustrations and no hero
-still; `npm run check` fails if `public/posters`, `public/showcase` or `public/stills` reappears.
+**No film's own poster ships in this build, and no photograph claims to be this building.**
+`public/` holds exactly two things: the cover plates listed in `data/cover-art.json`, and a README.
+There are no posters, no cinema illustrations and no hero still; `npm run check` fails if
+`public/posters`, `public/showcase` or `public/stills` reappears, and fails if a plate exists without a
+manifest entry or a manifest entry without a plate.
 
 ### What was removed, and why
 
@@ -77,9 +80,28 @@ imagery was generated. What occupies those spaces instead is designed, and hones
 
 | Was | Now |
 | --- | --- |
-| Ten generated film posters | `components/programme/ProgrammePlate.tsx` — a typographic plate per film, carrying the title over one of four flat brand treatments and the words *Artwork pending* |
+| Ten generated film posters | An **original cover plate** per film where one has been made (`public/cover-art/`, `data/cover-art.json`); otherwise `components/programme/ProgrammePlate.tsx`, a typographic plate carrying the title over one of four flat brand treatments |
 | Hero still (`/stills/auditorium.jpg`) | The hero is type only. The design language was built for it: ruled overline, display type, ruled footer. |
 | Five `public/showcase/` interiors | `components/showcase/VenuePhotographyPending.tsx` — a ruled panel listing what has been requested from the venue and what is known for certain |
+
+### The cover plates that do ship
+
+`public/cover-art/<slug>.jpg` — one abstract plate per film, made for this project, in the site's own
+palette (deep red, cream, ink, muted gold). They are geometric compositions and nothing else: no text,
+no lettering, no numerals, no logo, no likeness, no character, no scene from any film. They do not
+depict the film they sit beside, and the interface says so — the caption under each card reads
+*Original cover art, not the film's poster*, and every plate's alt text says the same thing in words.
+
+Their job is to give the programme the shape a cinema programme has, without borrowing anything. They
+are a stand-in with a stated limitation, not a claim to be key art.
+
+| Property | Value |
+| --- | --- |
+| Author | Generated for this project for this repository |
+| Licence | Original work made for this project — see `data/cover-art.json` |
+| Contents | Flat geometric forms in the brand palette only |
+| Declared in | `data/cover-art.json` (manifest), `public/cover-art/` (files) |
+| Replaced by | A licensed poster, automatically, when the venue or the partner feed supplies one |
 
 ### How imagery gets back in
 

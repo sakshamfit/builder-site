@@ -21,7 +21,7 @@
 import { addDays, todayInZone } from "@/lib/date-format";
 import { zoneOffsetString } from "@/lib/date-format";
 
-export const TEST_VENUE_ID = "elante-chandigarh";
+export const TEST_VENUE_ID = "madhuban-bihar";
 export const TEST_TIMEZONE = "Asia/Kolkata";
 /** Host the local demo server serves artwork from. Must be allow-listed to work. */
 export const TEST_ARTWORK_HOST = "127.0.0.1";

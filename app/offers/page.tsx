@@ -8,7 +8,7 @@ import { formatDateLong } from "@/lib/date-format";
 export const metadata: Metadata = buildMetadata({
   title: "Offers",
   description:
-    "Approved promotions at the cinema at Elante Mall, Chandigarh. Only venue-approved offers with confirmed dates and terms are published here.",
+    "Approved promotions at the cinema at Madhuban, Bihar. Only venue-approved offers with confirmed dates and terms are published here.",
   path: "/offers",
 });
 

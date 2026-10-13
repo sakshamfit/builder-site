@@ -548,7 +548,8 @@ check("query parameters are validated before use", () => {
 section("Sourced programme");
 
 const { parseProgramme, loadProgramme } = await import("../lib/programme.ts");
-const { readFileSync, existsSync } = await import("node:fs");
+const { pendingFacts } = await import("../data/cinema.ts");
+const { readFileSync, existsSync, readdirSync, statSync } = await import("node:fs");
 
 const parsedProgramme = parseProgramme("2026-10-13");
 
@@ -582,9 +583,83 @@ check("no film in the programme claims a fact its source did not publish", () =>
     assert.equal(movie.runtimeMinutes, null, `${movie.slug} claims a runtime`);
     assert.equal(movie.certification, null, `${movie.slug} claims a certification`);
     assert.equal(movie.synopsis, null, `${movie.slug} claims a synopsis`);
-    assert.equal(movie.artwork, null, `${movie.slug} claims artwork`);
     assert.deepEqual(movie.formats, [], `${movie.slug} claims a screening format`);
   }
+});
+
+const coverArtManifest = JSON.parse(readFileSync("data/cover-art.json", "utf8")) as {
+  licence: string;
+  plates: string[];
+};
+
+check("a programme film only ever shows this project's own cover plate", () => {
+  for (const movie of parsedProgramme.movies) {
+    if (!movie.artwork) continue;
+    assert.equal(
+      movie.artwork.url,
+      `/cover-art/${movie.slug}.jpg`,
+      `${movie.slug} points at something other than its own plate`,
+    );
+    assert.ok(
+      coverArtManifest.plates.includes(movie.slug),
+      `${movie.slug} renders a plate that is not in the manifest`,
+    );
+    assert.equal(movie.artwork.licence, coverArtManifest.licence);
+    assert.match(
+      movie.artwork.alt,
+      /not the film's poster/i,
+      `${movie.slug}: the alt text must say the image is not the film's poster`,
+    );
+  }
+});
+
+check("no borrowed poster can reach the programme through a URL", () => {
+  for (const movie of parsedProgramme.movies) {
+    const url = movie.artwork?.url ?? "";
+    assert.ok(
+      !/^https?:\/\//.test(url),
+      `${movie.slug} pulls artwork from the network — a poster is licensed, not fetched`,
+    );
+  }
+});
+
+check("the cover-art manifest and the files on disk agree", () => {
+  const onDisk = readdirSync("public/cover-art")
+    .filter((name) => name.endsWith(".jpg"))
+    .map((name) => name.replace(/\.jpg$/, ""))
+    .sort();
+  const declared = [...coverArtManifest.plates].sort();
+
+  for (const slug of declared) {
+    assert.ok(
+      existsSync(`public/cover-art/${slug}.jpg`),
+      `data/cover-art.json lists ${slug} but public/cover-art/${slug}.jpg is missing`,
+    );
+  }
+  for (const slug of onDisk) {
+    assert.ok(
+      coverArtManifest.plates.includes(slug),
+      `public/cover-art/${slug}.jpg is declared nowhere — add it to data/cover-art.json`,
+    );
+  }
+});
+
+check("every cover plate is a raster image inside a sensible budget", () => {
+  for (const slug of coverArtManifest.plates) {
+    const bytes = statSync(`public/cover-art/${slug}.jpg`).size;
+    assert.ok(bytes > 1024, `${slug}.jpg is suspiciously small (${bytes} bytes)`);
+    assert.ok(bytes < 600 * 1024, `${slug}.jpg is ${Math.round(bytes / 1024)} KB — too heavy for a card`);
+  }
+});
+
+check("every film in the programme is reachable and uniquely addressable", () => {
+  const slugs = new Set<string>();
+  for (const movie of parsedProgramme.movies) {
+    assert.ok(!slugs.has(movie.slug), `${movie.slug} appears twice`);
+    slugs.add(movie.slug);
+    assert.match(movie.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/, `${movie.slug} is not a safe URL segment`);
+  }
+  assert.ok(slugs.size >= 30, `only ${slugs.size} films — the programme was truncated`);
 });
 
 check("every film states that it is not this cinema's schedule", () => {
@@ -704,6 +779,84 @@ check("the programme file declares no runtime, certification, synopsis or artwor
       `data/programme.json carries "${forbidden}" — that fact has to come from a source or a feed`,
     );
   }
+});
+
+section("Venue facts");
+
+check("the venue is in Madhuban, Bihar and nothing below that is invented", () => {
+  assert.equal(venue.address.locality.value, "Madhuban");
+  assert.equal(venue.address.region.value, "Bihar");
+  assert.equal(venue.address.country.value, "India");
+  assert.equal(
+    venue.address.locality.status,
+    "confirmed",
+    "the owner supplied the town and state, so they are confirmed facts",
+  );
+
+  /* Everything below the town is unconfirmed, and must stay unconfirmed until
+     the venue supplies it. This check exists so a future edit cannot quietly
+     promote a guess to a confirmed fact. */
+  const stillOpen = [
+    venue.address.street,
+    venue.address.postalCode,
+    venue.address.planningNote,
+    venue.contact.phone,
+    venue.contact.email,
+    venue.arrival.parking,
+    venue.arrival.transit,
+    venue.arrival.entrance,
+    ...venue.hours.map((hour) => hour.value),
+  ];
+  for (const fact of stillOpen) {
+    assert.notEqual(
+      fact.status,
+      "confirmed",
+      "a venue fact was confirmed without the venue supplying it",
+    );
+    assert.equal(fact.value, null, "an unconfirmed venue fact carries a value");
+    assert.ok(
+      (fact.pendingNote ?? "").length > 20,
+      "an unconfirmed venue fact must explain itself to the visitor",
+    );
+  }
+});
+
+check("the pending list the visitor sees is not empty", () => {
+  assert.ok(pendingFacts().length >= 8, "the outstanding-facts list shrank unexpectedly");
+});
+
+check("no page copy names a former or unconfirmed location or operator", () => {
+  const files = [
+    "app/page.tsx",
+    "app/cinema/page.tsx",
+    "app/movies/page.tsx",
+    "app/movies/[slug]/page.tsx",
+    "app/layout.tsx",
+    "app/offers/page.tsx",
+    "components/home/Hero.tsx",
+    "components/home/VenueInfo.tsx",
+    "components/layout/SiteFooter.tsx",
+    "components/layout/FullScreenMenu.tsx",
+    "lib/site-config.ts",
+    "data/showcase.ts",
+    "README.md",
+  ];
+  for (const file of files) {
+    const source = readFileSync(file, "utf8");
+    for (const forbidden of ["Elante", "Chandigarh", "PVR", "INOX"]) {
+      assert.ok(
+        !source.includes(forbidden),
+        `${file} still mentions ${forbidden} — the venue never confirmed it`,
+      );
+    }
+  }
+});
+
+check("the map link searches for the town, not a door the venue has not confirmed", () => {
+  const link = venue.contact.links.find((entry) => entry.id === "directions");
+  assert.ok(link, "the directions link went missing");
+  assert.match(link.href, /Madhuban%2C%20Bihar/);
+  assert.ok(!/\d+\.\d{3,}/.test(link.href), "a coordinate pair was published as the venue's position");
 });
 
 /* -------------------------------------------------------------------------- */

@@ -11,8 +11,8 @@ import styles from "./programme.module.css";
  * varied without ever being random between renders.
  *
  * This is deliberately NOT a poster. It carries no imagery, no studio mark and no
- * title treatment, and it says on its face that artwork is pending. A visitor
- * cannot mistake it for key art, and a rights holder has nothing to object to.
+ * title treatment, and it labels itself as original cover art. A visitor cannot
+ * mistake it for key art, and a rights holder has nothing to object to.
  */
 export function ProgrammePlate({
   title,
@@ -33,7 +33,7 @@ export function ProgrammePlate({
   return (
     <div className={`${styles.plate} ${styles[tone]} ${compact ? styles.plateCompact : ""}`}>
       <span className={styles.plateRule} aria-hidden="true" />
-      <span className={styles.plateKicker}>Artwork pending</span>
+      <span className={styles.plateKicker}>Original cover art</span>
       <span className={styles.plateTitle} aria-hidden="true">
         {title}
       </span>

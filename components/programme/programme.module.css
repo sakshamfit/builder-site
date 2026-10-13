@@ -374,3 +374,14 @@
     padding: 1.5rem 1.6rem 1.6rem;
   }
 }
+
+/* The line under a card that says what the image above it actually is. Quiet on
+   purpose: it is a caption, not a caveat shouted at the visitor. */
+.cardArtNote {
+  font-family: var(--font-label);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-top: 0.15rem;
+}

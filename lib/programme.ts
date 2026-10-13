@@ -14,10 +14,13 @@
  *    on which screen, at what time, or in which language version. Only the
  *    venue's ticketing feed can say that (see FEED_CONTRACT.md). Every surface
  *    that renders these films states the difference in words.
- * 2. It does not fill gaps. Runtime, certification, synopsis and artwork are
- *    null here because the sources used did not publish them, and a plausible
- *    guess is a claim the venue never made. They appear when a feed supplies
- *    them.
+ * 2. It does not fill gaps. Runtime, certification and synopsis are null here
+ *    because the sources used did not publish them, and a plausible guess is a
+ *    claim the venue never made. They appear when a feed supplies them.
+ * 3. It does not borrow a film's poster. The only artwork this module attaches is
+ *    the project's own abstract cover plate (see `data/cover-art.json`), and the
+ *    alt text says so in words. A licensed poster from the venue or the feed
+ *    always takes precedence over a plate.
  *
  * Provenance is decided by this module, not by the payload: `data/programme.json`
  * cannot declare itself verified any more than a feed payload can declare itself
@@ -26,9 +29,10 @@
 
 import { cache } from "react";
 import programmeData from "@/data/programme.json";
+import coverArtData from "@/data/cover-art.json";
 import { readClock } from "@/lib/clock";
 import { addDays, isValidCalendarDate } from "@/lib/date-format";
-import type { Language, Movie, SourceRef } from "@/lib/types";
+import type { Artwork, Language, Movie, SourceRef } from "@/lib/types";
 
 type RawSource = { label?: unknown; url?: unknown };
 type RawLanguage = { code?: unknown; label?: unknown };
@@ -62,6 +66,36 @@ export type Programme = {
 };
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * The slugs that have an original cover plate in `public/cover-art/`.
+ *
+ * Read from a manifest rather than by listing the directory so that a missing
+ * file is a build failure (`npm run check` compares the two) instead of a broken
+ * image. The alt text is deliberately explicit about what the image is: a person
+ * using a screen reader should not be told a generated plate is a film poster.
+ */
+const COVER_PLATES = new Set<string>(
+  Array.isArray((coverArtData as { plates?: unknown }).plates)
+    ? ((coverArtData as { plates: unknown[] }).plates.filter(
+        (slug): slug is string => typeof slug === "string",
+      ) as string[])
+    : [],
+);
+
+const COVER_PLATE_LICENCE =
+  typeof (coverArtData as { licence?: unknown }).licence === "string"
+    ? (coverArtData as { licence: string }).licence
+    : "Original cover art made for this project";
+
+function coverPlateFor(slug: string, title: string): Artwork | null {
+  if (!COVER_PLATES.has(slug)) return null;
+  return {
+    url: `/cover-art/${slug}.jpg`,
+    alt: `Original abstract cover art for ${title}, made for this site in its own colours. This is not the film's poster.`,
+    licence: COVER_PLATE_LICENCE,
+  };
+}
 
 /* Only https sources: a release date that cannot be checked is not a fact. */
 function parseSources(raw: unknown, slug: string, errors: string[]): SourceRef[] {
@@ -196,7 +230,8 @@ export function parseProgramme(todayISO: string): {
       certification: null,
       /* Formats belong to the venue's own assignment. Never inferred from a title. */
       formats: [],
-      artwork: null,
+      /* The project's own plate, or nothing. Never a borrowed poster. */
+      artwork: coverPlateFor(slug, title),
       releaseDate,
       releaseScope,
       sources,

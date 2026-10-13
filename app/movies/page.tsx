@@ -17,7 +17,7 @@ import type { Movie } from "@/lib/types";
 export const metadata: Metadata = buildMetadata({
   title: "Film programme",
   description:
-    "Films in cinemas and announced for release, with sourced release dates, at the cinema at Elante Mall, Chandigarh.",
+    "Films in cinemas and announced for release, with sourced release dates, at the cinema at Madhuban, Bihar.",
   path: "/movies",
 });
 

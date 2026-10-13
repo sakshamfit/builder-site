@@ -22,7 +22,7 @@ export function SiteFooter() {
   return (
     <footer className={styles.footer}>
       <div className="wrap">
-        <span className={`eyebrow ${styles.footerEyebrow}`}>Chandigarh · India</span>
+        <span className={`eyebrow ${styles.footerEyebrow}`}>Madhuban · Bihar · India</span>
 
         <p className={styles.footerTitle}>
           <span>{siteConfig.brandName}</span>
