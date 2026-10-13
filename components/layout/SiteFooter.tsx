@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NAV_ITEMS } from "@/lib/nav";
 import { siteConfig } from "@/lib/site-config";
+import { CrowdCanvas } from "@/components/ui/skiper39";
 import { venue } from "@/data/cinema";
 import { confirmed, confirmedAddressLines, directionsLink } from "@/lib/cinema-content";
 import styles from "./layout.module.css";
@@ -88,6 +89,10 @@ export function SiteFooter() {
 
         <div className={styles.footerBottom}>
           <p>
+            Crowd animation adapted from Skiper UI (attribution required under its free licence).
+            Illustration by openpeeps.
+          </p>
+          <p>
             © {year} {siteConfig.brandName}. A venue website. Not affiliated with, endorsed by, or
             operated by the mall or any cinema chain unless an attribution line appears above.
           </p>
@@ -97,6 +102,17 @@ export function SiteFooter() {
               : "Film release dates are sourced from published release calendars, with the sources listed on each film. Screening times, prices and seat availability come from a cinema's own ticketing system; they appear here once the venue connects it."}
           </p>
         </div>
+      </div>
+
+      {/* A crowd walking the footer's floor. Decorative only: hidden from assistive tech, and
+          the canvas stays still for visitors who ask for reduced motion. */}
+      <div className={styles.footerCrowd} aria-hidden="true">
+        <CrowdCanvas
+          src="https://cdn.21st.dev/assets/localized/abdb8990a7bef8c2f5af3e45f0a3c969c4b0603fba8be92e81347de4ea4e1ed7.png"
+          rows={15}
+          cols={7}
+          height="100%"
+        />
       </div>
     </footer>
   );

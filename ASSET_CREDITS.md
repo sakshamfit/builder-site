@@ -357,3 +357,16 @@ the home page on each visit until the reader pushes through it (`components/layo
 
 This is the only third-party video on the site. The intro never depicts this cinema, and it is not a
 photograph of the venue.
+
+---
+
+## 9. Footer crowd: sprite and licence (to be confirmed)
+
+The footer carries a crowd of walking figures, `components/ui/skiper39.tsx` (`CrowdCanvas`), rendered in a strip beneath the footer copy.
+
+| Asset | Source | Licence position | Status |
+| --- | --- | --- | --- |
+| Crowd sprite (figures, 15 × 7 grid) | `https://cdn.21st.dev/assets/localized/abdb8990….png`, illustration by openpeeps | Skiper UI free licence: free to use and modify, **attribution to Skiper UI required**. Attribution is printed in the footer. | **Host the file under `public/` before launch** so the site does not depend on a third-party CDN, and confirm the illustration's own licence with openpeeps. |
+| Animation code | Adapted from Skiper UI "Canvas_Landing_004", itself inspired by a CodePen by zadvorsky | Same Skiper UI free licence; attribution as above. | Attribution in the footer. |
+
+The animation uses `gsap` (MIT licence). It is not used when the visitor has asked for reduced motion.
