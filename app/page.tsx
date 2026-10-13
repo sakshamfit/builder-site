@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
+import { Showcase } from "@/components/home/Showcase";
 import { NowShowing } from "@/components/home/NowShowing";
 import { ComingSoon } from "@/components/home/ComingSoon";
 import { CinemaExperience } from "@/components/home/CinemaExperience";
@@ -55,19 +56,21 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           place={place}
           isFixture={siteConfig.isFixtureMode}
         />
-        <section className="section" id="showtimes">
+        <Showcase />
+
+        <section className="section section--tight" id="showtimes">
           <div className="container">
             <div className="section-head">
               <div>
-                <span className="eyebrow">Choose a date</span>
+                <span className="eyebrow">When you are ready to book</span>
                 <h2>Showtimes</h2>
               </div>
             </div>
             <EmptyState title="Showtimes are unavailable right now">
               <p>{snapshot.reason}</p>
               <p>
-                The rest of this page still works: you can check the location, plan your visit and
-                read the booking help.
+                The hall showcase, location and visiting information above are unaffected — only the
+                schedule is missing.
               </p>
             </EmptyState>
           </div>
@@ -97,6 +100,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         isFixture={siteConfig.isFixtureMode}
       />
 
+      <Showcase />
+
       <NowShowing
         movies={showingNow}
         nextScreenings={nextScreenings}
@@ -110,10 +115,11 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         <div className="container">
           <div className="section-head">
             <div>
-              <span className="eyebrow">Choose a date</span>
+              <span className="eyebrow">When you are ready to book</span>
               <h2>Showtimes</h2>
               <p>
-                Pick a day, then choose a screening. Each card shows the screen, format and language
+                This site shows the hall; tickets are handled by the venue&rsquo;s ticketing partner.
+                Pick a day, then choose a screening — each card shows the screen, format and language
                 the venue has assigned to it.
               </p>
             </div>

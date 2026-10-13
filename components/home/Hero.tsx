@@ -9,12 +9,16 @@ import styles from "./home.module.css";
  * Home hero.
  *
  * One still, one message, one primary action. No autoplaying video, no
- * scroll-jacking, no intro animation: the showtime chooser is reachable
- * immediately below.
+ * scroll-jacking, no intro animation.
  *
- * The still is a generated placeholder, not a photograph of this cinema, so it
- * is marked decorative for assistive technology and captioned as a placeholder
- * for everyone else. Venue photography or licensed key art replaces it before
+ * The primary action points at the cinema-hall showcase, because this is a
+ * showcase of the venue rather than a booking engine — ticketing is a separate,
+ * secondary step that the header and the showtimes section both reach in one
+ * tap.
+ *
+ * The still is a generated illustration, not a photograph of this cinema, so it
+ * is marked decorative for assistive technology and captioned as an
+ * illustration for everyone else. Approved venue photography replaces it before
  * launch (see ASSET_CREDITS.md).
  */
 export function Hero({
@@ -31,6 +35,13 @@ export function Hero({
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.heroMedia}>
+        {/*
+          A still, not a video. No licensed footage of this cinema exists yet,
+          and an unlicensed clip would be worse than a quiet image. The slow
+          ambient drift is CSS-only, so it costs no extra bytes, cannot
+          autoplay audio, and is disabled outright by
+          `prefers-reduced-motion: reduce` (see app/globals.css).
+        */}
         <Image
           src="/stills/auditorium.jpg"
           alt=""
@@ -38,6 +49,7 @@ export function Hero({
           priority
           sizes="100vw"
           aria-hidden="true"
+          className={styles.heroStill}
         />
       </div>
       <div className={styles.heroScrim} aria-hidden="true" />
@@ -49,16 +61,16 @@ export function Hero({
         </h1>
 
         <p className={`lede ${styles.heroLede}`}>
-          Find what is playing, choose a date, and continue to the venue&rsquo;s ticketing partner to
-          complete your booking. Location, access, timings and help all live here too.
+          A showcase of the cinema inside Elante Mall, Chandigarh — the auditorium, the screen, the
+          foyer and everything between the mall and your seat.
         </p>
 
         <div className={styles.heroActions}>
-          <Button href="#showtimes" variant="primary" size="large">
-            View showtimes
+          <Button href="#showcase" variant="primary" size="large">
+            See the cinema
           </Button>
-          <Button href="/cinema" variant="secondary" size="large">
-            Plan your visit
+          <Button href="#showtimes" variant="secondary" size="large">
+            Today&rsquo;s showtimes
           </Button>
         </div>
 
@@ -72,11 +84,11 @@ export function Hero({
               </span>
             </>
           ) : null}
-          {isFixture ? <Badge tone="amber">Sample data</Badge> : null}
+          {isFixture ? <Badge tone="amber">Sample schedule</Badge> : null}
         </p>
 
         <p className={styles.heroImageNote}>
-          Placeholder image: venue photography has not been supplied yet.
+          Illustrative background — photographs of this cinema are still being supplied.
         </p>
       </div>
     </section>

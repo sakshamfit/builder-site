@@ -1,0 +1,245 @@
+/* ==========================================================================
+   Venue showcase — spotlight viewer, highlights, gallery grid
+   ========================================================================== */
+
+.showcase {
+  position: relative;
+}
+
+/* --- spotlight ------------------------------------------------------------ */
+
+.spotlight {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--ink-800);
+}
+
+.stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Ambient drift, decorative only. Collapsed by prefers-reduced-motion. */
+  animation: stageDrift 40s ease-in-out infinite alternate;
+}
+
+@keyframes stageDrift {
+  from {
+    transform: scale(1.01);
+  }
+  to {
+    transform: scale(1.07) translate3d(1%, -1%, 0);
+  }
+}
+
+/* Scrim exists so the caption stays legible over any image. */
+.stageScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(7, 8, 12, 0) 32%,
+    rgba(7, 8, 12, 0.55) 62%,
+    rgba(7, 8, 12, 0.94) 100%
+  );
+}
+
+.stageOverlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: grid;
+  gap: 0.3rem;
+  padding: clamp(0.85rem, 2.4vw, 1.5rem);
+}
+
+.stageTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.stageCaption {
+  max-width: 62ch;
+  color: var(--paper-dim);
+  font-size: clamp(0.82rem, 1.6vw, 0.95rem);
+}
+
+/* Everyone sees where the image came from, not just a footnote. */
+.stageProvenance {
+  color: var(--muted-2);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+
+/* --- tabs ----------------------------------------------------------------- */
+
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scroll-snap-type: x proximity;
+}
+
+.tab {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--paper-dim);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  scroll-snap-align: start;
+  transition:
+    border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.tab:hover {
+  border-color: var(--line-strong);
+  color: var(--paper);
+}
+
+.tab:where([aria-selected="true"]) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--paper);
+}
+
+.tabThumb {
+  position: relative;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ink-700);
+}
+
+.tabThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- highlight list ------------------------------------------------------- */
+
+.highlights {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: clamp(1.25rem, 3vw, 2rem);
+}
+
+.highlight {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.highlightConfirmed {
+  border-left-color: var(--ok-line);
+}
+
+.highlightPending {
+  border-left-color: var(--amber-line);
+}
+
+.highlightLabel {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--paper);
+}
+
+.highlightDetail {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+/* --- gallery grid (used on the cinema page) ------------------------------- */
+
+.gallery {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.galleryItem {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.galleryFrame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink-800);
+}
+
+.galleryFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.galleryTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.galleryCaption {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.galleryProvenance {
+  color: var(--muted-2);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+
+.galleryNote {
+  margin-top: 1rem;
+  color: var(--muted-2);
+  font-size: 0.82rem;
+}
+
+@media (min-width: 640px) {
+  .highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1000px) {
+  .highlights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}

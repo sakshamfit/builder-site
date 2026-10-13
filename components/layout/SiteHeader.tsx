@@ -78,14 +78,19 @@ export function SiteHeader() {
         <PrimaryNav items={NAV_ITEMS} variant="header" />
 
         <div className={styles.headerActions}>
+          {/*
+            The persistent action is "Showtimes", not "Book tickets": this site
+            has no booking flow, and the label must not imply one. It stays
+            high-contrast so showtime discovery is still one tap away.
+          */}
           <Button
             href="/#showtimes"
             variant="primary"
             size="small"
             className={styles.headerCta}
-            ariaLabel="Book tickets — choose a screening"
+            ariaLabel="Showtimes — choose a screening"
           >
-            Book tickets
+            Showtimes
           </Button>
 
           <MobileNavigation
@@ -93,9 +98,9 @@ export function SiteHeader() {
             brandName={siteConfig.brandName}
             place={place}
             ctaHref="/#showtimes"
-            ctaLabel="Book tickets"
+            ctaLabel="Showtimes"
             meta={[
-              "Ticket links appear once the venue's ticketing partner is connected.",
+              "A showcase of the cinema hall. Ticket links appear once the venue's ticketing partner is confirmed.",
             ]}
           />
         </div>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { LocationPanel } from "@/components/cinema/LocationPanel";
+import { VenueGallery } from "@/components/showcase/VenueGallery";
+import { showcaseCopy, showcaseImages } from "@/data/showcase";
 import { Facilities, ScreenLegend } from "@/components/cinema/Facilities";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -46,6 +48,17 @@ export default function CinemaPage() {
           </Button>
         ) : null}
       </div>
+
+      <section style={{ marginBottom: "2rem" }} aria-labelledby="venue-gallery-title">
+        <div className="section-head">
+          <div>
+            <span className="eyebrow">{showcaseCopy.eyebrow}</span>
+            <h2 id="venue-gallery-title">Inside the hall</h2>
+            <p>{showcaseCopy.lede}</p>
+          </div>
+        </div>
+        <VenueGallery images={showcaseImages} note={showcaseCopy.galleryNote} />
+      </section>
 
       <div className={styles.layout}>
         <LocationPanel />

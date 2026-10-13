@@ -69,6 +69,11 @@ placeholder.
 | `public/posters/the-long-interval.jpg` | Empty vintage auditorium | Soft glow from an unseen screen | Sample film `the-long-interval` |
 | `public/posters/second-reel.jpg` | Curling 35mm film strip | Macro, dust and scratches, amber light | Sample film `second-reel` |
 | `public/posters/static-and-stars.jpg` | Stars crossed by static | Deep black, coral signal line | Sample film `static-and-stars` |
+| `public/showcase/screen-wall.jpg` | Blank screen between dark curtains | Warm screen glow, low angle | Cinema-hall showcase |
+| `public/showcase/seats.jpg` | Rows of dark upholstered seats | Warm aisle light, shallow focus | Cinema-hall showcase |
+| `public/showcase/foyer.jpg` | Dark foyer, low counter | Warm cove lighting, wide angle | Cinema-hall showcase |
+| `public/showcase/concessions.jpg` | Dark concession counter | Amber under-shelf light, bokeh | Cinema-hall showcase |
+| `public/showcase/corridor.jpg` | Entrance corridor | Line of light, one-point perspective | Cinema-hall showcase |
 
 Each poster is 800 × 1200 (2:3) JPEG, metadata stripped. The hero still is 1376 × 768. All are
 served through `next/image` with explicit `sizes` and are converted to AVIF/WebP at request time.
@@ -90,6 +95,10 @@ be replaced by the official logo once the venue supplies it.
 - [ ] Replace the sample film catalogue (`data/movies.ts`) with the venue's approved programme, and
       record the licence for each poster and still here.
 - [ ] Replace the header mark and `app/icon.svg` with the approved brand logo.
+- [ ] Replace the five `public/showcase/` illustrations and the hero still with approved photographs
+      of this cinema, and set `depictsVenue: true` in `data/showcase.ts` for each.
+- [ ] If film key art is wanted, obtain each distributor's digital asset kit in writing and record
+      the granted permission title by title here. Do not source it from any personal repository.
 - [ ] If any trailer or video is added: confirm distribution rights, supply captions or a transcript,
       provide a poster fallback, keep it muted and user-initiated, and pause it when it scrolls out of
       view. (This build ships no video at all, because no licensed footage was available.)
@@ -99,7 +108,58 @@ be replaced by the official logo once the venue supplies it.
 
 ---
 
-## 4. What is deliberately absent
+## 4. A note on reusing media from the owner's own repositories
+
+The venue owner also owns the GitHub accounts `gireeshkumarreddy` and `divyashrma18`, and asked for
+cinema-hall imagery and current film imagery to be taken from those repositories. That request was
+investigated directly rather than assumed, and the outcome is recorded here because it is a rights
+decision, not a preference.
+
+**Finding 1 — no repository in either account carries a LICENSE file.** Without one, the default is
+all rights reserved, so code and media from those repositories cannot be relicensed into this
+project. (This is the same finding that governs the code audit in section 1.)
+
+**Finding 2 — some repositories do document their own asset provenance, and that documentation is
+what makes reuse *possible* elsewhere but not *suitable* here:**
+
+| Repository | Its own provenance record | Why it was not used |
+| --- | --- | --- |
+| `gireeshkumarreddy/vara-studio` | `ASSET_PROVENANCE.md`: photographs downloaded from Unsplash under the Unsplash License, with photographer, page URL and image id listed; "Credit is not required by the licence but is given" | The images are women's fashion editorial photographs. Wrong subject for a cinema hall, and carrying them into this project would move a third-party licence obligation (and a brand context) into a venue site for no benefit. |
+| `gireeshkumarreddy/varasaree` | `ASSET_PROVENANCE.md`: nine images generated with the built-in image tool, with the exact prompt set recorded | Original AI images, but of Indian sarees — wrong subject. The *practice* here is the model this project followed: generate original images and record the exact prompts. |
+| `gireeshkumarreddy/Telangana-tech` | `CREDITS.md`: two Wikimedia Commons photographs under **CC BY-SA 4.0** with full attribution, plus several Unsplash illustrative photographs | CC BY-SA 4.0 is a share-alike licence. Importing one into a commercial venue site would impose attribution and share-alike obligations, and the photographs show a government secretariat and Hyderabad — not this cinema. |
+| `gireeshkumarreddy/alluarjun`, `Bahubali`, `pk`, `one-piece-`, `AVENGERS-DOOMSDAY-`, `Ghost-Rider-`, `GIRL`, `cinematic-portofilo` | Asset source notes exist in some, but the media is franchise material | Fan-project material. Franchise imagery cannot be relicensed by anyone other than the rights holder, regardless of who owns the repository. |
+
+**Finding 3 — the franchise repositories contain exactly the material that must not ship.** Direct
+inspection found, for example:
+
+- `divyashrma18/harryPotter` → `vite-project/public/images/house1.png` … `house4.png`, `wand-cursor.svg`, `video/one.mp4`
+- `divyashrma18/avengers` → `vite-project/public/images/a1.png` … `a4.png`, `logo.png`
+
+These are the visual identity of two of the largest film franchises in the world. Shipping them on a
+commercial cinema site would be trademark and copyright infringement, and the brief prohibits it in
+terms: *"All franchise imagery, official logos, posters, trailers, music, characters and trademarked
+content unless the cinema has explicit rights."*
+
+**Finding 4 — "current movie launch" imagery cannot come from these repositories at all.** No
+repository in either account contains current film key art. Searching them could not produce it,
+because film posters and stills are the property of the distributor. They reach a cinema website only
+through a studio-approved marketing asset kit or the ticketing partner's feed, with per-title and
+per-territory permission. Nothing in a personal GitHub account can grant that.
+
+### What was done instead
+
+The cinema-hall showcase was built from **original generated imagery** (`public/showcase/`, plus the
+existing `public/stills/auditorium.jpg`), which achieves the requested outcome — a venue-first
+showcase of the hall — with no third-party rights exposure. The showcase's data layer
+(`data/showcase.ts`) is written so that approved venue photography and, later, properly licensed
+film key art can be dropped in: set `depictsVenue: true`, update `src`/`alt`/`caption`, and record
+the photographer and licence in this file.
+
+If the owner wants film artwork on the site, the correct route is to request the distributor's
+digital asset kit for each title, and to record the granted permission here per asset. That is a
+licensing step for the venue, not a development step.
+
+## 5. What is deliberately absent
 
 For the avoidance of doubt, this project contains:
 

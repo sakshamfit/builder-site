@@ -25,6 +25,22 @@
   object-position: 62% 45%;
 }
 
+/* Ambient drift. Purely decorative, extremely slow, and fully disabled under
+   `prefers-reduced-motion: reduce` because the global rule in app/globals.css
+   collapses every animation on the site. */
+.heroStill {
+  animation: heroDrift 46s ease-in-out infinite alternate;
+}
+
+@keyframes heroDrift {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.09) translate3d(-1.2%, -1%, 0);
+  }
+}
+
 /* Two-layer scrim: the lower band guarantees text contrast at every width,
    the top-right wash keeps the image from looking like a flat overlay. */
 .heroScrim {
@@ -80,6 +96,19 @@
   color: var(--muted-2);
   font-size: 0.7rem;
   letter-spacing: 0.03em;
+}
+
+/* --- showcase section --------------------------------------------------- */
+
+.showcaseSection {
+  padding-block: clamp(2.25rem, 5vw, 3.75rem);
+}
+
+.showcaseNote {
+  max-width: 72ch;
+  margin-top: 1.25rem;
+  color: var(--muted-2);
+  font-size: 0.8rem;
 }
 
 /* --- generic section layout --------------------------------------------- */

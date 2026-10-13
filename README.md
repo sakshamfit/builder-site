@@ -1,8 +1,11 @@
 # Cinema at Elante Mall — venue website
 
-A mobile-first venue website for the cinema at Elante Mall, Chandigarh. A visitor can see what is
-playing, pick a date, read the screen/format/language for each screening, and continue to the
-venue's ticketing partner to book.
+A mobile-first website that **showcases the cinema hall** at Elante Mall, Chandigarh — the
+auditorium, the screen, the seating, the foyer and the route from the mall to your seat — with
+showtimes and film listings supporting that, rather than the other way round.
+
+This is a venue showcase, not a booking engine. It shows the hall and tells you what is playing; when
+you are ready, it hands you to the venue's ticketing partner to choose seats and pay.
 
 > **Status: development build, not launch-ready.**
 > The site currently serves **sample data** — fictional films with original placeholder artwork and
@@ -45,6 +48,7 @@ reachable through the UI while the project is in fixture mode.
 | Accessibility provision | **Not confirmed** — listed item by item with its own verification state |
 | Films, runtimes, certifications, synopses | **Sample** — original fictional entries written for this project |
 | Poster artwork | **Sample** — original abstract images generated for this project |
+| Cinema-hall showcase imagery | **Illustration** — original generated images, captioned on screen as illustrations and not as photographs of this venue |
 | Schedule | **Sample** — generated for the next 7 days at build time |
 | Prices and seat availability | **Never invented** — the fixtures deliberately carry `null`/`unknown`, and the UI states that these come from the ticketing partner |
 
@@ -73,13 +77,15 @@ app/                      routes (App Router)
   sitemap.ts robots.ts    generated from NEXT_PUBLIC_SITE_URL
 components/
   layout/                 header, footer, primary nav, mobile dialog
-  home/                   hero, now showing, coming soon, experience, visit
+  showcase/               venue spotlight (ARIA tabs), highlights, full gallery
+  home/                   hero, showcase section, now showing, coming soon, experience, visit
   movies/                 poster card, grid, filters
   showtimes/              date selector, film groups, screening chips, schedule status
   cinema/                 location, facilities, screens
   booking/                the ticket handoff component
   ui/                     button, badge, poster image, empty state
 data/
+  showcase.ts             the cinema-hall showcase: images, captions, highlights
   cinema.ts               venue facts, each with a confirmation status
   movies.ts               SAMPLE catalogue
   showtimes.fixture.ts    SAMPLE schedule
@@ -101,7 +107,34 @@ JavaScript disabled, and each date/filter choice is a real, shareable URL.
 
 ---
 
-## 4. Data: how the schedule works
+## 4. The cinema-hall showcase
+
+The centrepiece of the site. It sits directly under the hero, ahead of anything ticket-related,
+because the first question a venue site answers is "what is this place like?".
+
+* **`VenueSpotlight`** is a proper WAI-ARIA tabs widget — roving tabindex so the whole strip is one
+  tab stop, arrow keys and Home/End to move between spaces, a labelled `tabpanel`, and visible
+  caption text. No interaction is required to read any caption.
+* **`ShowcaseHighlights`** lists what the cinema offers as facts where the venue has confirmed them
+  and as open questions where it has not. Seven of the eight lines are marked "Awaiting venue",
+  because seating, projection, access and concession details are genuinely unconfirmed.
+* **`VenueGallery`** shows the full set of spaces on `/cinema`, with the same caption and provenance
+  treatment.
+* **Every image is an original illustration**, and says so on screen. `ShowcaseImage.depictsVenue`
+  drives that wording, so approved venue photography automatically stops being labelled an
+  illustration once it lands.
+
+### Motion without a video file
+
+The hero still and the spotlight image carry a very slow ambient drift implemented purely in CSS.
+That choice was deliberate: no licensed footage of this cinema exists yet, a background video would
+add autoplay-policy, offscreen-pause and reduced-motion complexity for little gain, and decorative
+CSS motion is collapsed outright by the existing `prefers-reduced-motion: reduce` rule in
+`app/globals.css` — so it is safe by construction rather than by careful implementation.
+
+---
+
+## 5. Data: how the schedule works
 
 ```
 data/showtimes.fixture.ts  ──┐
@@ -135,7 +168,7 @@ data/showtimes.fixture.ts  ──┐
 
 ---
 
-## 5. Booking handoff
+## 6. Booking handoff
 
 `lib/ticketing-provider.ts` is the **only** place that knows how a visitor leaves to buy a ticket.
 There is no seat map, no cart, no checkout and no confirmation page anywhere in this project — seat
@@ -169,7 +202,7 @@ the provider's own screening id — verified in `npm run check`.
 
 ---
 
-## 6. Dates, times and timezones
+## 7. Dates, times and timezones
 
 The venue operates in one timezone (`NEXT_PUBLIC_VENUE_TIMEZONE`, default `Asia/Kolkata`) while a
 visitor's device may be in another. Therefore:
@@ -183,7 +216,7 @@ visitor's device may be in another. Therefore:
 
 ---
 
-## 7. Brand, attribution and never-claims
+## 8. Brand, attribution and never-claims
 
 * The public name is configurable (`NEXT_PUBLIC_BRAND_DISPLAY_NAME`) and defaults to the neutral
   working title **"Cinema at Elante Mall"**.
@@ -200,7 +233,7 @@ visitor's device may be in another. Therefore:
 
 ---
 
-## 8. Accessibility and motion
+## 9. Accessibility and motion
 
 * Semantic landmarks, one `h1` per page, a skip link as the first tab stop, and visible focus rings
   that are never removed.
@@ -223,11 +256,33 @@ could overflow a 320 px viewport (none).
 
 ---
 
-## 9. Assets and their rights
+## 10. Assets and their rights
 
-Every image in `public/` is an original abstract artwork generated for this project, not a photograph
-of this venue and not licensed film artwork. Full provenance, including the placeholder checklist that
-must be completed before launch, is in **`ASSET_CREDITS.md`**.
+Every image in `public/` — the ten film posters, the hero still and the five cinema-hall showcase
+illustrations plus the auditorium still — is original artwork generated for this project. None is a
+photograph of this venue and none is licensed film artwork. Full provenance, including the
+placeholder checklist that must be completed before launch, is in **`ASSET_CREDITS.md`**.
+
+**On reusing media from the owner's other repositories:** the owner also owns the GitHub accounts
+`gireeshkumarreddy` and `divyashrma18` and asked for cinema-hall and film imagery to be taken from
+them. That was investigated in detail and could not be done, for four documented reasons:
+
+1. **No repository in either account has a LICENSE file**, so its media is all rights reserved and
+   cannot be relicensed into this project.
+2. Some repositories *do* document their own assets (`vara-studio`, `varasaree`, `Telangana-tech`),
+   and that documentation is what made the audit possible — but the images are women's fashion
+   editorial, sarees and Telangana government buildings. Wrong subject, and in `Telangana-tech`'s
+   case CC BY-SA 4.0 share-alike obligations that a commercial venue site should not inherit.
+3. The franchise repositories contain the material the brief explicitly prohibits. Inspection found
+   `divyashrma18/harryPotter` shipping `house1–4.png`, `wand-cursor.svg` and a video, and
+   `divyashrma18/avengers` shipping `a1–4.png` and `logo.png`.
+4. **No repository contains current film key art**, and none could: film posters and stills belong to
+   the distributor and reach a cinema site only through a studio-approved asset kit. A personal
+   GitHub account cannot grant that permission.
+
+The showcase was therefore built from original imagery, and `data/showcase.ts` is written so approved
+venue photography and properly licensed film artwork can be dropped in later. See
+`ASSET_CREDITS.md` §4.
 
 Typography uses a system font stack: no webfont is downloaded, so there is no third-party font
 request and no font licence dependency. Swap in a licensed face in `app/globals.css`
@@ -235,7 +290,7 @@ request and no font licence dependency. Swap in a licensed face in `app/globals.
 
 ---
 
-## 10. Review of the source repositories
+## 11. Review of the source repositories
 
 The brief asked for specific patterns to be studied in a list of public repositories before building.
 Those repositories were inspected, and the decisive finding is recorded in `ASSET_CREDITS.md`:
@@ -251,7 +306,7 @@ in every case is "concepts only, no files".
 
 ---
 
-## 11. Owner inputs required before launch
+## 12. Owner inputs required before launch
 
 The full list is published on `/cinema` and `/help` as "Still being confirmed". In summary:
 
