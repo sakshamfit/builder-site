@@ -69,15 +69,16 @@ export function Hero({
 
         <p className={`script ${styles.heroScript}`}>
           {upcomingCount > 0
-            ? `${upcomingCount} announced release${upcomingCount === 1 ? "" : "s"} listed, with the cinema's own times still to come.`
-            : "The hall, the location and everything between the mall and your seat."}
+            ? `${upcomingCount} announced release${upcomingCount === 1 ? "" : "s"} in the programme, every date taken from a published release calendar and cited where you read it.`
+            : "The hall, the location, and the films on their way to it."}
         </p>
 
         <div className={styles.heroBottom}>
           <div className={styles.heroMeta}>
-            <p>Inside Madhuban, Bihar</p>
+            <p>Inside {place}</p>
             <p className={styles.heroImageNote}>
-              Venue photography is pending. This page states only what the venue has confirmed.
+              Venue details come from the cinema&rsquo;s owner. Film dates come from published
+              release calendars, cited on every film.
             </p>
           </div>
 

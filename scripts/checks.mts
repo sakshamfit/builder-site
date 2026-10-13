@@ -853,28 +853,42 @@ check("the pending list the visitor sees is not empty", () => {
   assert.ok(pendingFacts().length >= 8, "the outstanding-facts list shrank unexpectedly");
 });
 
-check("no page copy names a former or unconfirmed location or operator", () => {
-  const files = [
-    "app/page.tsx",
-    "app/cinema/page.tsx",
-    "app/movies/page.tsx",
-    "app/movies/[slug]/page.tsx",
-    "app/layout.tsx",
-    "app/offers/page.tsx",
-    "components/home/Hero.tsx",
-    "components/home/VenueInfo.tsx",
-    "components/layout/SiteFooter.tsx",
-    "components/layout/FullScreenMenu.tsx",
-    "lib/site-config.ts",
-    "data/showcase.ts",
-    "README.md",
-  ];
+check("no file in the source tree names a location or operator the venue never confirmed", () => {
+  /* This walks the whole tree rather than a hand-kept list of files. The earlier
+     version of this check listed a dozen paths, and three files outside that list
+     kept a stale town through a site-wide move — including the header chip and the
+     left rail, which appear on every single page. */
+  const forbidden = ["Elante", "Chandigarh", "PVR", "INOX"];
+  const skipDirs = new Set(["node_modules", ".next", ".git", "out", "dist", "build"]);
+  const skipFiles = new Set(["scripts/checks.mts"]); /* this file names them on purpose */
+
+  const walk = (dir: string, found: string[] = []): string[] => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name.startsWith(".") && entry.name !== ".env.example") continue;
+      const path = `${dir}/${entry.name}`;
+      if (entry.isDirectory()) {
+        if (skipDirs.has(entry.name)) continue;
+        walk(path, found);
+      } else if (/\.(tsx?|mts|json|md|css|svg|example)$/.test(entry.name)) {
+        found.push(path.replace("./", ""));
+      }
+    }
+    return found;
+  };
+
+  const files = walk("app")
+    .concat(walk("components"), walk("lib"), walk("data"), walk("scripts"))
+    .concat(["README.md", "ASSET_CREDITS.md", "FEED_CONTRACT.md", "package.json", ".env.example"]);
+
+  assert.ok(files.length > 40, `only ${files.length} files were scanned — the walk is broken`);
+
   for (const file of files) {
+    if (skipFiles.has(file) || !existsSync(file)) continue;
     const source = readFileSync(file, "utf8");
-    for (const forbidden of ["Elante", "Chandigarh", "PVR", "INOX"]) {
+    for (const word of forbidden) {
       assert.ok(
-        !source.includes(forbidden),
-        `${file} still mentions ${forbidden} — the venue never confirmed it`,
+        !source.includes(word),
+        `${file} still mentions ${word} — the venue never confirmed it`,
       );
     }
   }

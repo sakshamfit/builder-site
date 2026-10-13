@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { placeLabel } from "@/lib/cinema-content";
 import styles from "./layout.module.css";
 
 /**
@@ -57,7 +58,7 @@ export function Rail() {
       </div>
 
       <span className={styles.railLabel} aria-hidden="true">
-        Cinema · Chandigarh
+        Cinema · {placeLabel()}
       </span>
 
       <span className={styles.railNumber} aria-hidden="true">

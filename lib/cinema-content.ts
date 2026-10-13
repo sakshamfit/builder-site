@@ -24,6 +24,19 @@ export function isPending(fact: Fact<unknown> | { status: FactStatus }): boolean
 }
 
 /** Display name for the cinema. Working title until the trade name is approved. */
+/**
+ * Short place label for chips, rails and subtitles: "Madhuban, Bihar".
+ *
+ * Derived from the venue record rather than typed into each component. The header
+ * and the left rail both used to carry a hardcoded town, which is how one stale
+ * address survived a site-wide move.
+ */
+export function placeLabel(): string {
+  return [confirmed(venue.address.locality), confirmed(venue.address.region)]
+    .filter(Boolean)
+    .join(", ");
+}
+
 export function brandName(): string {
   return siteConfig.brandName;
 }

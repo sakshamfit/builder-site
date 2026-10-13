@@ -2,7 +2,7 @@
   "name": "elante-cinema-site",
   "version": "0.1.0",
   "private": true,
-  "description": "Mobile-first venue website for the cinema at Elante Mall, Chandigarh (working title; brand configurable).",
+  "description": "Mobile-first venue website for the cinema at Madhuban, Bihar (working name; brand configurable).",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

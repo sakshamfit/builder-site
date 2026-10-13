@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FullScreenMenu } from "@/components/layout/FullScreenMenu";
 import { NAV_ITEMS } from "@/lib/nav";
+import { placeLabel } from "@/lib/cinema-content";
 import { siteConfig } from "@/lib/site-config";
 import styles from "./layout.module.css";
 
@@ -35,7 +36,7 @@ export function SiteHeader() {
       */}
       <Link href="/" className={styles.brand}>
         <span className={styles.brandText}>{siteConfig.brandName}</span>
-        <span className={styles.brandPlace}>Chandigarh</span>
+        <span className={styles.brandPlace}>{placeLabel()}</span>
       </Link>
 
       <nav className={styles.nav} aria-label="Primary">
