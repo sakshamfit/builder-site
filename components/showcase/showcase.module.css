@@ -54,7 +54,7 @@
   display: grid;
   gap: 0.45rem;
   padding: clamp(1rem, 3vw, 2rem);
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .stageTitle {
@@ -69,7 +69,7 @@
   max-width: 54ch;
   font-size: 12.5px;
   line-height: 1.6;
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .stageProvenance {
@@ -310,6 +310,20 @@
 .pendingGrid {
   display: grid;
   gap: 1.1rem;
+}
+
+/*
+ * One column of the panel. It has no spacing of its own — the title's margin and
+ * the footnote's padding set the rhythm, and this must not add to them. What it
+ * does is keep both columns top-aligned when one list is longer than the other,
+ * which is visible today: the requested-images list is longer than the confirmed
+ * one. (It was also referenced by the component while missing from this file, so
+ * it resolved to `undefined` in the DOM — `npm run check` now fails on that.)
+ */
+.pendingColumn {
+  display: grid;
+  align-content: start;
+  min-width: 0;
 }
 
 .pendingColumnTitle {

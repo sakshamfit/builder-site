@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/Button";
+import { ScrollCue } from "@/components/home/ScrollCue";
 import { siteConfig } from "@/lib/site-config";
 import { formatDateLong } from "@/lib/date-format";
 import styles from "./home.module.css";
@@ -97,6 +98,9 @@ export function Hero({
             )}
           </div>
         </div>
+
+        {/* Decorative, and absent entirely for readers who ask for reduced motion. */}
+        <ScrollCue />
       </div>
     </section>
   );

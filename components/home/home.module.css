@@ -33,10 +33,157 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  /* Overline · title · ruled footer · the scroll cue beneath it. */
+  grid-template-rows: auto 1fr auto auto;
   align-content: center;
   width: 100%;
   min-height: calc(100svh - 150px);
+}
+
+/*
+ * --- scroll cue ------------------------------------------------------------
+ * The quiet invitation at the foot of the opening scene. Adapted from the
+ * ScrollCue in the owner's vistaRail repository; see ASSET_CREDITS.md §10.
+ *
+ * It is decorative in the strict sense: `aria-hidden`, pointer-events none, and
+ * not rendered at all for a reader who has asked for reduced motion. The wrapper
+ * carries the scroll-linked fade (set from JavaScript), so the inner element is
+ * free to own the entrance animation without the two fighting over `opacity`.
+ */
+
+.cueWrap {
+  display: grid;
+  place-items: center;
+  margin-top: clamp(1.25rem, 3.5vh, 2.75rem);
+  pointer-events: none;
+  transition: opacity var(--dur) linear;
+}
+
+.cue {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  opacity: 0;
+  animation: cueIn var(--dur-slow) var(--ease-premium) both;
+}
+
+@keyframes cueIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cueLabel {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.cueRule {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 30px;
+  overflow: hidden;
+  background: var(--line-strong);
+}
+
+/* A crimson bead travelling down the rule. The only thing on the page that
+   moves on its own, and it is removed entirely under reduced motion. */
+.cueDot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 1px;
+  height: 9px;
+  background: var(--red);
+  animation: cueTravel 2.4s var(--ease) infinite;
+}
+
+@keyframes cueTravel {
+  0% {
+    transform: translateY(-9px);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+}
+
+/*
+ * --- prelude ---------------------------------------------------------------
+ * One editorial beat between the opening scene and the programme: the site's
+ * own rule, stated once, before the reader is asked to read a listing. Adapted
+ * from the Prelude in the owner's vistaRail repository (see ASSET_CREDITS.md
+ * §6), rebuilt as a server component on the site's own reveal reader.
+ */
+
+.prelude {
+  padding-block: clamp(2.75rem, 6vw, 5.5rem);
+  border-bottom: 1px solid var(--line-ink);
+}
+
+.preludeInner {
+  display: grid;
+  gap: 1.5rem 3.5rem;
+}
+
+.preludeHead {
+  display: grid;
+  align-content: start;
+}
+
+.preludeHeading {
+  max-width: 24ch;
+  margin-top: 0.7rem;
+  font-size: clamp(1.9rem, 4.6vw, 3.4rem);
+}
+
+.preludeBody {
+  display: grid;
+  align-content: start;
+  gap: 1.1rem;
+  max-width: 60ch;
+  color: var(--ink-2);
+}
+
+.preludeLink {
+  justify-self: start;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--line-ink);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.preludeLink:hover {
+  color: var(--red-text);
+  border-color: var(--red-text);
+}
+
+@media (min-width: 900px) {
+  .preludeInner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+  }
 }
 
 .heroOverline {
@@ -256,7 +403,7 @@
 }
 
 .comingItem a:hover {
-  color: var(--red);
+  color: var(--red-text);
 }
 
 .comingMeta {
@@ -269,7 +416,7 @@
 }
 
 .comingDate {
-  color: var(--red);
+  color: var(--red-text);
   font-weight: 700;
 }
 

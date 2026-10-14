@@ -11,7 +11,7 @@
   overflow: hidden;
   border-block: 1px solid var(--line-ink);
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .track {

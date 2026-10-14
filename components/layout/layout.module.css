@@ -89,7 +89,7 @@
 
 .headerScrolled {
   padding-block: 9px;
-  background: rgba(244, 241, 230, 0.93);
+  background: var(--paper-veil);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -138,7 +138,7 @@
 }
 
 .navLink:hover {
-  color: var(--red);
+  color: var(--red-text);
 }
 
 .headerActions {
@@ -166,7 +166,99 @@
 
 .menuToggle:hover {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
+}
+
+/*
+ * --- appearance switch -----------------------------------------------------
+ * The day↔night control. Adapted from the header control in the owner's
+ * vistaRail repository; see ASSET_CREDITS.md §10.
+ *
+ * Both glyphs occupy the same 16px box and cross-fade in place, rotating and
+ * scaling, so the control never changes width and the row never shifts. The
+ * glyph shown is the *destination* — a moon while the page is paper, a sun once
+ * it is night — and the word beside it agrees with it.
+ */
+
+/* Phones: the same 44 × 40 box as the menu button beside it, glyph only. */
+.modeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-height: 40px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.modeToggle:hover {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.modeGlyphs {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+.modeGlyph {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+}
+
+/* Day: the moon is showing. */
+.modeGlyphMoon {
+  opacity: 1;
+  transform: none;
+}
+
+.modeGlyphSun {
+  opacity: 0;
+  transform: rotate(-50deg) scale(0.5);
+}
+
+/* Night: they have swapped. */
+.modeToggle[aria-pressed="true"] .modeGlyphMoon {
+  opacity: 0;
+  transform: rotate(50deg) scale(0.5);
+}
+
+.modeToggle[aria-pressed="true"] .modeGlyphSun {
+  opacity: 1;
+  transform: none;
+}
+
+/* The word is hidden on the narrowest header, where the glyph and the
+   accessible name carry the control on their own. */
+.modeWord {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .modeToggle {
+    width: auto;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .modeWord {
+    display: inline;
+  }
 }
 
 .menuToggleLines {
@@ -191,7 +283,7 @@
   padding: 22px var(--pad) 40px;
   padding-left: calc(var(--rail) + var(--pad));
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
   animation: menuIn 620ms var(--ease-inout) both;
 }
 
@@ -292,7 +384,7 @@
   margin-top: clamp(2.5rem, 6vw, 5rem);
   padding-block: clamp(2.5rem, 5vw, 4rem) 2.5rem;
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
   overflow: hidden;
 }
 
@@ -383,7 +475,7 @@
 }
 
 .footerLink:hover {
-  border-color: var(--paper);
+  border-color: var(--on-dark);
 }
 
 .footerBottom {

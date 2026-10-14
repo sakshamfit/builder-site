@@ -5,7 +5,8 @@ brief. It is the audit trail for the site's rights position: if something here i
 in public and can be corrected.
 
 **Summary: no third-party code, imagery, audio or video is included in this project — and, as of the
-current build, no first-party placeholder imagery either.** The site ships no images at all: the
+current build, no first-party placeholder imagery either.** Code adapted from the owner's own
+repositories (`kingfisher`, `vistaRail`) is recorded in §6 and §10; nothing from a third party is. The site ships no images at all: the
 generated posters and cinema illustrations that an earlier build carried have been deleted, because a
 stand-in that reads as a photograph of this cinema, or as a film's own poster, is worse than no image.
 Every asset that will appear on this site has to arrive with its licence attached. The repositories
@@ -17,8 +18,12 @@ design language is adapted from a repository owned by the same owner, at the own
 
 ## 1. Code provenance
 
-All source code in this repository is original to this project. No file was copied, translated or
-adapted from another repository.
+All source code in this repository is original to this project, with two documented exceptions, both
+of them owner-directed adaptations of the owner's own repositories: the design language from
+`gireeshkumarreddy/kingfisher` (§6) and the appearance system, scroll cue and prelude from
+`gireeshkumarreddy/vistaRail` (§10). No file was copied verbatim from either; §6 and §10 itemise what
+was taken and what was changed. Everything below covers the repositories that were reviewed but not
+taken from.
 
 ### Repositories reviewed before building
 
@@ -32,7 +37,7 @@ curl -s https://api.github.com/repos/<owner>/<repo> | python3 -c \
 
 | Repository | Licence reported by the GitHub API | What was taken |
 | --- | --- | --- |
-| `gireeshkumarreddy/vistaRail` | **No licence file** | Concepts only. A restrained full-bleed hero with a text scrim, a single primary action, a documented reduced-motion fallback, and a shared easing token. Reimplemented from scratch; no markup, CSS, component or asset was copied. |
+| `gireeshkumarreddy/vistaRail` | **No licence file** | Concepts only at the time of the review — a restrained full-bleed hero with a text scrim, a single primary action, a documented reduced-motion fallback and a shared easing token. **Superseded:** the owner later directed that components be taken from it, and §10 records what was adapted, from where, and under what permission. No markup, CSS, component or asset was copied verbatim, and none of its imagery or video is used. |
 | `gireeshkumarreddy/-Gireesh-Portfolio` | **No licence file** | Concepts only. Content separated into typed local data, page/section composition, metadata organisation. |
 | `gireeshkumarreddy/AVENGERS-DOOMSDAY-` | **No licence file** | Concepts only. Poster-card data shapes and DOM layering discipline. Its scroll-scrubbed master timeline, video choreography and franchise theme were deliberately **not** adopted. |
 | `gireeshkumarreddy/hidden` | **No licence file** | Concepts only. Separating filter state from data, and making "demo vs. live" an explicit, visible state. None of its property, account, Firebase or checkout logic is present here. |
@@ -261,7 +266,9 @@ For the avoidance of doubt, this project contains:
 * no scraped or hot-linked images — `next.config.ts` derives its permitted remote artwork hosts
   from `POSTER_HOST_ALLOWLIST`, which is empty by default, so no remote host is reachable at all;
 * no analytics, advertising or tracking scripts;
-* no credentials, API keys, Firebase configuration or demo user accounts from any source repository.
+* no credentials, API keys, Firebase configuration or demo user accounts from any source repository;
+* no video or imagery from `vistaRail` — its hero films are stock footage of a different railway and
+  are not used anywhere here (§10).
 
 ---
 
@@ -315,7 +322,8 @@ this project, recorded in §1). That would normally mean code unavailable for co
 the other repositories contributed ideas only. This one is the owner's own repository and the
 adaptation was explicitly directed by the owner, so it is permitted here — but only for the owner,
 and only for this project. If any part of this codebase is ever reused elsewhere, the design language
-in this section must be re-checked against the same rule.
+in this section must be re-checked against the same rule. The same reasoning, and the same limits,
+govern the `vistaRail` adaptation recorded in §10.
 
 ---
 
@@ -370,3 +378,51 @@ The footer carries a crowd of walking figures, `components/ui/skiper39.tsx` (`Cr
 | Animation code | Adapted from Skiper UI "Canvas_Landing_004", itself inspired by a CodePen by zadvorsky | Same Skiper UI free licence; attribution as above. | Attribution in the footer. |
 
 The animation uses `gsap` (MIT licence). It is not used when the visitor has asked for reduced motion.
+
+---
+
+## 10. Appearance, scroll cue and prelude: adapted from `gireeshkumarreddy/vistaRail`
+
+At the owner's instruction ("use component from here too"), components were taken from the owner's own
+repository [`gireeshkumarreddy/vistaRail`](https://github.com/gireeshkumarreddy/vistaRail) and adapted
+into this project. This section is the record of exactly what travelled, what changed on the way, and
+what was left behind.
+
+**Licence position — same finding as every repository reviewed in §1, and the same reasoning as §6.**
+`vistaRail` carries **no LICENSE file**, so under the default its code is all rights reserved and
+could not be copied by anyone else. It is the owner's own repository, and the owner directed this
+adaptation, exactly as with `kingfisher` in §6. The permission therefore runs to the owner, for this
+project, and no further. If any part of this codebase is reused elsewhere, everything in this section
+has to be re-checked against that rule first.
+
+### What was adapted, and how
+
+Nothing was copied file-for-file. `vistaRail` is a Tailwind + framer-motion + Lenis project; this one
+is CSS-module + token driven with no animation library. Each component below was re-implemented in
+this project's own structure and visual language, and the changes are the interesting part:
+
+| In `vistaRail` | Here | What changed, and why |
+| --- | --- | --- |
+| `ModeProvider.tsx` — day/night context with a `busy` lock for the toggle | `components/layout/ModeProvider.tsx` + `lib/appearance.ts` | The document is the source of truth rather than React state: a pre-paint script sets the attribute and the provider reads it through `useSyncExternalStore`, the pattern `SiteIntro` already uses. The `busy` lock was dropped — upstream needs it because its toggle crossfades two videos, which must not overlap; here the change is paint only. Added: persistence, following the operating system until the reader chooses, cross-tab sync, and a browser theme-colour update. |
+| `Navbar.tsx`'s day/night button | `components/layout/ModeToggle.tsx`, `components/ui/icons.tsx` | The stacking and the rotate/scale crossfade of the two glyphs are kept, so the control never changes width. The two stacked labels become one. It is a real toggle button: `aria-pressed`, and an accessible name that says what pressing it will do rather than naming the current sheet. The icons are redrawn to this project's 1.7 stroke; no mark or logo is drawn, as §6 records. |
+| `app/globals.css` glass surfaces, `document.documentElement.dataset.mode` | `[data-mode="night"]` in `app/globals.css` | Same central idea — theme one attribute, and every surface follows — carried out with this project's own tokens instead of Tailwind classes, so no component contains a theme branch. Upstream's glass-and-video palette is not used; this is the same poster printed in reverse. |
+| `ScrollCue.tsx` | `components/home/ScrollCue.tsx` | Same behaviour: waits for the hero's entrance, fades in, fades away as the reader scrolls. The mark is a travelling hairline rather than a mouse outline, and under reduced motion the cue is **not rendered at all** (upstream animates a still dot). |
+| `Prelude.tsx` | `components/home/Prelude.tsx` | Kept as the single editorial beat beneath the hero. Rebuilt as a **server component** on the site's existing `.reveal` reader, and its content is derived from `data/cinema.ts` — the count and the examples it names are read from the venue record, so the paragraph cannot claim something the rest of the site contradicts. Upstream's brand copy was not carried across. |
+| `lib/motion.ts` | `lib/motion.ts` | The motion language as values rather than as framer-motion variants, published to CSS as custom properties and checked against them by `npm run check`. Upstream's two easing curves are kept (`--ease`, `--ease-inout`); `--ease-premium` is added for the theme crossfade. |
+
+### What was deliberately not taken
+
+- **`SmoothScroll.tsx` / Lenis.** It would add a dependency whose whole purpose is to take the wheel
+  away from the reader, and the brief prohibits scroll-hijacking. The browser's own scrolling is used,
+  with `scroll-behavior: smooth` for anchors.
+- **`HeroVideo.tsx` and the day↔night video crossfade.** This venue has supplied no footage, and
+  §2/§4 record why a stock clip of a different railway, city or hall cannot stand in for it. The
+  appearance system therefore carries type and surfaces, not video. If the venue supplies its own
+  footage later, the crossfade is the natural place to reintroduce it.
+- **`Navbar.tsx`, `Footer.tsx`, `ui/SearchField.tsx`, `ui/Button.tsx`, `icons.tsx` (beyond the two
+  glyphs).** The chrome is already this project's (§6), and an inert "where would you like to go?"
+  search field is a promise a cinema site cannot keep — there is nothing to search until a venue feed
+  is connected. Upstream's brand mark is not used anywhere: this site draws no logo (§2).
+- **Its Tailwind theme, colour values, wording, copy, fonts and imagery.** None of it travels. The
+  night sheet's palette is this project's own four colours, contrast-checked in `npm run check`.
+

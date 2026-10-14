@@ -60,12 +60,12 @@
 /* Four flat treatments. No gradients, no imagery, no studio colourways. */
 .red {
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .ink {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
 }
 
 .gold {
@@ -194,7 +194,7 @@
   font-size: 0.6rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--red-text);
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
@@ -215,7 +215,7 @@
 }
 
 .cardLink:hover {
-  color: var(--red);
+  color: var(--red-text);
 }
 
 .cardLink::after {

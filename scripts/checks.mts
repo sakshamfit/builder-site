@@ -550,6 +550,8 @@ section("Sourced programme");
 const { parseProgramme, loadProgramme } = await import("../lib/programme.ts");
 const { pendingFacts } = await import("../data/cinema.ts");
 const { readFileSync, existsSync, readdirSync, statSync } = await import("node:fs");
+const fs = await import("node:fs");
+const path = await import("node:path");
 
 const parsedProgramme = parseProgramme("2026-10-13");
 
@@ -1060,6 +1062,386 @@ check("a malformed payload degrades to an honest unavailable state, never to sam
   assert.equal(result.ok, false);
   if (result.ok) return;
   assert.ok(result.errors.length > 0);
+});
+
+
+/* -------------------------------------------------------------------------- */
+/* Stylesheets                                                                */
+/* -------------------------------------------------------------------------- */
+
+section("Stylesheets");
+
+check("every class a component asks for exists in its stylesheet", () => {
+  /*
+   * A CSS module returns `undefined` for a class that is not in the file, so a
+   * typo or a renamed rule ships silently as `class="undefined"` — no error, no
+   * warning, just a surface that has lost its styling. This walks every
+   * component that imports a stylesheet and checks the names it asks for.
+   */
+  const { readdirSync, statSync, readFileSync: read } = fs;
+  const { dirname, join } = path;
+
+  const componentFiles: string[] = [];
+  for (const group of readdirSync("components")) {
+    const dir = `components/${group}`;
+    if (!statSync(dir).isDirectory()) continue;
+    for (const file of readdirSync(dir)) {
+      if (file.endsWith(".tsx")) componentFiles.push(`${dir}/${file}`);
+    }
+  }
+
+  for (const file of componentFiles) {
+    const source = read(file, "utf8");
+    const imported = source.match(/import styles from "([^"]+\.module\.css)"/);
+    if (!imported) continue;
+
+    const cssPath = imported[1].startsWith("@/")
+      ? imported[1].slice(2)
+      : join(dirname(file), imported[1]);
+    const css = read(cssPath, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+
+    const requested = new Set(
+      [...source.matchAll(/\bstyles\.([A-Za-z0-9_]+)/g)].map((match) => match[1]),
+    );
+
+    for (const name of requested) {
+      assert.ok(
+        new RegExp(`\\.${name}(?![A-Za-z0-9_-])`).test(css),
+        `${file} asks for styles.${name}, which ${cssPath} does not define`,
+      );
+    }
+  }
+});
+
+/* -------------------------------------------------------------------------- */
+/* Appearance — the day sheet and the night sheet                             */
+/* -------------------------------------------------------------------------- */
+
+section("Appearance");
+
+const {
+  APPEARANCE_ATTRIBUTE,
+  APPEARANCE_BOOTSTRAP,
+  APPEARANCE_COLORS,
+  APPEARANCE_STORAGE_KEY,
+  resolveMode,
+} = await import("../lib/appearance.ts");
+const { MOTION, MOTION_CSS_PROPERTIES } = await import("../lib/motion.ts");
+
+const stylesheet = readFileSync("app/globals.css", "utf8");
+
+/** The text between `selector {` and its matching close, brace-counted. */
+function cssBlock(source: string, selector: string): string {
+  const open = source.indexOf(`${selector} {`);
+  assert.ok(open !== -1, `${selector} is missing from app/globals.css`);
+  const start = source.indexOf("{", open);
+  let depth = 0;
+  for (let index = start; index < source.length; index += 1) {
+    if (source[index] === "{") depth += 1;
+    else if (source[index] === "}") {
+      depth -= 1;
+      if (depth === 0) return source.slice(start + 1, index);
+    }
+  }
+  throw new Error(`unbalanced braces after ${selector}`);
+}
+
+function cssCustomProperties(block: string): Map<string, string> {
+  const found = new Map<string, string>();
+  for (const line of block.split("\n")) {
+    const match = line.match(/^\s*(--[a-z0-9-]+)\s*:\s*(.+?);\s*$/i);
+    if (match) found.set(match[1], match[2].trim());
+  }
+  return found;
+}
+
+const dayTokens = cssCustomProperties(cssBlock(stylesheet, ":root"));
+const nightTokens = cssCustomProperties(cssBlock(stylesheet, '[data-mode="night"]'));
+
+/* WCAG 2.x relative luminance and contrast ratio. */
+function luminance(hex: string): number {
+  const value = hex.replace("#", "");
+  const channels = [0, 2, 4].map((offset) => parseInt(value.slice(offset, offset + 2), 16) / 255);
+  const linear = channels.map((channel) =>
+    channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4,
+  );
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+
+function contrast(foreground: string, background: string): number {
+  const [high, low] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+  return (high + 0.05) / (low + 0.05);
+}
+
+/** A translucent colour painted over an opaque one — how a tinted chip reads. */
+function over(translucent: string, background: string): string {
+  const parts = translucent.match(/[\d.]+/g)?.map(Number) ?? [];
+  const [r, g, b, alpha] = parts;
+  const base = background.replace("#", "");
+  const channels = [0, 2, 4].map((offset) => parseInt(base.slice(offset, offset + 2), 16));
+  return `#${[r, g, b]
+    .map((channel, index) =>
+      Math.round(channel * alpha + channels[index] * (1 - alpha))
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("")}`;
+}
+
+function token(palette: Map<string, string>, name: string): string {
+  const value = palette.get(name);
+  assert.ok(value, `${name} is not defined`);
+  return value;
+}
+
+check("an explicit appearance choice beats the operating system", () => {
+  assert.equal(resolveMode("night", false), "night");
+  assert.equal(resolveMode("day", true), "day");
+});
+
+check("with no choice stored, the operating system decides", () => {
+  assert.equal(resolveMode(null, true), "night");
+  assert.equal(resolveMode(null, false), "day");
+  assert.equal(resolveMode("", false), "day", "an empty value is not a choice");
+  assert.equal(resolveMode("christmas", true), "night", "a junk value is ignored, not obeyed");
+});
+
+check("the pre-paint script cannot drift from the module that defines it", () => {
+  assert.ok(
+    APPEARANCE_BOOTSTRAP.includes(JSON.stringify(APPEARANCE_STORAGE_KEY)),
+    "the bootstrap script must read the shared storage key",
+  );
+  assert.ok(
+    APPEARANCE_BOOTSTRAP.includes(JSON.stringify(APPEARANCE_ATTRIBUTE)),
+    "the bootstrap script must set the shared attribute",
+  );
+  assert.ok(
+    APPEARANCE_BOOTSTRAP.includes("prefers-color-scheme"),
+    "with no stored choice the script must ask the operating system",
+  );
+});
+
+check("every colour token has a night value — no day colour can leak through", () => {
+  /* Tokens that describe structure, type or motion are appearance-independent and
+     are deliberately absent from the night block. Everything else must be
+     redefined, or a surface would keep its cream background after dark. */
+  const appearanceIndependent = /^--font-|^--ease|^--dur(-|$)|^--theme-dur$|^--rail$|^--pad$|^--maxw$/;
+
+  for (const name of dayTokens.keys()) {
+    if (appearanceIndependent.test(name)) continue;
+    assert.ok(nightTokens.has(name), `${name} has no night value in app/globals.css`);
+  }
+});
+
+check("the night sheet's text is legible on the night paper", () => {
+  const paper = token(nightTokens, "--paper");
+  const paperTwo = token(nightTokens, "--paper-2");
+  const paperThree = token(nightTokens, "--paper-3");
+
+  const bodyText: [string, string, string][] = [
+    ["--ink on --paper", "--ink", paper],
+    ["--ink on --paper-2", "--ink", paperTwo],
+    ["--ink-2 on --paper", "--ink-2", paper],
+    ["--ink-3 on --paper", "--ink-3", paper],
+    ["--ink-3 on --paper-2", "--ink-3", paperTwo],
+    ["--ink-3 on --paper-3", "--ink-3", paperThree],
+    ["--red-text on --paper", "--red-text", paper],
+    ["--red-text on --paper-2", "--red-text", paperTwo],
+    ["--gold on --paper", "--gold", paper],
+    ["--gold on --paper-2", "--gold", paperTwo],
+    ["--green on --paper", "--green", paper],
+  ];
+
+  for (const [label, colourToken, background] of bodyText) {
+    const ratio = contrast(token(nightTokens, colourToken), background);
+    assert.ok(ratio >= 4.5, `${label} is ${ratio.toFixed(2)}:1, below the 4.5:1 minimum`);
+  }
+
+  /* A translucent chip is read against what it is painted over, not against the
+     raw tint, so the composite is what gets measured. */
+  const chip = over(token(nightTokens, "--gold-soft"), paperTwo);
+  assert.ok(
+    contrast(token(nightTokens, "--gold"), chip) >= 4.5,
+    "the amber chip's label is below 4.5:1 on its own fill",
+  );
+});
+
+check("the night sheet's accent still carries display type, fills and labels", () => {
+  const paper = token(nightTokens, "--paper");
+
+  /* The hero title is display type (40px+), so 3:1 is its floor. A fill carries
+     a printed label, so 4.5:1 is theirs — and the label on the crimson is
+     --on-dark, which does not invert with the sheet. */
+  assert.ok(
+    contrast(token(nightTokens, "--red"), paper) >= 3,
+    "the crimson display type is below the 3:1 needed at that size",
+  );
+  assert.ok(
+    contrast(token(nightTokens, "--on-dark"), token(nightTokens, "--red")) >= 4.5,
+    "the crimson fill cannot carry the label printed on it",
+  );
+  assert.ok(
+    contrast(token(nightTokens, "--on-dark"), token(nightTokens, "--red-dark")) >= 4.5,
+    "the pressed crimson fill cannot carry its label",
+  );
+  assert.ok(
+    contrast(token(nightTokens, "--on-ink"), token(nightTokens, "--ink")) >= 4.5,
+    "the ink fill cannot carry its label once the ink becomes the light surface",
+  );
+  assert.ok(
+    contrast(token(nightTokens, "--line-ink"), paper) >= 3,
+    "the strongest rule is below the 3:1 needed for a non-text boundary",
+  );
+});
+
+check("no rule prints paper-coloured type on a fill that is not paper", () => {
+  /*
+   * The bug this exists to stop: a surface painted with `background: var(--ink)`
+   * or `var(--red)` whose label is `color: var(--paper)`. By day that reads
+   * perfectly and looks right; at night `--paper` becomes near-black while the
+   * ink fill becomes cream, and the label disappears. Labels on a backing use
+   * --on-ink (which inverts with an ink fill) or --on-dark (which does not
+   * invert, for a crimson fill or a photograph's scrim).
+   */
+  const files = [
+    "app/globals.css",
+    ...readdirSync("components").flatMap((entry) => {
+      const dir = `components/${entry}`;
+      if (!statSync(dir).isDirectory()) return [];
+      return readdirSync(dir)
+        .filter((name) => name.endsWith(".module.css"))
+        .map((name) => `${dir}/${name}`);
+    }),
+  ];
+
+  for (const file of files) {
+    const source = readFileSync(file, "utf8");
+    for (const match of source.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      const [, selector, body] = match;
+      const fill = /background(?:-color)?:\s*var\(--(?:ink|red|red-dark)\)/.test(body);
+      const label = /(?:^|[;\s])color:\s*var\(--paper\)/.test(body);
+      const name =
+        selector
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line && !line.startsWith("/*") && !line.startsWith("*"))
+          .at(-1) ?? selector.trim();
+      assert.ok(
+        !(fill && label),
+        `${file}: ${name} paints --paper type on a --ink/--red fill, which breaks at night`,
+      );
+    }
+  }
+});
+
+check("the day sheet was not disturbed by the night one", () => {
+  /* These are the values the site shipped with. The night palette is additive:
+     if a day value moved, this check says so. */
+  assert.equal(token(dayTokens, "--paper"), "#f4f1e6");
+  assert.equal(token(dayTokens, "--ink"), "#1c1a17");
+  assert.equal(token(dayTokens, "--red"), "#c1121f");
+  assert.equal(token(dayTokens, "--red-text"), "#c1121f");
+  assert.equal(token(dayTokens, "--gold"), "#755915");
+
+  const paper = token(dayTokens, "--paper");
+  for (const [label, colourToken] of [
+    ["--ink on --paper", "--ink"],
+    ["--ink-3 on --paper", "--ink-3"],
+    ["--red-text on --paper", "--red-text"],
+    ["--gold on --paper", "--gold"],
+  ]) {
+    const ratio = contrast(token(dayTokens, colourToken), paper);
+    assert.ok(ratio >= 4.5, `${label} is ${ratio.toFixed(2)}:1, below the 4.5:1 minimum`);
+  }
+
+  assert.ok(
+    contrast(token(dayTokens, "--on-ink"), token(dayTokens, "--ink")) >= 4.5,
+    "the ink fill cannot carry its label by day either",
+  );
+  assert.ok(
+    contrast(token(dayTokens, "--on-dark"), token(dayTokens, "--red")) >= 4.5,
+    "the crimson fill cannot carry its label by day either",
+  );
+});
+
+check("the browser chrome colour matches the sheet it belongs to", () => {
+  assert.equal(
+    APPEARANCE_COLORS.day,
+    token(dayTokens, "--paper"),
+    "the day theme colour must be the day paper",
+  );
+  assert.equal(
+    APPEARANCE_COLORS.night,
+    token(nightTokens, "--paper"),
+    "the night theme colour must be the night paper",
+  );
+});
+
+check("the motion tokens and the stylesheet agree", () => {
+  const motionValue = (path: string): string | number => {
+    const [group, key] = path.split(".");
+    const value = (MOTION as Record<string, Record<string, string | number>>)[group]?.[key];
+    assert.ok(value !== undefined, `lib/motion.ts defines no MOTION.${path}`);
+    return value;
+  };
+
+  for (const [path, cssProperty] of Object.entries(MOTION_CSS_PROPERTIES)) {
+    const expected = motionValue(path);
+    const declared = dayTokens.get(cssProperty);
+    assert.ok(declared, `${cssProperty} is not declared in app/globals.css`);
+
+    const formatted = typeof expected === "number" ? `${expected}ms` : String(expected);
+    assert.equal(
+      declared,
+      formatted,
+      `${cssProperty} is ${declared} but lib/motion.ts says ${formatted}`,
+    );
+  }
+});
+
+check("the appearance switch is reachable from the header", () => {
+  const header = readFileSync("components/layout/SiteHeader.tsx", "utf8");
+  assert.match(header, /<ModeToggle \/>/, "the header no longer offers the day/night switch");
+
+  const toggle = readFileSync("components/layout/ModeToggle.tsx", "utf8");
+  assert.match(
+    toggle,
+    /aria-pressed=\{isNight\}/,
+    "a two-state control must report its state to assistive technology",
+  );
+  assert.match(
+    toggle,
+    /aria-label="[^"{}]+"/,
+    "the accessible name must be a constant: the state is what aria-pressed is for",
+  );
+  assert.match(
+    toggle,
+    /aria-hidden="true">\s*\{isNight \?/,
+    "the visible word follows the destination and must be hidden from assistive tech",
+  );
+});
+
+check("the scroll cue is decorative and never traps a pointer", () => {
+  const cue = readFileSync("components/home/ScrollCue.tsx", "utf8");
+  assert.match(cue, /aria-hidden="true"/, "the cue repeats a position the browser already conveys");
+  assert.match(cue, /if \(reducedMotion\) return null;/, "reduced motion must remove the cue");
+
+  const hero = readFileSync("components/home/Hero.tsx", "utf8");
+  assert.match(hero, /<ScrollCue \/>/, "the cue is no longer mounted in the hero");
+});
+
+check("the prelude derives its claims from the venue record", () => {
+  const prelude = readFileSync("components/home/Prelude.tsx", "utf8");
+  assert.match(
+    prelude,
+    /from "@\/data\/cinema"/,
+    "the prelude states how many details are outstanding — that number must be read, not typed",
+  );
+  assert.doesNotMatch(
+    prelude,
+    /^\s*"use client"/m,
+    "the prelude is static content and must stay a server component",
+  );
 });
 
 /* -------------------------------------------------------------------------- */

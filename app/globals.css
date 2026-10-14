@@ -33,11 +33,36 @@
   --line-strong: #8f8a79;
   --line-ink: #1c1a17;
 
+  /*
+   * The paper a floating surface shows when content is passing beneath it (the
+   * header on scroll). A token rather than a literal, because it has to become
+   * dark paper at night like everything else.
+   */
+  --paper-veil: rgba(244, 241, 230, 0.93);
+
   /* --- crimson: the single accent ---------------------------------------- */
   --red: #c1121f;
   --red-dark: #8f0d18;
+  /*
+   * The crimson *as small type* — nav hovers, card statuses, dates, the ghost
+   * button. Separate from --red because the two jobs pull in opposite
+   * directions on a dark ground: a fill wants to stay deep, small type wants to
+   * get lighter. They are the same value on paper, so nothing changes by day.
+   */
+  --red-text: #c1121f;
   --red-soft: rgba(193, 18, 31, 0.1);
   --red-line: rgba(193, 18, 31, 0.34);
+
+  /*
+   * --- labels that sit on a backing rather than on paper ------------------
+   * Two tokens, because two different things happen at night. An **ink fill**
+   * becomes the light surface, so its label has to invert with it (--on-ink).
+   * A **crimson fill** and a photograph's **scrim** stay dark in both sheets, so
+   * their labels must not move at all (--on-dark) — which is why a component
+   * that needs one cannot simply say `color: var(--paper)`.
+   */
+  --on-ink: #f4f1e6;
+  --on-dark: #f4f1e6;
 
   /*
    * --- antique gold: "awaiting confirmation" states only -----------------
@@ -70,9 +95,118 @@
   /* --- motion ----------------------------------------------------------- */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 150ms;
   --dur: 280ms;
   --dur-slow: 600ms;
+  /* The day↔night crossfade. Long enough to read as a lighting change. */
+  --theme-dur: 620ms;
+}
+
+/* ==========================================================================
+   The night sheet
+   --------------------------------------------------------------------------
+   The same poster printed in reverse: near-black stock, cream ink, the crimson
+   kept and lifted so it still reads as crimson under lamplight.
+
+   The theme is one attribute on <html>, set before first paint by the script in
+   app/layout.tsx and switched by components/layout/ModeToggle.tsx. Because every
+   surface on the site is painted from these tokens, this block re-skins the whole
+   site at once — no component contains a branch for it.
+
+   Every value here is measured, and `npm run check` recomputes the ratios from
+   this file so a later tweak cannot quietly break them. Contrast on the night
+   ground (#14120f / #1c1916), against the 4.5:1 body-text minimum:
+
+     ink      16.5 : 12.4   primary and secondary type
+     ink-3     7.9 :  7.4   labels, captions, rulings
+     red-text  7.6 :  7.1   red small type
+     red       3.4          the hero title (40px+ display)
+     on-red    4.8          the cream label printed on a crimson fill
+     gold      8.8 :  8.3   "awaiting confirmation" states
+     green     8.3          "confirmed by the venue"
+     line-ink  11.2         the strongest rule, held below full cream so a
+                            1px border does not glare on a dark ground. On paper
+                            the same token is 15.4:1, so the relationship — the
+                            loudest rule on the page — is kept.
+   ========================================================================== */
+
+[data-mode="night"] {
+  color-scheme: dark;
+
+  --paper: #14120f;
+  --paper-2: #1c1916;
+  --paper-3: #2e2a26;
+  --paper-veil: rgba(20, 18, 15, 0.92);
+
+  --ink: #f4f1e6;
+  --ink-2: #d8d2c0;
+  --ink-3: #b0a897;
+
+  --line: #3d3833;
+  --line-strong: #6b6459;
+  --line-ink: #cfc8b6;
+
+  /*
+   * The crimson lifts only as far as it must. Its darkest form is unreadable as
+   * display type on this paper, but every lift costs the cream label printed on
+   * top of it, so --red stops one step above the 3:1 floor for large type and the
+   * fills keep their cream labels (4.81:1). --red-dark stays the pressed shade —
+   * deeper, as it is by day — and --red-text is the one that becomes light,
+   * because small red type on dark paper has nowhere else to go.
+   */
+  --red: #cf1b26;
+  --red-dark: #a8161f;
+  --red-text: #f3867e;
+  --red-soft: rgba(207, 27, 38, 0.16);
+  --red-line: rgba(207, 27, 38, 0.46);
+
+  --on-ink: #14120f;
+  /* Unchanged on purpose: the crimson and the scrim are dark on both sheets. */
+  --on-dark: #f4f1e6;
+
+  --gold: #d9ab5c;
+  --gold-bright: #c8994a;
+  --gold-soft: rgba(217, 171, 92, 0.16);
+
+  --green: #57c08c;
+  --green-soft: rgba(87, 192, 140, 0.14);
+
+  /* The grain is ink on paper; at night it is paper over ink. */
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23f4f1e6' filter='url(%23n)' opacity='.5' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+}
+
+/*
+ * The crossfade.
+ *
+ * Surfaces are allowed to animate their paint only while a change is in flight
+ * (the provider sets this attribute for exactly --theme-dur, and only when the
+ * mode actually changed). Outside it, nothing on the site carries a permanent
+ * transition on colour, so hovering a button is still instant rather than
+ * dragging a 620ms tail behind it.
+ *
+ * `!important` is deliberate for the same 620ms window: it must win over the
+ * per-component transitions it is temporarily replacing.
+ */
+[data-mode-transition="on"] *,
+[data-mode-transition="on"] *::before,
+[data-mode-transition="on"] *::after {
+  transition:
+    background-color var(--theme-dur) var(--ease-premium),
+    border-color var(--theme-dur) var(--ease-premium),
+    color var(--theme-dur) var(--ease-premium),
+    fill var(--theme-dur) var(--ease-premium) !important;
+}
+
+/* Readers who ask for reduced motion get the other sheet immediately. The rule
+   above is already collapsed by the global reduced-motion block below; this
+   states the intent where the transition is defined. */
+@media (prefers-reduced-motion: reduce) {
+  [data-mode-transition="on"] *,
+  [data-mode-transition="on"] *::before,
+  [data-mode-transition="on"] *::after {
+    transition: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -268,7 +402,7 @@ p:last-child {
   z-index: 150;
   padding: 10px 18px;
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
   font-family: var(--font-label);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -418,8 +552,38 @@ p:last-child {
 }
 
 @media print {
-  .site-intro {
+  .site-intro,
+  .scroll-cue {
     display: none !important;
+  }
+
+  /*
+   * The print sheet is always the day sheet. Printing the night theme would put
+   * cream type on a white page — "save ink" would be the wrong reason to do it,
+   * "it cannot be read" is the right one. The palette is reset here rather than
+   * the theme being switched in JavaScript, so this holds for a reader who
+   * prints with scripting paused.
+   */
+  [data-mode="night"] {
+    --paper: #ffffff;
+    --paper-2: #ffffff;
+    --paper-3: #f4f1e6;
+    --paper-veil: #ffffff;
+    --ink: #1c1a17;
+    --ink-2: #3a3733;
+    --ink-3: #55524b;
+    --line: #b9b4a3;
+    --line-strong: #8f8a79;
+    --line-ink: #1c1a17;
+    --red: #c1121f;
+    --red-dark: #8f0d18;
+    --red-text: #c1121f;
+    --gold: #755915;
+    --gold-bright: #b0863c;
+    --green: #1f6f4a;
+    --on-ink: #f4f1e6;
+    --on-dark: #f4f1e6;
+    color-scheme: light;
   }
 
   body {

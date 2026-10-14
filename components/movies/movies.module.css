@@ -59,7 +59,7 @@
 }
 
 .card:hover .cardLink {
-  color: var(--red);
+  color: var(--red-text);
 }
 
 /* A wide link target over the poster, so the whole artwork is clickable. */
@@ -162,7 +162,7 @@
   font-family: var(--font-condensed);
   font-size: 10px;
   vertical-align: super;
-  color: var(--red);
+  color: var(--red-text);
 }
 
 .filterFooter {
