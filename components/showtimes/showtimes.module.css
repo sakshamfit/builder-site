@@ -84,7 +84,7 @@
 .dateChip[aria-pressed="true"],
 .dateChip[aria-current="true"] {
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .dateChip[aria-pressed="true"] .dateChipWeekday,
@@ -220,7 +220,7 @@
 
 .chip:hover {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
   transform: translateY(-3px);
 }
 

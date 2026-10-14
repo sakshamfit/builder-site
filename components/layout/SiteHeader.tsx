@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FullScreenMenu } from "@/components/layout/FullScreenMenu";
+import { ModeToggle } from "@/components/layout/ModeToggle";
 import { NAV_ITEMS } from "@/lib/nav";
 import { placeLabel } from "@/lib/cinema-content";
 import { siteConfig } from "@/lib/site-config";
@@ -51,6 +52,7 @@ export function SiteHeader() {
         <Link href="/#showtimes" className={`${styles.navLink} ${styles.headerCta}`}>
           Showtimes
         </Link>
+        <ModeToggle />
         <FullScreenMenu items={NAV_ITEMS} brandName={siteConfig.brandName} />
       </div>
     </header>

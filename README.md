@@ -27,7 +27,7 @@ Other commands:
 
 | Command | What it does |
 | --- | --- |
-| `npm run check` | Runs the project's self-checks (75 assertions) covering the sourced programme's provenance rules, timezone maths, schedule validation, the ticketing handoff rules and the venue feed contract. |
+| `npm run check` | Runs the project's self-checks (98 assertions) covering the sourced programme's provenance rules, timezone maths, schedule validation, the ticketing handoff rules, the venue feed contract, and the appearance system — palette parity, measured contrast on both sheets, and a scan that fails if any rule prints paper-coloured type on a fill. |
 | `npm run feed:serve` | Starts a stand-in partner feed on `http://127.0.0.1:4100` so live mode can be exercised without a partner account. |
 | `npm run build` | Production build. |
 | `npm run lint` | ESLint (`eslint-config-next`). |
@@ -92,14 +92,14 @@ app/                      routes (App Router)
   help/page.tsx           booking handoff steps, FAQs, policies
   sitemap.ts robots.ts    generated from NEXT_PUBLIC_SITE_URL
 components/
-  layout/                 header, footer, primary nav, mobile dialog
+  layout/                 header, footer, primary nav, mobile dialog, day/night provider and switch
   showcase/               venue spotlight (ARIA tabs), highlights, gallery, photography-pending panel
-  home/                   hero, showcase section, cinema experience, visit information
+  home/                   hero, prelude, scroll cue, showcase section, cinema experience, visit information
   programme/              the film programme: board, cards, typographic plate, schedule-wait panel
   movies/                 filter row
   showtimes/              date selector, film groups, screening chips, schedule status
   cinema/                 location, facilities, screens
-  ui/                     button, badge, poster image, empty state
+  ui/                     button, badge, poster image, empty state, the two appearance glyphs
 data/
   programme.json          SOURCED film programme: real titles, real release dates, real citations
   showcase.ts             venue imagery registry (empty until approved photography arrives)
@@ -113,15 +113,18 @@ lib/
   schedule.ts             validation and grouping
   showtime-view.ts        display models (all formatting happens here)
   date-format.ts          timezone-safe date/time/price formatting
+  appearance.ts           day/night: the storage key, the rule, the pre-paint script
+  motion.ts               easings and durations, checked against the stylesheet
   types.ts site-config.ts clock.ts share-url.ts metadata.ts cinema-content.ts
 scripts/checks.mts        self-checks (npm run check)
 ASSET_CREDITS.md          provenance for every asset and every idea borrowed
 ```
 
 Every screen is a server component. The only client components are the mobile navigation dialog, the
-venue spotlight, the marquee and the two navigation helpers that mark the current section — so the
-whole booking journey works with JavaScript disabled, and each date/filter choice is a real, shareable
-URL.
+venue spotlight, the marquee, the two navigation helpers that mark the current section, and the two
+appearance pieces (the provider and the switch). The scroll cue is client-side too, and decorative.
+So the whole booking journey works with JavaScript disabled — without it the page simply renders on
+the day sheet, with no cue and no switch — and each date/filter choice is a real, shareable URL.
 
 ---
 
@@ -213,7 +216,19 @@ Type is the other half of it: **Anton** set very large and very tight for displa
 at 14px for body copy, with **Barlow** carrying labels and numerals. Everything above is expressed in
 CSS custom properties in `app/globals.css`, so the palette and type scale can be retuned in one file.
 
-Motion is limited to two things: reveal-on-scroll for section blocks, and short hover transitions.
+**The night sheet.** The site prints in two inks: the cream poster by day, and the same poster
+reversed — near-black stock, cream type, the crimson kept — after dark. The switch lives in the
+header, the choice is remembered, and a visitor who has never touched it follows their operating
+system. It is one attribute on `<html>` (`data-mode="night"`), set before first paint by a small
+script so nobody gets a cream flash, and every surface on the site is painted from the tokens that
+attribute redefines: no component contains a theme branch. Because the two sheets are the same
+palette, the night values are measured, and `npm run check` recomputes their contrast ratios from the
+stylesheet — a colour that fails AA is a failing build, not a matter of taste. (`--on-ink` and
+`--on-dark` exist for the labels that sit *on* a fill rather than on paper: one inverts with its
+surface, the other must not, and a scan in the check suite fails any new rule that confuses them.)
+
+Motion is limited to four things: reveal-on-scroll for section blocks, short hover transitions, the
+quiet scroll cue at the foot of the hero, and the crossfade between the two sheets.
 The reveal is gated behind a `data-reveal="ready"` flag that only JavaScript sets, so if the script
 never runs every section renders fully visible — content is never hidden behind an animation.
 `prefers-reduced-motion: reduce` removes both, and disables the marquee outright.
@@ -222,6 +237,13 @@ never runs every section renders fully visible — content is never hidden behin
 `gireeshkumarreddy/kingfisher`. What was adapted, and what was deliberately left behind (its imagery,
 trademarks, wording, Google Fonts links and scroll-driven centrepiece), is set out with reasoning in
 `ASSET_CREDITS.md` §6.
+
+The day/night system, the scroll cue and the prelude beneath the hero were adapted the same way from
+the owner's own `gireeshkumarreddy/vistaRail`, at the owner's direction. That repository is Tailwind +
+framer-motion + Lenis; none of that came across — each piece was re-implemented with this project's
+tokens and its own, smaller, motion language. Its smooth-scroll dependency, its video crossfade, its
+brand mark and its search field were deliberately left behind. `ASSET_CREDITS.md` §10 lists every
+component, every change and every omission.
 
 ---
 
@@ -376,9 +398,14 @@ visitor's device may be in another. Therefore:
   captions are visible text, not tooltips.
 * The programme plate is decorative (`aria-hidden`) with the film title rendered once as a real
   heading beside it, so a screen reader hears each title once, in a sensible outline.
-* Motion is limited to short opacity/transform transitions. `prefers-reduced-motion: reduce` collapses
-  animation globally. There is no scroll-jacking, no scroll-scrubbed video, no forced smooth scrolling
-  and no intro splash.
+* Motion is limited to short opacity/transform transitions, the slow marquee and the day↔night
+  crossfade. `prefers-reduced-motion: reduce` collapses all of it globally: reveals appear instantly,
+  the marquee stops, the crossfade becomes a cut, and the scroll cue beside the hero is not rendered
+  at all. A reader who has asked for reduced motion never sees the opening intro either — it is
+  skipped outright, and hidden by CSS even before the script runs.
+* There is no scroll-jacking and no forced smooth scrolling: the opening intro pins the page only
+  while it is on screen, always offers a visible "Skip intro", releases on a failed video load, and
+  hands scrolling back the moment it is entered.
 * Every touch target is at least 44 px, and the layouts start at 320 px.
 
 Verified by rendering each route and auditing the HTML for `h1` count, duplicate ids, missing image
@@ -425,6 +452,12 @@ them. That was investigated in detail and could not be done, for four documented
 
 See `ASSET_CREDITS.md` §4.
 
+**Code provenance is audited the same way.** All code here is original, with two owner-directed
+exceptions from the owner's own repositories — the design language from `kingfisher` (§6) and the
+day/night system, scroll cue and prelude from `vistaRail` (§10). Neither carries a licence file;
+neither was copied verbatim; both sections itemise what travelled and what did not, and the permission
+runs to this project only.
+
 Typography is self-hosted and OFL-1.1 licensed (**Anton** for display, **Barlow** and **Barlow
 Condensed** for interface labels and numerals, **DM Sans Variable** for body copy), installed as npm
 packages so nothing is fetched from a font CDN at runtime. Licences and swap instructions are in
@@ -446,12 +479,16 @@ shipping video at all) are reimplemented from scratch in this project's own code
 `ASSET_CREDITS.md` lists each repository reviewed and what was taken from it, which in every case is
 "concepts only, no files".
 
-**One documented exception.** The owner subsequently directed that the visual layer follow their own
-repository, `gireeshkumarreddy/kingfisher` ("just clone the repo and then customize it"). Its design
-system — palette, fixed left rail, display-type treatment, bordered specification sheets, filter row,
-full-screen menu and reveal-on-scroll — was therefore adapted into this project. Its imagery,
-trademarks, wording, Google Fonts links and scroll-driven sticky centrepiece were not. What was taken
-and why is itemised in `ASSET_CREDITS.md` §6.
+**Two documented exceptions, both the owner's own repositories and both owner-directed.** First, the
+visual layer follows `gireeshkumarreddy/kingfisher` ("just clone the repo and then customize it"): its
+design system — palette, fixed left rail, display-type treatment, bordered specification sheets,
+filter row, full-screen menu and reveal-on-scroll — was adapted into this project. Its imagery,
+trademarks, wording, Google Fonts links and scroll-driven sticky centrepiece were not. Second, at the
+owner's instruction components were taken from `gireeshkumarreddy/vistaRail` — the day/night
+appearance system, the scroll cue and the prelude beneath the hero. Its Tailwind theme, framer-motion
+dependency, Lenis smooth scrolling, video crossfade, brand mark, search field and copy did not travel;
+each piece was re-implemented against this project's tokens. What was taken, what was changed and what
+was left behind is itemised in `ASSET_CREDITS.md` §6 and §10.
 
 ---
 

@@ -38,7 +38,7 @@
 /* The single accent action. */
 .red {
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .red:hover {
@@ -47,11 +47,15 @@
 
 .ink {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
 }
 
+/* The pressed ink button becomes the accent, so its label has to change hands:
+   cream does not read on crimson at night, and dark paper does not read on it by
+   day. --on-dark is the one that sits on the accent in both sheets. */
 .ink:hover {
   background: var(--red);
+  color: var(--on-dark);
 }
 
 .outline {
@@ -62,7 +66,7 @@
 
 .outline:hover {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
 }
 
 .ghost {
@@ -71,7 +75,7 @@
 }
 
 .ghost:hover {
-  color: var(--red);
+  color: var(--red-text);
 }
 
 .small {
@@ -113,7 +117,7 @@
 .badgeAccent {
   border-color: var(--red);
   background: var(--red-soft);
-  color: var(--red-dark);
+  color: var(--red-text);
 }
 
 .badgeOk {

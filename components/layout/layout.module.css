@@ -89,7 +89,7 @@
 
 .headerScrolled {
   padding-block: 9px;
-  background: rgba(244, 241, 230, 0.93);
+  background: var(--paper-veil);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -138,7 +138,7 @@
 }
 
 .navLink:hover {
-  color: var(--red);
+  color: var(--red-text);
 }
 
 .headerActions {
@@ -166,7 +166,99 @@
 
 .menuToggle:hover {
   background: var(--ink);
-  color: var(--paper);
+  color: var(--on-ink);
+}
+
+/*
+ * --- appearance switch -----------------------------------------------------
+ * The day↔night control. Adapted from the header control in the owner's
+ * vistaRail repository; see ASSET_CREDITS.md §10.
+ *
+ * Both glyphs occupy the same 16px box and cross-fade in place, rotating and
+ * scaling, so the control never changes width and the row never shifts. The
+ * glyph shown is the *destination* — a moon while the page is paper, a sun once
+ * it is night — and the word beside it agrees with it.
+ */
+
+/* Phones: the same 44 × 40 box as the menu button beside it, glyph only. */
+.modeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-height: 40px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.modeToggle:hover {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.modeGlyphs {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+.modeGlyph {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+}
+
+/* Day: the moon is showing. */
+.modeGlyphMoon {
+  opacity: 1;
+  transform: none;
+}
+
+.modeGlyphSun {
+  opacity: 0;
+  transform: rotate(-50deg) scale(0.5);
+}
+
+/* Night: they have swapped. */
+.modeToggle[aria-pressed="true"] .modeGlyphMoon {
+  opacity: 0;
+  transform: rotate(50deg) scale(0.5);
+}
+
+.modeToggle[aria-pressed="true"] .modeGlyphSun {
+  opacity: 1;
+  transform: none;
+}
+
+/* The word is hidden on the narrowest header, where the glyph and the
+   accessible name carry the control on their own. */
+.modeWord {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .modeToggle {
+    width: auto;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .modeWord {
+    display: inline;
+  }
 }
 
 .menuToggleLines {
@@ -191,7 +283,7 @@
   padding: 22px var(--pad) 40px;
   padding-left: calc(var(--rail) + var(--pad));
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
   animation: menuIn 620ms var(--ease-inout) both;
 }
 
@@ -290,29 +382,53 @@
   position: relative;
   z-index: 5;
   margin-top: clamp(2.5rem, 6vw, 5rem);
-  padding-block: clamp(2.5rem, 5vw, 4rem) 2.5rem;
+  /* No bottom padding: the crowd band is the footer's floor and sits flush on it. */
+  padding-top: clamp(2.5rem, 5vw, 4rem);
   background: var(--red);
-  color: var(--paper);
+  color: var(--on-dark);
   overflow: hidden;
 }
 
-/* The crowd covers the whole footer background, drawn on the red itself. */
-.footerCrowd {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* The copy sits above the crowd and stays clickable. A red halo behind each letter keeps
-   the text readable where the figures pass behind it, without boxing the copy in. */
+/*
+ * The copy. Nothing overlaps it: the crowd used to be a full-bleed layer behind
+ * these lines, which is what the text-shadow halo below this rule was for. The
+ * halo is gone with it — with the crowd in its own band, a glow behind every
+ * letter would be decoration with nothing to solve.
+ */
 .footerContent {
   position: relative;
   z-index: 1;
-  text-shadow:
-    0 0 3px var(--red),
-    0 0 8px var(--red),
-    0 0 14px var(--red);
+}
+
+/*
+ * The crowd's band.
+ *
+ * In normal flow, below the copy and clear of it by a margin, so no figure can
+ * ever cross a line of text however tall the footer grows. The height fits the
+ * animation rather than the other way round: the figures are spread across
+ * roughly 250px of vertical range above the floor, so the band is sized to hold
+ * that spread plus a figure's own height, which is what keeps heads and feet out
+ * of the crop.
+ *
+ * Decorative only — pointer-events none, and the footer's own red shows through.
+ */
+.footerCrowd {
+  position: relative;
+  z-index: 0;
+  height: clamp(200px, 26vh, 300px);
+  margin-top: clamp(1.5rem, 4vw, 3rem);
+  pointer-events: none;
+}
+
+/*
+ * Readers who ask for reduced motion get no band at all rather than an empty one.
+ * The canvas declines to animate for them, so leaving it in place would reserve
+ * its height for nothing — a dead red strip under the footer.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .footerCrowd {
+    display: none;
+  }
 }
 
 .footerEyebrow {
@@ -383,7 +499,7 @@
 }
 
 .footerLink:hover {
-  border-color: var(--paper);
+  border-color: var(--on-dark);
 }
 
 .footerBottom {
@@ -396,14 +512,14 @@
   color: rgba(244, 241, 230, 0.92);
 }
 
-/* Small print sits on a solid red backing so attribution and legal lines stay readable
-   where the crowd passes behind them. */
+/*
+ * Small print. It runs the full measure of its column again: the solid red
+ * backing that used to sit behind these lines existed only to hold them clear of
+ * the walking figures, and there are no figures behind them now.
+ */
 .footerBottom p {
   max-width: 62ch;
   margin: 0;
-  background: var(--red);
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
 }
 
 /* --- breakpoints ---------------------------------------------------------- */

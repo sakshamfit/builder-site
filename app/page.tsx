@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
+import { Prelude } from "@/components/home/Prelude";
 import { Showcase } from "@/components/home/Showcase";
 import { MarqueeTicker } from "@/components/showcase/MarqueeTicker";
 import { CinemaExperience } from "@/components/home/CinemaExperience";
@@ -63,6 +64,9 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
           leadingFilmTitle={null}
           upcomingCount={0}
         />
+
+        <Prelude />
+
         <MarqueeTicker
           items={[siteConfig.brandName, place || "Bihar"]}
           label={`${siteConfig.brandName}, ${place || "Bihar"}. The film programme could not be read.`}
@@ -134,6 +138,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         leadingFilmTitle={leading?.title ?? null}
         upcomingCount={upcoming.length}
       />
+
+      <Prelude />
 
       <MarqueeTicker
         items={marqueeItems}
