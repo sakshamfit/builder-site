@@ -593,7 +593,8 @@ p:last-child {
 
   .grain,
   .rail,
-  .site-header {
+  .site-header,
+  .footer-crowd {
     display: none !important;
   }
 }

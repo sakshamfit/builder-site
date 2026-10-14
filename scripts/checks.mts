@@ -1066,6 +1066,85 @@ check("a malformed payload degrades to an honest unavailable state, never to sam
 
 
 /* -------------------------------------------------------------------------- */
+/* The footer's crowd band                                                    */
+/* -------------------------------------------------------------------------- */
+
+section("Footer crowd");
+
+check("the crowd band sits below the copy, never behind it", () => {
+  /*
+   * The crowd is a strip of illustrated passers-by: it is decorative, and the
+   * figures are not this venue's audience. The rule is therefore that no line of
+   * copy is ever printed over one — the band is a block below the copy rather
+   * than a background layer behind it. This was once the other way round, and the
+   * giveaway was the workarounds it forced: a red text-shadow halo on every
+   * footer line and a solid backing plate behind the small print, both there to
+   * hold type clear of the figures.
+   */
+  const footer = readFileSync("components/layout/SiteFooter.tsx", "utf8");
+  const css = readFileSync("components/layout/layout.module.css", "utf8");
+
+  const copyAt = footer.indexOf("styles.footerContent");
+  const crowdAt = footer.indexOf("styles.footerCrowd");
+  assert.ok(copyAt !== -1 && crowdAt !== -1, "the footer must render both the copy and the band");
+  assert.ok(
+    crowdAt > copyAt,
+    "the crowd band must come after the copy in the markup, so it sits below it on screen",
+  );
+
+  const band = cssBlock(css, ".footerCrowd");
+  assert.doesNotMatch(
+    band,
+    /position:\s*absolute/,
+    "an absolutely-positioned band can be stretched over the copy — it must be a block in flow",
+  );
+  assert.doesNotMatch(
+    band,
+    /inset:\s*0|top:\s*0|height:\s*100%/,
+    "the band must not cover the whole footer",
+  );
+  assert.match(band, /height:/, "the band needs a definite height for the canvas to fill");
+  assert.match(band, /pointer-events:\s*none/, "the band must never intercept a click");
+
+  assert.doesNotMatch(
+    cssBlock(css, ".footerContent"),
+    /text-shadow/,
+    "a halo behind the copy only makes sense if something is drawn behind the copy",
+  );
+
+  const attribution = footer.slice(footer.indexOf("styles.footerBottom"));
+  assert.doesNotMatch(
+    attribution,
+    /background:\s*var\(--red\)/,
+    "the small print no longer needs a backing plate — nothing passes behind it",
+  );
+});
+
+check("the crowd band is decorative and removable", () => {
+  const footer = readFileSync("components/layout/SiteFooter.tsx", "utf8");
+  const css = readFileSync("components/layout/layout.module.css", "utf8");
+
+  assert.match(
+    footer,
+    /styles.footerCrowd\} footer-crowd/,
+    "the band needs the stable `footer-crowd` hook that app/globals.css addresses in print",
+  );
+
+  const reduced = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
+  assert.match(
+    reduced,
+    /\.footerCrowd\s*\{[^}]*display:\s*none/,
+    "reduced motion must remove the band, not leave its height standing empty",
+  );
+
+  assert.match(
+    readFileSync("app/globals.css", "utf8"),
+    /\.footer-crowd\s*\{/,
+    "the band must be hidden when the page is printed",
+  );
+});
+
+/* -------------------------------------------------------------------------- */
 /* Stylesheets                                                                */
 /* -------------------------------------------------------------------------- */
 

@@ -370,7 +370,13 @@ photograph of the venue.
 
 ## 9. Footer crowd: sprite and licence (to be confirmed)
 
-The footer carries a crowd of walking figures, `components/ui/skiper39.tsx` (`CrowdCanvas`), rendered in a strip beneath the footer copy.
+The footer carries a crowd of walking figures, `components/ui/skiper39.tsx` (`CrowdCanvas`), rendered in
+a strip beneath the footer copy. The strip is its own band, in normal flow below every line of the
+footer: **no text of any kind is printed over the figures.** That is deliberate on two counts — the
+figures illustrate a generic audience rather than this venue's, so nothing here should read as
+appearing "in front of" them, and the attribution required by this licence is a line of copy like any
+other, so it cannot sit on the animation either. Readers who ask for reduced motion get no band at
+all, rather than an empty one.
 
 | Asset | Source | Licence position | Status |
 | --- | --- | --- | --- |
