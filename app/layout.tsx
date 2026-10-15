@@ -1,29 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Rail } from "@/components/layout/Rail";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { UtilityStrip } from "@/components/layout/UtilityStrip";
 import { RevealProvider } from "@/components/layout/RevealProvider";
-import { SiteIntro } from "@/components/layout/SiteIntro";
 import { ModeProvider } from "@/components/layout/ModeProvider";
 import { siteConfig } from "@/lib/site-config";
 import { APPEARANCE_BOOTSTRAP } from "@/lib/appearance";
+import { placeLabel } from "@/lib/cinema-content";
 
 /*
  * Self-hosted, OFL-1.1 licensed fonts (see ASSET_CREDITS.md).
- * Anton carries the oversized condensed display voice, Barlow handles interface
- * labels and numbers, DM Sans carries body copy.
+ * Archivo carries the headings, Inter the body copy, JetBrains Mono everything
+ * that is read off the screen rather than read through: screening times, prices,
+ * codes and the micro-labels above each block.
  *
  * Imported here rather than fetched from a font CDN: no third-party request, no
  * layout shift, and the licence travels with the repository.
  */
-import "@fontsource/anton";
-import "@fontsource/barlow/400.css";
-import "@fontsource/barlow/600.css";
-import "@fontsource/barlow/700.css";
-import "@fontsource/barlow-condensed/600.css";
-import "@fontsource-variable/dm-sans";
+import "@fontsource-variable/archivo";
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
 
 import "./globals.css";
+
+const place = placeLabel();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
@@ -31,14 +31,13 @@ export const metadata: Metadata = {
     default: `${siteConfig.brandName} — showtimes, location and visiting information`,
     template: `%s · ${siteConfig.brandName}`,
   },
-  description:
-    "Showtimes, dates and venue information for the cinema at Madhuban, Bihar. Find what is playing, plan your visit, and continue to the venue's ticketing partner to book.",
+  description: `Showtimes, dates and venue information for the cinema${place ? ` at ${place}` : ""}. Find what is playing, plan your visit, and continue to the venue's ticketing partner to book.`,
   applicationName: siteConfig.brandName,
   formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f4f1e6",
+  themeColor: "#f6f3ee",
   /*
    * `colorScheme` is deliberately not set here. The day and night palettes each
    * declare their own `color-scheme` in app/globals.css, keyed off the same
@@ -69,12 +68,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         */}
         <script dangerouslySetInnerHTML={{ __html: APPEARANCE_BOOTSTRAP }} />
 
-        {/* Opening: the scroll-scrubbed video intro. Covers the page until entered. */}
-        <SiteIntro />
-
         {/*
-          Film grain. Fixed, decorative, pointer-events none — it sits over the
-          page the way grain sits over a print, and is never interactive.
+          Projector dust. Fixed, decorative, pointer-events none — the finest
+          grain over the whole surface, never a texture a reader has to read
+          through.
         */}
         <div className="grain" aria-hidden="true" />
 
@@ -85,13 +82,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/*
           Day / night.
 
-          The provider wraps the header and the page because the header carries
-          the switch and reads the state from here. The pages themselves do not
-          read it at all — every surface paints from the tokens in globals.css,
-          which the `data-mode` attribute on <html> redefines.
+          The provider wraps the chrome because the utility strip carries the
+          switch and reads the state from here. The pages themselves do not read
+          it at all — every surface paints from the tokens in globals.css, which
+          the `data-mode` attribute on <html> redefines.
         */}
         <ModeProvider>
-          <Rail />
+          <UtilityStrip />
           <SiteHeader />
 
           <main id="main">{children}</main>

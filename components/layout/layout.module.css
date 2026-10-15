@@ -1,139 +1,150 @@
 /* ==========================================================================
-   Layout — rail, header, full-screen menu, footer
+   Layout — utility strip, header, full-screen menu, footer
+   --------------------------------------------------------------------------
+   The site's chrome, in the projection-house language: hairlines instead of
+   shadows, mono micro-labels, one coral action per tier.
+
+   The two header tiers behave differently on purpose. The utility strip is a
+   static band — a standing announcement and where this cinema is — and scrolls
+   away with the page. The header itself sticks to the top, because the section
+   list and the ticket action have to be reachable from anywhere.
    ========================================================================== */
 
-/* --- rail ----------------------------------------------------------------- */
+/* --- utility strip -------------------------------------------------------- */
 
-.rail {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 80;
-  width: var(--rail);
-  border-right: 1px solid var(--line-ink);
-  background: var(--paper);
+.utilityStrip {
+  position: relative;
+  z-index: 60;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-2);
 }
 
-/*
- * A hairline progress rule running the full height of the rail and sitting on
- * top of its border, so the page's position is legible from anywhere without a
- * separate control. Purely decorative.
- */
-.railProgress {
-  position: absolute;
-  top: 0;
-  right: -1px;
-  bottom: 0;
-  width: 2px;
-  pointer-events: none;
-}
-
-.railProgress span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--red);
-  transform-origin: top;
-  transform: scaleY(0);
-}
-
-.railLabel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  writing-mode: vertical-rl;
-  transform: translate(-50%, -50%) rotate(180deg);
-  font-family: var(--font-label);
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  white-space: nowrap;
-}
-
-.railNumber {
-  position: absolute;
-  bottom: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--font-condensed);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-}
-
-/* --- header --------------------------------------------------------------- */
-
-.header {
-  position: fixed;
-  z-index: 70;
-  top: 0;
-  left: var(--rail);
-  right: 0;
+.utilityInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 18px var(--pad);
-  pointer-events: none;
-  transition:
-    padding var(--dur) var(--ease),
-    background-color var(--dur) var(--ease);
+  min-height: var(--utility-h);
 }
 
-.header > * {
-  pointer-events: auto;
-}
-
-.headerScrolled {
-  padding-block: 9px;
-  background: var(--paper-veil);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
-}
-
-.brand {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.7rem;
+.utilityNotice {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   min-width: 0;
-}
-
-.brandText {
-  font-family: var(--font-display);
-  font-size: 17px;
-  line-height: 1;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
+  margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.brandPlace {
+.utilityTag {
+  flex: none;
   font-family: var(--font-label);
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.24em;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  color: var(--gold);
+}
+
+.utilityText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
+
+.utilityRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: none;
+}
+
+.utilityPlace {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
   color: var(--ink-3);
   white-space: nowrap;
+}
+
+.utilityIcon {
+  width: 13px;
+  height: 13px;
+  color: var(--gold);
+}
+
+/* --- header --------------------------------------------------------------- */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+  transition: background-color var(--dur) var(--ease);
+}
+
+/* Once the page has moved, the bar lets a little of what passes under it show,
+   so it reads as a floating surface rather than a hard cut. */
+.headerScrolled {
+  background: var(--paper-veil);
+  backdrop-filter: blur(14px);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 2.25rem);
+  min-height: var(--header-h);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
+.brandMark {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brandLead {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.brandTail {
+  margin-top: 3px;
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--gold);
 }
 
 .nav {
   display: none;
   align-items: center;
-  gap: 30px;
+  gap: clamp(0.85rem, 1.5vw, 1.6rem);
+  margin-inline: auto;
 }
 
 .navLink {
-  font-family: var(--font-label);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
   transition: color var(--dur) var(--ease);
 }
 
@@ -144,84 +155,110 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  margin-left: auto;
 }
 
-.headerCta {
+.iconButton {
   display: none;
-  padding-bottom: 3px;
-  border-bottom: 1px solid var(--ink);
-}
-
-.menuToggle {
-  display: grid;
   place-items: center;
-  width: 44px;
-  height: 40px;
-  border: 1px solid var(--ink);
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-2);
   transition:
-    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
     color var(--dur) var(--ease);
 }
 
-.menuToggle:hover {
-  background: var(--ink);
-  color: var(--on-ink);
+.iconButton:hover {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+.iconGlyph {
+  width: 17px;
+  height: 17px;
 }
 
 /*
- * --- appearance switch -----------------------------------------------------
- * The day↔night control. Adapted from the header control in the owner's
- * vistaRail repository; see ASSET_CREDITS.md §10.
- *
- * Both glyphs occupy the same 16px box and cross-fade in place, rotating and
- * scaling, so the control never changes width and the row never shifts. The
- * glyph shown is the *destination* — a moon while the page is paper, a sun once
- * it is night — and the word beside it agrees with it.
+ * The ticket action. Coral fill with an ink label — the one place on the site
+ * where the action colour is a solid block, and the reason `--on-red` exists
+ * rather than a cream label that would disappear into it.
  */
-
-/* Phones: the same 44 × 40 box as the menu button beside it, glyph only. */
-.modeToggle {
+.cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  min-height: 40px;
-  border: 1px solid var(--ink);
-  color: var(--ink);
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 6px;
+  background: var(--red);
+  color: var(--on-red);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.cta:hover {
+  background: var(--red-hover);
+}
+
+/* --- appearance switch ---------------------------------------------------- */
+
+/*
+ * Day↔night. Adapted from the header control in the owner's vistaRail
+ * repository; see ASSET_CREDITS.md §10. Both glyphs occupy one 14px box and
+ * cross-fade in place, rotating and scaling, so the control never changes width
+ * and the strip never shifts.
+ *
+ * In the utility strip it is a quiet text control rather than a button box: it
+ * sits beside the place label, says what it is, and reports its state to
+ * assistive technology through `aria-pressed`.
+ */
+.modeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  min-height: 24px;
+  padding: 0 2px;
+  color: var(--ink-3);
   font-family: var(--font-label);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  transition:
-    background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease);
 }
 
 .modeToggle:hover {
-  background: var(--ink);
-  color: var(--on-ink);
+  color: var(--gold);
 }
 
 .modeGlyphs {
   position: relative;
   display: grid;
   place-items: center;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .modeGlyph {
   position: absolute;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   transition:
     opacity var(--dur-slow) var(--ease),
     transform var(--dur-slow) var(--ease);
 }
 
-/* Day: the moon is showing. */
+/* Day: the moon is showing — the destination is night. */
 .modeGlyphMoon {
   opacity: 1;
   transform: none;
@@ -243,28 +280,35 @@
   transform: none;
 }
 
-/* The word is hidden on the narrowest header, where the glyph and the
-   accessible name carry the control on their own. */
 .modeWord {
   display: none;
 }
 
-@media (min-width: 640px) {
-  .modeToggle {
-    width: auto;
-    gap: 8px;
-    padding: 0 12px;
-  }
+/* --- full-screen menu ----------------------------------------------------- */
 
-  .modeWord {
-    display: inline;
-  }
+.menuToggle {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-2);
+  transition:
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.menuToggle:hover {
+  border-color: var(--gold);
+  color: var(--ink);
 }
 
 .menuToggleLines {
   display: grid;
   gap: 4px;
-  width: 18px;
+  width: 16px;
 }
 
 .menuToggleLines span {
@@ -272,19 +316,16 @@
   background: currentColor;
 }
 
-/* --- full-screen menu ----------------------------------------------------- */
-
 .menu {
   position: fixed;
   inset: 0;
   z-index: 100;
   display: flex;
   flex-direction: column;
-  padding: 22px var(--pad) 40px;
-  padding-left: calc(var(--rail) + var(--pad));
-  background: var(--red);
-  color: var(--on-dark);
-  animation: menuIn 620ms var(--ease-inout) both;
+  padding: 18px var(--pad) 32px;
+  background: var(--paper-2);
+  color: var(--ink);
+  animation: menuIn 460ms var(--ease-inout) both;
 }
 
 @keyframes menuIn {
@@ -301,24 +342,26 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-bottom: 18px;
-  border-bottom: 1px solid rgba(244, 241, 230, 0.32);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
 }
 
 .menuBrand {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 16px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .menuClose {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(244, 241, 230, 0.5);
-  font-size: 26px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 22px;
   line-height: 1;
   transition: transform var(--dur) var(--ease);
 }
@@ -337,244 +380,267 @@
 
 .menuLink {
   display: inline-flex;
-  align-items: flex-start;
-  gap: 1.1rem;
+  align-items: baseline;
+  gap: 1rem;
   width: fit-content;
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 8vw, 5.2rem);
-  line-height: 1.14;
+  font-size: clamp(1.5rem, 5.6vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.3;
   text-transform: uppercase;
-  letter-spacing: -0.03em;
-  transition: transform 260ms var(--ease);
+  letter-spacing: -0.02em;
+  transition: color var(--dur) var(--ease);
 }
 
 .menuLink:hover {
-  transform: translateX(14px);
+  color: var(--red-text);
 }
 
 .menuLink sup {
+  margin-top: 0.2em;
   font-family: var(--font-label);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  margin-top: 0.7em;
-  opacity: 0.75;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--gold);
 }
 
 .menuLink[aria-current="page"] {
-  text-decoration: underline;
-  text-underline-offset: 10px;
-  text-decoration-thickness: 2px;
+  color: var(--red-text);
 }
 
 .menuFoot {
-  max-width: 40ch;
-  padding-top: 18px;
-  border-top: 1px solid rgba(244, 241, 230, 0.32);
+  max-width: 46ch;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
   font-size: 12px;
   line-height: 1.6;
-  opacity: 0.9;
 }
 
 /* --- footer --------------------------------------------------------------- */
 
 .footer {
-  position: relative;
-  z-index: 5;
-  margin-top: clamp(2.5rem, 6vw, 5rem);
-  /* No bottom padding: the crowd band is the footer's floor and sits flush on it. */
-  padding-top: clamp(2.5rem, 5vw, 4rem);
-  background: var(--red);
-  color: var(--on-dark);
-  overflow: hidden;
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(2.25rem, 4vw, 3.25rem) 1.5rem;
+  border-top: 1px solid var(--line);
+  background: var(--paper-2);
 }
 
-/*
- * The copy. Nothing overlaps it: the crowd used to be a full-bleed layer behind
- * these lines, which is what the text-shadow halo below this rule was for. The
- * halo is gone with it — with the crowd in its own band, a glow behind every
- * letter would be decoration with nothing to solve.
- */
-.footerContent {
-  position: relative;
-  z-index: 1;
-}
-
-/*
- * The crowd's band.
- *
- * In normal flow, below the copy and clear of it by a margin, so no figure can
- * ever cross a line of text however tall the footer grows. The height fits the
- * animation rather than the other way round: the figures are spread across
- * roughly 250px of vertical range above the floor, so the band is sized to hold
- * that spread plus a figure's own height, which is what keeps heads and feet out
- * of the crop.
- *
- * Decorative only — pointer-events none, and the footer's own red shows through.
- */
-.footerCrowd {
-  position: relative;
-  z-index: 0;
-  height: clamp(200px, 26vh, 300px);
-  margin-top: clamp(1.5rem, 4vw, 3rem);
-  pointer-events: none;
-}
-
-/*
- * Readers who ask for reduced motion get no band at all rather than an empty one.
- * The canvas declines to animate for them, so leaving it in place would reserve
- * its height for nothing — a dead red strip under the footer.
- */
-@media (prefers-reduced-motion: reduce) {
-  .footerCrowd {
-    display: none;
-  }
-}
-
-.footerEyebrow {
-  color: rgba(244, 241, 230, 0.92);
-}
-
-.footerTitle {
-  margin: 0.9rem 0 1.6rem;
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 11vw, 9rem);
-  line-height: 0.92;
-  text-transform: uppercase;
-  letter-spacing: -0.035em;
-}
-
-.footerLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 32px;
-  padding-bottom: 26px;
-  border-bottom: 1px solid rgba(244, 241, 230, 0.4);
-  font-family: var(--font-label);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.footerLinks a:hover {
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-
-.footerGrid {
+.footerColumns {
   display: grid;
-  gap: 2rem;
-  padding-block: 2rem;
+  gap: 2.25rem 2rem;
 }
 
-.footerHeading {
-  margin-bottom: 0.7rem;
+.footerBrand {
+  min-width: 0;
+}
+
+.footerMark {
+  align-items: flex-start;
+}
+
+.footerPlace {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.footerDescription {
+  max-width: 42ch;
+  margin-top: 0.9rem;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.newsletter {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+  max-width: 380px;
+}
+
+.newsletterRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--paper-3);
+}
+
+.newsletterInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.newsletterInput::placeholder {
+  color: var(--ink-3);
+}
+
+.newsletterButton {
+  flex: none;
+  min-height: 32px;
+  padding: 0 16px;
+  border-radius: 4px;
+  background: var(--gold-bright);
+  color: var(--on-gold);
   font-family: var(--font-label);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(244, 241, 230, 0.9);
+  transition: filter var(--dur) var(--ease);
 }
 
-.footerAddress {
-  display: grid;
-  gap: 2px;
-  margin-bottom: 0.9rem;
-  font-style: normal;
-  font-size: 13.5px;
-  line-height: 1.55;
+.newsletterButton:hover {
+  filter: brightness(1.08);
+}
+
+.newsletterNote {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.visuallyHiddenLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.footerSection {
+  min-width: 0;
+}
+
+.footerHeading {
+  display: block;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 
 .footerList {
   display: grid;
-  gap: 0.5rem;
-  font-size: 13.5px;
+  gap: 0.6rem;
+  margin-top: 1rem;
 }
 
 .footerLink {
-  border-bottom: 1px solid rgba(244, 241, 230, 0.4);
-  transition: border-color var(--dur) var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-3);
+  font-size: 13px;
+  transition: color var(--dur) var(--ease);
 }
 
 .footerLink:hover {
-  border-color: var(--on-dark);
+  color: var(--gold);
 }
 
-.footerBottom {
+.footerLinkIcon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+.footerLegal {
   display: grid;
-  gap: 0.9rem;
-  padding-top: 22px;
-  border-top: 1px solid rgba(244, 241, 230, 0.4);
-  font-size: 10.5px;
-  line-height: 1.65;
-  color: rgba(244, 241, 230, 0.92);
+  gap: 1.25rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
 }
 
-/*
- * Small print. It runs the full measure of its column again: the solid red
- * backing that used to sit behind these lines existed only to hold them clear of
- * the walking figures, and there are no figures behind them now.
- */
-.footerBottom p {
-  max-width: 62ch;
+.footerLegalText {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 96ch;
+  color: var(--ink-3);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.footerLegalText p {
   margin: 0;
+}
+
+.footerLegalLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.footerLegalLinks a {
+  color: var(--ink-3);
+  transition: color var(--dur) var(--ease);
+}
+
+.footerLegalLinks a:hover {
+  color: var(--gold);
 }
 
 /* --- breakpoints ---------------------------------------------------------- */
 
+@media (min-width: 560px) {
+  .iconButton {
+    display: grid;
+  }
+
+  .utilityPlace {
+    display: inline-flex;
+  }
+
+  .modeWord {
+    display: inline;
+  }
+}
+
 @media (min-width: 900px) {
+  .footerColumns {
+    grid-template-columns: 1.7fr 1fr 1fr 1fr;
+    gap: 3rem 2rem;
+  }
+
+  .footerLegal {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1080px) {
   .nav {
     display: flex;
   }
 
-  .headerCta {
-    display: inline-block;
-  }
-
-  .footerGrid {
-    grid-template-columns: 1.3fr 1fr;
-    gap: 3rem;
-  }
-
-  .footerBottom {
-    grid-template-columns: 1.3fr 1fr;
-    gap: 3rem;
-  }
-}
-
-@media (max-width: 700px) {
-  :root {
-    --rail: 40px;
-  }
-
-  .railLabel {
-    font-size: 8px;
-    letter-spacing: 0.22em;
-  }
-
-  .railNumber {
-    font-size: 11px;
-  }
-
-  .header {
-    padding: 12px var(--pad);
-  }
-
-  .brandPlace {
+  .menuToggle {
     display: none;
-  }
-
-  .headerScrolled {
-    padding-block: 7px;
-  }
-
-  .menu {
-    padding-top: 16px;
-  }
-
-  .menuLink {
-    line-height: 1.2;
   }
 }

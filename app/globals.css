@@ -1,96 +1,124 @@
 /* ==========================================================================
-   Cinema at Madhuban — design system
+   Design system — "projection house"
    --------------------------------------------------------------------------
-   Direction: "vintage cinema one-sheet". Warm cream poster stock, deep crimson
-   ink, near-black type, a restrained antique gold. A fixed left navigation
-   rail, oversized condensed display type over a small, quiet body size, and
-   full-height scenes.
+   Direction: "projection house". A dark auditorium UI: near-black ground,
+   panel surfaces separated by hairlines rather than shadows, one warm coral
+   doing every call to action, and amber reserved for status, status codes and
+   the labels that name a block. Numbers and micro-labels are set in mono so a
+   time, a price and a hold countdown stay unmistakable at a glance.
 
-   This is an editorial poster system rather than a dark UI: light surfaces,
-   enormous uppercase display type, generous margins, and ruled boxes instead of
-   soft cards. It is deliberately built to a small palette — four colours doing
-   all the work.
+   The look is a control surface, not a poster. That means:
+     - a two-tier header (a utility strip carrying the member code, the place
+       and the appearance switch; a main bar carrying navigation and the
+       ticket action);
+     - boxed panels with 1px rules, generous internal padding and small radii;
+     - micro-labels in uppercase mono above the value they describe;
+     - display type in a heavy grotesque, never larger than the layout needs.
+
+   The night sheet is the design's home: that is what the auditorium looks like
+   with the lights down. The day sheet is the same room with the house lights
+   up — the same coral and amber on warm stock — so the site is readable in
+   daylight and in print. Every colour here is measured, and `npm run check`
+   recomputes the ratios from this file.
+
+   Nothing here names a venue, a town or an operator: the palette is the
+   building, not the sign over the door. Venue identity lives in the venue
+   record (data/cinema.ts) and in configuration, and the check suite refuses to
+   let a location this venue has not confirmed into the source tree.
 
    Typography is self-hosted and OFL-1.1 licensed:
-     Anton             — display. Condensed, heavy, uppercase. The one-sheet voice.
-     Barlow / Condensed— interface labels, eyebrows, navigation, numbers.
-     DM Sans           — body copy, captions and everything long.
-
-   Original to this project. The palette is a classic cinema-poster pairing and
-   intentionally distinct from any cinema chain's brand colours.
+     Archivo (variable)      — display. The heavy grotesque used for headings.
+     Inter (variable)        — body copy, captions and everything long.
+     JetBrains Mono (var.)   — micro-labels, codes, times and prices.
    ========================================================================== */
 
 :root {
-  /* --- paper and ink ----------------------------------------------------- */
-  --paper: #f4f1e6;
-  --paper-2: #eae5d4;
-  --paper-3: #ded7c1;
-  --ink: #1c1a17;
-  --ink-2: #3a3733;
-  --ink-3: #55524b;
+  /* --- house lights: warm stock, same accents ---------------------------- */
+  --paper: #f6f3ee;
+  --paper-2: #efeae1;
+  --paper-3: #e4ded2;
+  --ink: #16151a;
+  --ink-2: #3b3941;
+  --ink-3: #5d5a63;
 
-  --line: #b9b4a3;
-  --line-strong: #8f8a79;
-  --line-ink: #1c1a17;
+  --line: #ddd7ca;
+  --line-strong: #b6afa1;
+  --line-ink: #16151a;
 
   /*
    * The paper a floating surface shows when content is passing beneath it (the
    * header on scroll). A token rather than a literal, because it has to become
-   * dark paper at night like everything else.
+   * near-black at night like everything else.
    */
-  --paper-veil: rgba(244, 241, 230, 0.93);
+  --paper-veil: rgba(246, 243, 238, 0.88);
 
-  /* --- crimson: the single accent ---------------------------------------- */
-  --red: #c1121f;
-  --red-dark: #8f0d18;
+  /* --- coral: the action colour ------------------------------------------ */
+  --red: #e04a2f;
   /*
-   * The crimson *as small type* — nav hovers, card statuses, dates, the ghost
-   * button. Separate from --red because the two jobs pull in opposite
-   * directions on a dark ground: a fill wants to stay deep, small type wants to
-   * get lighter. They are the same value on paper, so nothing changes by day.
+   * The coral *under interaction*. It lifts rather than deepens, which is the
+   * opposite of a light-UI button: the label printed on this fill is ink, so
+   * darkening the fill on hover would eat the label. Here the control lights up
+   * instead — the same gesture the auditorium makes when the film starts.
    */
-  --red-text: #c1121f;
-  --red-soft: rgba(193, 18, 31, 0.1);
-  --red-line: rgba(193, 18, 31, 0.34);
-
+  --red-hover: #ec5638;
   /*
-   * --- labels that sit on a backing rather than on paper ------------------
-   * Two tokens, because two different things happen at night. An **ink fill**
-   * becomes the light surface, so its label has to invert with it (--on-ink).
-   * A **crimson fill** and a photograph's **scrim** stay dark in both sheets, so
-   * their labels must not move at all (--on-dark) — which is why a component
-   * that needs one cannot simply say `color: var(--paper)`.
+   * The coral *as small type*. Separate from --red because the two jobs pull in
+   * opposite directions: a fill wants to stay bright enough to carry a dark
+   * label, small type on stock wants to get deeper. They are the same value on
+   * the night sheet, so nothing changes after dark.
    */
-  --on-ink: #f4f1e6;
-  --on-dark: #f4f1e6;
+  --red-text: #b8351f;
+  --red-soft: rgba(224, 74, 47, 0.1);
+  --red-line: rgba(224, 74, 47, 0.32);
 
   /*
-   * --- antique gold: "awaiting confirmation" states only -----------------
-   * Darkened from a decorative gold to #755915 so it clears 4.5:1 as small text
-   * on every paper tone here: 5.81 on --paper, 5.21 on --paper-2 and 4.63 on the
-   * tinted badge fill. The lighter gold looks better on a swatch and cannot be
-   * read; contrast wins.
+   * --- labels that sit on a backing rather than on stock -----------------
+   * Three tokens, because three different things happen:
+   *   --on-ink  an *ink fill* becomes the light surface at night, so its label
+   *             has to invert with it, and it does.
+   *   --on-red  a coral fill carries ink-dark type in both sheets (the BOOK
+   *             TICKETS pill), because coral is a light colour and a cream
+   *             label on it would be unreadable.
+   *   --on-dark a photograph's scrim, and the seat map's dark chrome, are dark
+   *             on both sheets, so their labels must not move at all.
    */
-  --gold: #755915;
-  --gold-bright: #b0863c;
-  --gold-soft: rgba(176, 134, 60, 0.14);
+  --on-ink: #f6f3ee;
+  --on-red: #14100e;
+  --on-gold: #14100e;
+  --on-dark: #f7f5f1;
+
+  /*
+   * --- amber: status, codes and block labels ------------------------------
+   * Darkened to #8a5a12 so it clears 4.5:1 as small type on every paper tone
+   * here: 5.28 on --paper, 4.94 on --paper-2. The brighter amber that looks
+   * right on the night sheet is unreadable on stock, which is why the token
+   * moves between the sheets and why the check suite measures both.
+   */
+  --gold: #8a5a12;
+  --gold-bright: #b8792a;
+  --gold-soft: rgba(184, 121, 42, 0.14);
 
   /* --- deep green: the "confirmed by venue" state ------------------------ */
   --green: #1f6f4a;
   --green-soft: rgba(31, 111, 74, 0.11);
 
   /* --- structure -------------------------------------------------------- */
-  --rail: 56px;
-  --pad: clamp(1.25rem, 5vw, 5.5rem);
-  --maxw: 1500px;
+  --pad: clamp(1rem, 3.4vw, 2.5rem);
+  --maxw: 1440px;
+  --radius: 3px;
+  /* The two header tiers. Pages offset their first scene by this much. */
+  --utility-h: 34px;
+  --header-h: 62px;
+  /* Hairline used for every internal division inside a panel. */
+  --panel-line: var(--line);
 
   --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%231c1a17' filter='url(%23n)' opacity='.6' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
 
   /* --- type ------------------------------------------------------------- */
-  --font-display: "Anton", "Arial Narrow", Impact, sans-serif;
-  --font-label: "Barlow", "Arial Narrow", Arial, sans-serif;
-  --font-condensed: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
-  --font-body: "DM Sans Variable", "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-display: "Archivo Variable", "Archivo", "Inter Variable", system-ui, sans-serif;
+  --font-body: "Inter Variable", "Inter", system-ui, -apple-system, sans-serif;
+  --font-label: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-condensed: "Archivo Variable", "Archivo", system-ui, sans-serif;
 
   /* --- motion ----------------------------------------------------------- */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -104,76 +132,76 @@
 }
 
 /* ==========================================================================
-   The night sheet
+   The night sheet — the auditorium with the lights down
    --------------------------------------------------------------------------
-   The same poster printed in reverse: near-black stock, cream ink, the crimson
-   kept and lifted so it still reads as crimson under lamplight.
+   This is the design's home sheet: near-black ground, panel surfaces a few
+   points above it, coral lifted so it still reads as coral under lamplight, and
+   amber doing the same job it does by day. The theme is one attribute on
+   <html>, set before first paint by the script in app/layout.tsx and switched
+   by components/layout/ModeToggle.tsx; because every surface paints from these
+   tokens, one block re-skins the whole site.
 
-   The theme is one attribute on <html>, set before first paint by the script in
-   app/layout.tsx and switched by components/layout/ModeToggle.tsx. Because every
-   surface on the site is painted from these tokens, this block re-skins the whole
-   site at once — no component contains a branch for it.
+   Every value is measured, and `npm run check` recomputes the ratios from this
+   file so a later tweak cannot quietly break them. Contrast on the night ground
+   (#0b0b0c / #141416 / #1c1c20), against the 4.5:1 body-text minimum:
 
-   Every value here is measured, and `npm run check` recomputes the ratios from
-   this file so a later tweak cannot quietly break them. Contrast on the night
-   ground (#14120f / #1c1916), against the 4.5:1 body-text minimum:
-
-     ink      16.5 : 12.4   primary and secondary type
-     ink-3     7.9 :  7.4   labels, captions, rulings
-     red-text  7.6 :  7.1   red small type
-     red       3.4          the hero title (40px+ display)
-     on-red    4.8          the cream label printed on a crimson fill
-     gold      8.8 :  8.3   "awaiting confirmation" states
-     green     8.3          "confirmed by the venue"
-     line-ink  11.2         the strongest rule, held below full cream so a
-                            1px border does not glare on a dark ground. On paper
-                            the same token is 15.4:1, so the relationship — the
-                            loudest rule on the page — is kept.
+     ink      17.6 : 16.0 : 14.4   primary and secondary type
+     ink-3     6.3 :  5.9 :  5.4   labels, captions, micro-copy
+     red-text  7.4 :  6.9          coral small type
+     red       5.6                  the coral fill and its display type
+     on-red    5.5                  the ink label printed on a coral fill
+     gold     10.3 :  9.7          status, codes and block labels
+     green     8.7                  "confirmed by the venue"
+     line-ink  3.8                  the strongest rule, held at the 3:1 floor
+                                    for a non-text boundary
    ========================================================================== */
 
 [data-mode="night"] {
   color-scheme: dark;
 
-  --paper: #14120f;
-  --paper-2: #1c1916;
-  --paper-3: #2e2a26;
-  --paper-veil: rgba(20, 18, 15, 0.92);
+  --paper: #0b0b0c;
+  --paper-2: #141416;
+  --paper-3: #1c1c20;
+  --paper-veil: rgba(11, 11, 12, 0.86);
 
-  --ink: #f4f1e6;
-  --ink-2: #d8d2c0;
-  --ink-3: #b0a897;
+  --ink: #f4f2ee;
+  --ink-2: #c6c2ba;
+  --ink-3: #908c86;
 
-  --line: #3d3833;
-  --line-strong: #6b6459;
-  --line-ink: #cfc8b6;
+  --line: #26262b;
+  --line-strong: #3a3a41;
+  --line-ink: #6d6d77;
+  --panel-line: #26262b;
 
   /*
-   * The crimson lifts only as far as it must. Its darkest form is unreadable as
-   * display type on this paper, but every lift costs the cream label printed on
-   * top of it, so --red stops one step above the 3:1 floor for large type and the
-   * fills keep their cream labels (4.81:1). --red-dark stays the pressed shade —
-   * deeper, as it is by day — and --red-text is the one that becomes light,
-   * because small red type on dark paper has nowhere else to go.
+   * The coral lifts to a warm ember. Its darkest form is unreadable as display
+   * type on this ground, but every lift costs the ink label printed on top of
+   * it, so --red stops well above both floors: 5.6:1 against the ground for
+   * display type, 5.5:1 for the label it carries.
    */
-  --red: #cf1b26;
-  --red-dark: #a8161f;
-  --red-text: #f3867e;
-  --red-soft: rgba(207, 27, 38, 0.16);
-  --red-line: rgba(207, 27, 38, 0.46);
+  --red: #f0533c;
+  --red-hover: #ff6b52;
+  --red-text: #f57a66;
+  --red-soft: rgba(240, 83, 60, 0.16);
+  --red-line: rgba(240, 83, 60, 0.44);
 
-  --on-ink: #14120f;
-  /* Unchanged on purpose: the crimson and the scrim are dark on both sheets. */
-  --on-dark: #f4f1e6;
+  /* The ink fill becomes the light surface, so its label inverts with it. */
+  --on-ink: #0b0b0c;
+  /* The coral fill, the amber fill and the scrim stay as they are: their labels
+     must not move. An ink label on coral or amber is correct in both sheets. */
+  --on-red: #14100e;
+  --on-gold: #14100e;
+  --on-dark: #f7f5f1;
 
-  --gold: #d9ab5c;
-  --gold-bright: #c8994a;
-  --gold-soft: rgba(217, 171, 92, 0.16);
+  --gold: #f0b04a;
+  --gold-bright: #f7c463;
+  --gold-soft: rgba(240, 176, 74, 0.14);
 
   --green: #57c08c;
   --green-soft: rgba(87, 192, 140, 0.14);
 
-  /* The grain is ink on paper; at night it is paper over ink. */
-  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23f4f1e6' filter='url(%23n)' opacity='.5' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+  /* The grain is ink on stock; at night it is the dust in the projector beam. */
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23f4f2ee' filter='url(%23n)' opacity='.5' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
 }
 
 /*
@@ -227,27 +255,20 @@ html {
   -webkit-text-size-adjust: 100%;
   color-scheme: light;
   scroll-behavior: smooth;
-  /* Keeps anchored sections clear of the fixed header. */
-  scroll-padding-top: 90px;
+  /* Keeps anchored sections clear of the two header tiers. */
+  scroll-padding-top: calc(var(--utility-h) + var(--header-h) + 12px);
 }
 
 body {
   background-color: var(--paper);
   color: var(--ink);
-  /* Small body size against enormous display type is the core of the
-     editorial look, so the base stays deliberately modest. */
   font-family: var(--font-body);
   font-size: 14px;
-  line-height: 1.68;
-  letter-spacing: -0.005em;
+  line-height: 1.62;
+  letter-spacing: -0.003em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-}
-
-/* The rail owns the left edge, exactly as a poster's margin would. */
-body {
-  padding-left: var(--rail);
 }
 
 img,
@@ -286,13 +307,14 @@ ol {
   padding: 0;
 }
 
-/* Film grain, fixed over the whole page. Decorative. */
+/* Projector dust, fixed over the whole page. Decorative, and barely there: the
+   surfaces themselves are flat, so this must never read as texture. */
 .grain {
   position: fixed;
   inset: 0;
   z-index: 95;
   pointer-events: none;
-  opacity: 0.055;
+  opacity: 0.035;
   background-image: var(--grain);
 }
 
@@ -305,58 +327,73 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   text-transform: uppercase;
-  line-height: 0.99;
-  letter-spacing: -0.028em;
+  line-height: 1.06;
+  letter-spacing: -0.014em;
 }
 
 h1 {
-  font-size: clamp(3.4rem, 12vw, 11rem);
+  font-size: clamp(2.1rem, 4.4vw, 3.4rem);
 }
 
 h2 {
-  font-size: clamp(2.1rem, 5.6vw, 4.6rem);
+  font-size: clamp(1.55rem, 2.6vw, 2.25rem);
 }
 
 h3 {
-  font-size: clamp(1.35rem, 3vw, 2.3rem);
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
 }
 
 h4 {
-  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  font-size: 1rem;
 }
 
 p {
-  margin: 0 0 1.1rem;
+  margin: 0 0 1rem;
 }
 
 p:last-child {
   margin-bottom: 0;
 }
 
+/*
+ * .eyebrow — the micro-label that names a block.
+ *
+ * Mono, uppercase, widely tracked, and deliberately small: it is a label on a
+ * control surface, not a heading. Amber is the default because that is the
+ * design's language for "this names the thing below it".
+ */
 .eyebrow {
   display: block;
   font-family: var(--font-label);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  color: var(--gold);
 }
 
-/* Small italic serif accents — the handwritten note on a poster. */
-.script {
-  display: block;
-  font-family: Georgia, "Times New Roman", serif;
-  font-style: italic;
-  font-size: clamp(1.1rem, 1.7vw, 1.6rem);
-  line-height: 1.3;
+.eyebrow-quiet {
+  color: var(--ink-3);
+}
+
+/* A block label with the coral dot the design uses for live/active state. */
+.eyebrow-dot::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  vertical-align: 1px;
 }
 
 .lede {
-  max-width: 62ch;
+  max-width: 66ch;
   color: var(--ink-2);
-  font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+  font-size: 14px;
 }
 
 .muted {
@@ -367,11 +404,24 @@ p:last-child {
   font-size: 12px;
 }
 
-/* Showtimes, dates and prices: condensed, so digits stay tight and legible. */
+/*
+ * Mono for anything a visitor compares, reads off, or quotes back: screening
+ * times, prices, hold countdowns, codes. Tabular so digits do not shuffle.
+ */
+.mono,
 .tabular {
-  font-family: var(--font-condensed);
+  font-family: var(--font-label);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
+}
+
+.micro {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 .visually-hidden {
@@ -392,13 +442,13 @@ p:last-child {
 
 :focus-visible {
   outline: 2px solid var(--red);
-  outline-offset: 4px;
+  outline-offset: 3px;
 }
 
 .skip-link {
   position: fixed;
   top: 10px;
-  left: calc(var(--rail) + 10px);
+  left: 10px;
   z-index: 150;
   padding: 10px 18px;
   background: var(--ink);
@@ -432,10 +482,10 @@ p:last-child {
 }
 
 .scene-pad {
-  padding-block: clamp(3rem, 7vw, 6.5rem);
+  padding-block: clamp(2.25rem, 4.5vw, 3.75rem);
 }
 
-/* Alternate paper tone, used to separate consecutive scenes. */
+/* Alternate panel tone, used to separate consecutive scenes. */
 .sceneAlt {
   background: var(--paper-2);
   border-block: 1px solid var(--line);
@@ -446,36 +496,75 @@ p:last-child {
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem 2rem;
-  margin-bottom: clamp(1.75rem, 4vw, 3rem);
+  gap: 1rem 2.5rem;
+  margin-bottom: clamp(1.25rem, 2.4vw, 2rem);
 }
 
 .section-head h2 {
-  margin-top: 0.6rem;
+  margin-top: 0.5rem;
 }
 
 .section-head p {
-  max-width: 58ch;
-  margin-top: 0.7rem;
+  max-width: 52ch;
+  margin-top: 0;
   color: var(--ink-3);
   font-size: 13px;
 }
 
 /* ==========================================================================
-   Surfaces — ruled boxes, not soft cards
+   Surfaces — hairline panels, not soft cards
    ========================================================================== */
 
+.panel {
+  border: 1px solid var(--panel-line);
+  background: var(--paper-2);
+  border-radius: var(--radius);
+}
+
+.panel-flat {
+  background: var(--paper);
+}
+
+.panel-inset {
+  border: 1px solid var(--panel-line);
+  background: var(--paper-3);
+  border-radius: var(--radius);
+}
+
+/* Kept for components that ask for a plain ruled box. */
 .box {
   border: 1px solid var(--line-ink);
   background: var(--paper);
+}
+
+/*
+ * A chip: a small standing fact — a format, a screen, a runtime. Mono and
+ * uppercase so it reads as a code rather than as prose.
+ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: var(--paper-3);
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  white-space: nowrap;
 }
 
 /* Notice block: a ruled panel with a coloured spine. */
 .note {
   position: relative;
   display: block;
-  padding: 1rem 1.2rem 1rem 1.4rem;
+  padding: 0.9rem 1.1rem 0.9rem 1.3rem;
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: var(--paper-2);
   color: var(--ink-2);
   font-size: 13px;
@@ -486,7 +575,7 @@ p:last-child {
   position: absolute;
   inset: 0 auto 0 0;
   width: 3px;
-  background: var(--gold-bright);
+  background: var(--gold);
 }
 
 .note strong {
@@ -508,10 +597,10 @@ p:last-child {
 
 [data-reveal="ready"] .reveal {
   opacity: 0;
-  translate: 0 28px;
+  translate: 0 18px;
   transition:
-    opacity 750ms var(--ease),
-    translate 900ms var(--ease);
+    opacity 620ms var(--ease),
+    translate 720ms var(--ease);
 }
 
 [data-reveal="ready"] .reveal.is-visible {
@@ -567,34 +656,42 @@ p:last-child {
   [data-mode="night"] {
     --paper: #ffffff;
     --paper-2: #ffffff;
-    --paper-3: #f4f1e6;
+    --paper-3: #f6f3ee;
     --paper-veil: #ffffff;
-    --ink: #1c1a17;
-    --ink-2: #3a3733;
-    --ink-3: #55524b;
-    --line: #b9b4a3;
-    --line-strong: #8f8a79;
-    --line-ink: #1c1a17;
-    --red: #c1121f;
-    --red-dark: #8f0d18;
-    --red-text: #c1121f;
-    --gold: #755915;
-    --gold-bright: #b0863c;
+    --ink: #16151a;
+    --ink-2: #3b3941;
+    --ink-3: #5d5a63;
+    --line: #ddd7ca;
+    --line-strong: #b6afa1;
+    --line-ink: #16151a;
+    --panel-line: #ddd7ca;
+    --red: #e04a2f;
+    --red-hover: #ec5638;
+    --red-text: #b8351f;
+    --gold: #8a5a12;
+    --gold-bright: #b8792a;
     --green: #1f6f4a;
-    --on-ink: #f4f1e6;
-    --on-dark: #f4f1e6;
+    --on-ink: #f6f3ee;
+    --on-red: #14100e;
+    --on-gold: #14100e;
+    --on-dark: #f7f5f1;
     color-scheme: light;
   }
 
   body {
-    padding-left: 0;
     background: #fff;
   }
 
+  /*
+   * The chrome goes, by its stable hooks rather than by its hashed module class
+   * names: `.site-header` and `.utility-strip` are the two hooks that survive
+   * CSS-module hashing, the same arrangement the footer's band used to have.
+   * On paper the sections, the address and the small print are what a reader
+   * wants — not a floating bar.
+   */
   .grain,
-  .rail,
   .site-header,
-  .footer-crowd {
+  .utility-strip {
     display: none !important;
   }
 }
@@ -607,8 +704,8 @@ p:last-child {
 
 .films-hero {
   position: relative;
-  height: min(600px, 78vh);
-  min-height: 440px;
+  height: min(560px, 72vh);
+  min-height: 420px;
   overflow: hidden;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
@@ -625,18 +722,17 @@ p:last-child {
   display: flex;
   height: 100%;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 0 var(--pad);
   pointer-events: none;
 }
 
 .films-hero__panel {
   max-width: 620px;
-  padding: clamp(22px, 3vw, 40px) clamp(22px, 4vw, 52px);
-  background: var(--paper);
-  border: 1px solid var(--line-ink);
-  box-shadow: 0 18px 50px rgba(28, 26, 23, 0.18);
-  text-align: center;
+  padding: clamp(20px, 2.6vw, 34px) clamp(20px, 3vw, 40px);
+  background: var(--paper-2);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
   pointer-events: auto;
 }
 
@@ -652,7 +748,7 @@ p:last-child {
   .films-hero__copy {
     order: 1;
     height: auto;
-    /* Clears the fixed site header, which sits over the top of the page. */
+    /* Clears the two fixed header tiers. */
     padding: 6.5rem var(--pad) 1.25rem;
   }
 
@@ -660,7 +756,7 @@ p:last-child {
     order: 2;
     position: relative;
     inset: auto;
-    height: 300px;
+    height: 280px;
     overflow: hidden;
   }
 

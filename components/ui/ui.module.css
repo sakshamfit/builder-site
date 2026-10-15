@@ -42,7 +42,7 @@
 }
 
 .red:hover {
-  background: var(--red-dark);
+  background: var(--red-hover);
 }
 
 .ink {
@@ -184,4 +184,50 @@
 
 .emptyAction {
   margin-top: 0.5rem;
+}
+
+/* --- sample marker -------------------------------------------------------- */
+
+/*
+ * The marker on design sample content. Amber, because everything provisional on
+ * this site is amber, but with a filled dot and no border so it cannot be
+ * confused with the "awaiting the venue" badges beside it — those describe a
+ * fact that is coming, this describes a value that is a rehearsal.
+ */
+.sampleMark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 2px;
+  background: var(--gold-soft);
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.sampleDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.sampleNotice {
+  margin: 0 0 1rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.sampleNotice strong {
+  color: var(--ink);
 }
