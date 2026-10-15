@@ -9,15 +9,24 @@ import styles from "./layout.module.css";
 /**
  * Full-screen menu.
  *
- * Slides down over the page in the accent colour — a poster flipped to its
- * reverse. Built as a modal because it covers the viewport: focus moves in and
- * is trapped, Escape closes it, focus returns to the toggle, and background
- * scrolling is locked.
+ * Slides down over the page on the panel ground, carrying the same six sections
+ * as the header for readers whose viewport has no room for them. Built as a
+ * modal because it covers the viewport: focus moves in and is trapped, Escape
+ * closes it, focus returns to the toggle, and background scrolling is locked.
  *
  * The links are indexed like a contents page, which is also what makes the
  * numbering useful rather than decorative.
  */
-export function FullScreenMenu({ items, brandName }: { items: NavItem[]; brandName: string }) {
+export function FullScreenMenu({
+  items,
+  brandName,
+  note,
+}: {
+  items: NavItem[];
+  brandName: string;
+  /** One line of context, supplied by the caller from the venue record. */
+  note: string;
+}) {
   /*
    * The panel's open state is recorded against the route it was opened on, so a
    * navigation closes it during the same render — no effect, no flash of the
@@ -122,10 +131,7 @@ export function FullScreenMenu({ items, brandName }: { items: NavItem[]; brandNa
             ))}
           </nav>
 
-          <p className={styles.menuFoot}>
-            A showcase of the cinema hall at Madhuban, Bihar. Ticket links appear once the
-            venue&rsquo;s ticketing partner is confirmed.
-          </p>
+          <p className={styles.menuFoot}>{note}</p>
         </div>
       ) : null}
     </>

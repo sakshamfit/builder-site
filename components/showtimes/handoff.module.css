@@ -1,0 +1,912 @@
+/* ==========================================================================
+   Showtime & handoff — the screening screen
+   --------------------------------------------------------------------------
+   The design's flagship page, in three movements:
+
+     1. the hold banner, which states what the page is doing and how long the
+        allotment is held;
+     2. the two columns — what you are booking on the left, who completes the
+        sale on the right, with the one coral action that leaves the site;
+     3. the practical strip below it: arriving, parking, and where the terms
+        actually live, followed by the venue's route to the auditorium.
+
+   Every block here is a hairline panel on the night ground. Nothing is a card
+   with a shadow, nothing floats, and the only saturated fills on the page are
+   the coral action and the amber figures — so the eye always lands on the one
+   thing a visitor came to do.
+   ========================================================================== */
+
+.screen {
+  padding-block: clamp(1.25rem, 2.5vw, 2rem) clamp(2rem, 4vw, 3rem);
+}
+
+/* --- hold banner ---------------------------------------------------------- */
+
+.lockBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem 1.25rem;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+}
+
+.lockIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--gold-bright);
+  border-radius: 999px;
+  color: var(--gold);
+}
+
+.lockIconGlyph {
+  width: 17px;
+  height: 17px;
+}
+
+.lockBody {
+  min-width: 0;
+}
+
+.lockTitle {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.lockSub {
+  margin-top: 2px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.lockTimer {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-left: auto;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-3);
+}
+
+.lockTimerLabel {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.lockTimerValue {
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+}
+
+/* --- the two columns ------------------------------------------------------ */
+
+.columns {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.mainPanel,
+.sidePanel {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+}
+
+.mainPanel {
+  position: relative;
+  overflow: hidden;
+}
+
+/* The blurred "what else is on" wash the design puts behind the lower half of
+   the panel. Decorative only, and it never carries type. */
+.mainPanel::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 34%;
+  background: linear-gradient(to top, var(--paper-3), transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.posterRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: clamp(0.9rem, 2vw, 1.5rem);
+  align-items: flex-start;
+}
+
+/* The plate stands in for artwork, exactly as it does in the programme: the
+   title in the display face, the format strip beside it, and a label that says
+   what it is. No film's own key art appears anywhere in this project. */
+.plate {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: clamp(120px, 22vw, 188px);
+  aspect-ratio: 2 / 3;
+  padding: 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background:
+    radial-gradient(120% 90% at 20% 10%, rgba(240, 83, 60, 0.42), transparent 60%),
+    linear-gradient(160deg, #24100d, #0d0d0f 70%);
+  overflow: hidden;
+}
+
+.plateKicker {
+  font-family: var(--font-label);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(247, 245, 241, 0.72);
+}
+
+.plateTitle {
+  margin-top: 0.4rem;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.6vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: #f7f5f1;
+}
+
+.plateCert {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  padding: 3px 7px;
+  border-radius: 2px;
+  background: rgba(11, 11, 12, 0.82);
+  font-family: var(--font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f7f5f1;
+}
+
+.detailCol {
+  min-width: 0;
+  flex: 1;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.title {
+  margin-top: 0.75rem;
+  font-size: clamp(1.4rem, 3.2vw, 2.1rem);
+}
+
+.languageLine {
+  margin-top: 0.4rem;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.infoGrid {
+  display: grid;
+  gap: 1rem 1.5rem;
+  margin-top: 1.15rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.infoLabel {
+  display: block;
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.infoValue {
+  margin-top: 0.35rem;
+  font-size: 13.5px;
+}
+
+.infoSub {
+  margin-top: 2px;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.specBox {
+  margin-top: 1.15rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-3);
+}
+
+.specBody {
+  margin-top: 0.35rem;
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.priceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin-top: 1.15rem;
+}
+
+.priceLabel {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.priceValue {
+  font-family: var(--font-label);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.priceNote {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+.altRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--panel-line);
+}
+
+.altLabel {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.altLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.altLink:hover {
+  color: var(--ink);
+}
+
+.altLinkGlyph {
+  width: 13px;
+  height: 13px;
+}
+
+.times {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.9rem;
+}
+
+.timeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  background: var(--paper-3);
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+  transition:
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.timeChip:hover {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+/* The chosen slot: the page's own coral, filled, with the ink label that makes
+   the coral readable. */
+.timeChipSelected,
+.timeChipSelected:hover {
+  border-color: var(--red);
+  background: var(--red);
+  color: var(--on-red);
+  font-weight: 700;
+}
+
+.timeState {
+  color: var(--gold);
+}
+
+.timeChipSelected .timeState {
+  color: var(--on-red);
+  opacity: 0.75;
+}
+
+/* --- the partner column --------------------------------------------------- */
+
+.sideKicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.sideKicker::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.sideHeading {
+  margin-top: 0.7rem;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.sideBody {
+  margin-top: 0.75rem;
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.guarantee {
+  margin-top: 1.15rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-3);
+}
+
+.guaranteeHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guaranteeGlyph {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: var(--gold);
+}
+
+.guaranteeTitle {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.guaranteeBody {
+  margin-top: 0.5rem;
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.assurances {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.assurance {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 0.75rem 0.5rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-3);
+  text-align: center;
+}
+
+.assuranceGlyph {
+  width: 17px;
+  height: 17px;
+  color: var(--ink-2);
+}
+
+.assuranceTitle {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.assuranceDetail {
+  color: var(--ink-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.partnerAction {
+  display: block;
+  margin-top: 1.15rem;
+}
+
+.partnerCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.9rem 1.1rem;
+  border-radius: 6px;
+  background: var(--red);
+  color: var(--on-red);
+  font-family: var(--font-label);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.partnerCta:hover {
+  background: var(--red-hover);
+}
+
+.partnerCtaGlyph {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.partnerCtaNote {
+  margin-top: 0.6rem;
+  color: var(--ink-3);
+  font-size: 12px;
+  text-align: center;
+}
+
+.redirectLine {
+  margin-top: 0.5rem;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  text-align: center;
+}
+
+.altDivider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.altDivider::before,
+.altDivider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--panel-line);
+}
+
+.boxOffice {
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+}
+
+.boxOfficeHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.boxOfficeTitle {
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.boxOfficePlace {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.boxOfficeBody {
+  margin-top: 0.5rem;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+.operator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--panel-line);
+}
+
+.operatorLabel {
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.operatorValue {
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.concierge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-3);
+}
+
+.conciergeGlyph {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: var(--gold);
+}
+
+.conciergeText {
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.conciergeLink {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.conciergeLink:hover {
+  color: var(--ink);
+}
+
+/* --- the practical strip -------------------------------------------------- */
+
+.practical {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.practicalCard {
+  padding: clamp(0.95rem, 1.6vw, 1.25rem);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+}
+
+.practicalGlyph {
+  width: 17px;
+  height: 17px;
+  color: var(--gold);
+}
+
+.practicalTitle {
+  margin-top: 0.7rem;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.practicalBody {
+  margin-top: 0.55rem;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+/* --- venue logistics ------------------------------------------------------ */
+
+.logistics {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  border-top: 1px solid var(--panel-line);
+}
+
+.logisticsHead {
+  display: grid;
+  gap: 0.75rem 2.5rem;
+  align-items: end;
+}
+
+.logisticsBody {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.logisticsGrid {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(1rem, 2.2vw, 1.75rem);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.logisticsCard {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+}
+
+.logisticsTitle {
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.logisticsValue {
+  margin-top: 0.5rem;
+  font-size: 13.5px;
+}
+
+.logisticsNote {
+  margin-top: 0.4rem;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+@media (min-width: 1000px) {
+  .columns {
+    grid-template-columns: 1.55fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .logisticsHead {
+    grid-template-columns: 1.1fr 1fr;
+  }
+}
+
+/* --- sample marking -------------------------------------------------------- */
+
+/*
+ * The marker row sits above the hold banner, and the footnote closes the page.
+ * Both are only rendered when the screening is the design's sample content, so
+ * a reader never meets either on a real timetable.
+ */
+.sampleRow {
+  margin: 0 0 0.85rem;
+}
+
+.sampleFootnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 1.25rem;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.sampleFootnote code {
+  font-family: var(--font-label);
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.trademark {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 1.25rem;
+  color: var(--ink-3);
+  line-height: 1.6;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.trademarkGlyph {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--gold);
+}
+
+/* --- screen spec heading -------------------------------------------------- */
+
+.specHeading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--gold);
+}
+
+.specGlyph {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* --- sample schedule board ------------------------------------------------- */
+
+.sampleBoard {
+  display: grid;
+  gap: 0;
+}
+
+.boardCard {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+}
+
+.boardHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--panel-line);
+}
+
+.boardDate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.boardGlyph {
+  width: 15px;
+  height: 15px;
+  color: var(--gold);
+}
+
+.boardPlace {
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.boardFilm {
+  display: flex;
+  gap: clamp(0.9rem, 2vw, 1.5rem);
+  align-items: flex-start;
+  margin-top: 1.1rem;
+}
+
+.boardPlate {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  width: clamp(84px, 16vw, 130px);
+  aspect-ratio: 2 / 3;
+  padding: 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background:
+    radial-gradient(120% 90% at 25% 15%, rgba(240, 83, 60, 0.38), transparent 62%),
+    linear-gradient(160deg, #24100d, #0d0d0f 72%);
+}
+
+.boardPlateTitle {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: #f7f5f1;
+}
+
+.boardDetail {
+  min-width: 0;
+  flex: 1;
+}
+
+.boardTitle {
+  margin-top: 0.75rem;
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+}

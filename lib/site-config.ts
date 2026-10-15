@@ -8,18 +8,9 @@
  * See .env.example for the full list and README "Production configuration".
  */
 
+import { readEnv, readList } from "@/lib/env";
+
 export type DataMode = "programme" | "live";
-
-function readEnv(value: string | undefined): string {
-  return (value ?? "").trim();
-}
-
-function readList(value: string | undefined): string[] {
-  return readEnv(value)
-    .split(",")
-    .map((entry) => entry.trim().toLowerCase())
-    .filter(Boolean);
-}
 
 const DEFAULT_SITE_URL = "http://localhost:3000";
 
@@ -71,6 +62,14 @@ export const siteConfig = {
   /** Short form used where space is tight (mobile header). */
   brandShortName: readEnv(process.env.NEXT_PUBLIC_BRAND_SHORT_NAME) || "Cinema",
 
+  /**
+   * The venue's own description of itself, one or two sentences, shown in the
+   * footer under the wordmark. Empty until the owner approves the wording: the
+   * fallback is a factual sentence built from the venue record, not a marketing
+   * line somebody wrote on the venue's behalf.
+   */
+  brandDescription: readEnv(process.env.NEXT_PUBLIC_BRAND_DESCRIPTION),
+
   siteUrl: resolveSiteUrl(readEnv(process.env.NEXT_PUBLIC_SITE_URL)),
 
   /**
@@ -94,6 +93,26 @@ export const siteConfig = {
    * programme, where the UI must say so rather than show an empty timetable.
    */
   hasScreeningSchedule: dataMode === "live",
+
+  /**
+   * The utility strip's standing announcement — a member code, a price promise,
+   * a season. Two halves because they are typeset differently: `tag` is the
+   * amber label ("Privilege member"), `text` is the line beside it.
+   *
+   * Empty by default, and empty is a supported state: the strip falls back to
+   * the venue's own place label rather than showing an unapproved promotion.
+   * Anything that reads as a commercial promise belongs in the approved
+   * copy, not in a component.
+   */
+  announcementTag: readEnv(process.env.NEXT_PUBLIC_ANNOUNCEMENT_TAG),
+  announcementText: readEnv(process.env.NEXT_PUBLIC_ANNOUNCEMENT_TEXT),
+
+  /**
+   * Where the footer's newsletter form posts. Empty = the block is not shown at
+   * all, because a signup field that posts nowhere collects nothing and says
+   * something untrue about the venue having a mailing list.
+   */
+  newsletterEndpoint: readEnv(process.env.NEXT_PUBLIC_NEWSLETTER_ENDPOINT),
 
   ticketing: {
     /** Display name of the confirmed provider. Empty = no booking button. */

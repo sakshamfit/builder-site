@@ -1066,82 +1066,158 @@ check("a malformed payload degrades to an honest unavailable state, never to sam
 
 
 /* -------------------------------------------------------------------------- */
-/* The footer's crowd band                                                    */
+/* The footer                                                                 */
 /* -------------------------------------------------------------------------- */
 
-section("Footer crowd");
+section("The footer");
 
-check("the crowd band sits below the copy, never behind it", () => {
+const { NAV_ITEMS, FOOTER_SECTIONS } = await import("../lib/nav.ts");
+
+check("every link in the footer is a destination this site actually has", () => {
   /*
-   * The crowd is a strip of illustrated passers-by: it is decorative, and the
-   * figures are not this venue's audience. The rule is therefore that no line of
-   * copy is ever printed over one — the band is a block below the copy rather
-   * than a background layer behind it. This was once the other way round, and the
-   * giveaway was the workarounds it forced: a red text-shadow halo on every
-   * footer line and a solid backing plate behind the small print, both there to
-   * hold type clear of the figures.
+   * A footer is where dead links go to hide: three tidy columns of plausible
+   * page names, none of which resolve. Every entry here is an on-site path, and
+   * the navigation and the footer columns agree about what the sections are
+   * called, because they are read from the same module.
    */
-  const footer = readFileSync("components/layout/SiteFooter.tsx", "utf8");
-  const css = readFileSync("components/layout/layout.module.css", "utf8");
+  const sections = [...FOOTER_SECTIONS.flatMap((section) => section.items), ...NAV_ITEMS];
 
-  const copyAt = footer.indexOf("styles.footerContent");
-  const crowdAt = footer.indexOf("styles.footerCrowd");
-  assert.ok(copyAt !== -1 && crowdAt !== -1, "the footer must render both the copy and the band");
-  assert.ok(
-    crowdAt > copyAt,
-    "the crowd band must come after the copy in the markup, so it sits below it on screen",
-  );
+  for (const item of sections) {
+    assert.ok(
+      item.href.startsWith("/"),
+      `${item.label} points at ${item.href}, which is not an on-site destination`,
+    );
+  }
 
-  const band = cssBlock(css, ".footerCrowd");
-  assert.doesNotMatch(
-    band,
-    /position:\s*absolute/,
-    "an absolutely-positioned band can be stretched over the copy — it must be a block in flow",
-  );
-  assert.doesNotMatch(
-    band,
-    /inset:\s*0|top:\s*0|height:\s*100%/,
-    "the band must not cover the whole footer",
-  );
-  assert.match(band, /height:/, "the band needs a definite height for the canvas to fill");
-  assert.match(band, /pointer-events:\s*none/, "the band must never intercept a click");
-
-  assert.doesNotMatch(
-    cssBlock(css, ".footerContent"),
-    /text-shadow/,
-    "a halo behind the copy only makes sense if something is drawn behind the copy",
-  );
-
-  const attribution = footer.slice(footer.indexOf("styles.footerBottom"));
-  assert.doesNotMatch(
-    attribution,
-    /background:\s*var\(--red\)/,
-    "the small print no longer needs a backing plate — nothing passes behind it",
-  );
+  const duplicates = new Set<string>();
+  for (const item of NAV_ITEMS) {
+    assert.ok(!duplicates.has(item.href), `${item.href} appears twice in the primary navigation`);
+    duplicates.add(item.href);
+  }
 });
 
-check("the crowd band is decorative and removable", () => {
+check("the footer's small print is read from the records, not typed into the markup", () => {
+  /*
+   * The address, the attribution line and the sourcing note are the three places
+   * a venue site most often drifts out of date, because they are the three
+   * places copy gets pasted. Here they are assembled at render time: the address
+   * from the venue record (which only emits confirmed parts), the attribution
+   * from configuration (empty until approved), and the sourcing note from the
+   * data mode the build is actually in.
+   */
   const footer = readFileSync("components/layout/SiteFooter.tsx", "utf8");
-  const css = readFileSync("components/layout/layout.module.css", "utf8");
 
   assert.match(
     footer,
-    /styles.footerCrowd\} footer-crowd/,
-    "the band needs the stable `footer-crowd` hook that app/globals.css addresses in print",
+    /from "@\/data\/cinema"/,
+    "the footer must read the venue record rather than restating the address",
   );
-
-  const reduced = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
   assert.match(
-    reduced,
-    /\.footerCrowd\s*\{[^}]*display:\s*none/,
-    "reduced motion must remove the band, not leave its height standing empty",
+    footer,
+    /siteConfig\.attribution/,
+    "the attribution line must come from configuration, so it is absent until approved",
   );
+  assert.match(
+    footer,
+    /siteConfig\.hasScreeningSchedule/,
+    "what the footer says about times and prices must follow the mode the site is in",
+  );
+  assert.doesNotMatch(
+    footer,
+    /\b\d{6}\b/,
+    "a postal code typed into the footer is a fact that will go stale in the markup",
+  );
+  assert.doesNotMatch(
+    footer,
+    /https?:\/\//,
+    "the footer must not pull an asset from a third party — this site makes no third-party requests",
+  );
+});
+
+/* -------------------------------------------------------------------------- */
+/* The sample layer                                                           */
+/* -------------------------------------------------------------------------- */
+
+section("Sample content");
+
+check("sample content cannot be rendered without its marker", () => {
+  /*
+   * The owner asked for the design's own copy to be reproduced so the built
+   * pages match the comp. That is a rehearsal timetable, and the one thing that
+   * makes a rehearsal acceptable is that the reader is told it is one — so this
+   * walks every component and page that pulls a *value* out of the sample layer
+   * and requires the marker to travel with it.
+   *
+   * Files that import only the switch are exempt: deciding whether to render the
+   * sample page is not the same as rendering it, and the page that does render it
+   * (`SampleSchedule`, `HandoffScreen`) carries the marker itself.
+   */
+  const { readdirSync, readFileSync: read } = fs;
+  const { join } = path;
+
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (/\.tsx$/.test(entry.name)) files.push(full);
+    }
+  };
+  walk("app");
+  walk("components");
+
+  const consumers = files.filter((file) => {
+    if (file.endsWith(join("components", "ui", "SampleBadge.tsx"))) return false;
+    const source = read(file, "utf8");
+    return /\bsampleScreening\b|\bSAMPLE_NOTICE\b|\bSAMPLE_LABEL\b/.test(source);
+  });
+
+  assert.ok(consumers.length >= 1, "the sample layer is no longer rendered anywhere");
+
+  for (const file of consumers) {
+    assert.match(
+      read(file, "utf8"),
+      /Sample(Badge|Notice)/,
+      `${file} renders sample content without the marker that says so`,
+    );
+  }
+});
+
+check("the sample layer is off in a production build unless it is switched on", () => {
+  const source = readFileSync("lib/sample-content.ts", "utf8");
 
   assert.match(
-    readFileSync("app/globals.css", "utf8"),
-    /\.footer-crowd\s*\{/,
-    "the band must be hidden when the page is printed",
+    source,
+    /NEXT_PUBLIC_SAMPLE_CONTENT/,
+    "the sample layer must be switchable from configuration",
   );
+  assert.match(
+    source,
+    /return process\.env\.NODE_ENV !== "production"/,
+    "with nothing configured, sample content must be off in production and on in development",
+  );
+  assert.match(
+    source,
+    /SAMPLE_NOTICE/,
+    "sample content must ship the sentence that explains what it is",
+  );
+});
+
+check("no sample value is written into the venue records", () => {
+  /* The sample layer is a UI concern. Nothing from it may appear in `data/`,
+     which holds the venue's own facts and the sourced programme. */
+  const { readdirSync, statSync, readFileSync: read } = fs;
+
+  for (const entry of readdirSync("data")) {
+    const full = `data/${entry}`;
+    if (!statSync(full).isFile()) continue;
+    const source = read(full, "utf8");
+    assert.doesNotMatch(
+      source,
+      /sample-content|The Silent Horizon/,
+      `${full} carries sample content — that belongs in lib/sample-content.ts only`,
+    );
+  }
 });
 
 /* -------------------------------------------------------------------------- */
@@ -1301,10 +1377,14 @@ check("the pre-paint script cannot drift from the module that defines it", () =>
 });
 
 check("every colour token has a night value — no day colour can leak through", () => {
-  /* Tokens that describe structure, type or motion are appearance-independent and
-     are deliberately absent from the night block. Everything else must be
-     redefined, or a surface would keep its cream background after dark. */
-  const appearanceIndependent = /^--font-|^--ease|^--dur(-|$)|^--theme-dur$|^--rail$|^--pad$|^--maxw$/;
+  /* Tokens that describe structure, type, motion or geometry are
+     appearance-independent and are deliberately absent from the night block:
+     a hairline radius or a header height is the same in both sheets, and
+     restating them would be two places to change one number. Everything else
+     must be redefined, or a surface would keep its daylight background after
+     dark. */
+  const appearanceIndependent =
+    /^--font-|^--ease|^--dur(-|$)|^--theme-dur$|^--radius$|^--utility-h$|^--header-h$|^--pad$|^--maxw$/;
 
   for (const name of dayTokens.keys()) {
     if (appearanceIndependent.test(name)) continue;
@@ -1348,20 +1428,31 @@ check("the night sheet's text is legible on the night paper", () => {
 check("the night sheet's accent still carries display type, fills and labels", () => {
   const paper = token(nightTokens, "--paper");
 
-  /* The hero title is display type (40px+), so 3:1 is its floor. A fill carries
-     a printed label, so 4.5:1 is theirs — and the label on the crimson is
-     --on-dark, which does not invert with the sheet. */
+  /* The coral is display type at its largest (40px+), so 3:1 is its floor as
+     type; as a fill — the BOOK TICKETS pill, the partner button — it carries a
+     label, so 4.5:1 is theirs. That label is --on-red: coral is a light colour
+     in both sheets, so the ink that sits on it stays ink rather than inverting
+     with the sheet. --on-dark is the other job: cream type on a dark scrim, and
+     it is measured against the night ground it is actually painted on. */
   assert.ok(
     contrast(token(nightTokens, "--red"), paper) >= 3,
-    "the crimson display type is below the 3:1 needed at that size",
+    "the coral display type is below the 3:1 needed at that size",
   );
   assert.ok(
-    contrast(token(nightTokens, "--on-dark"), token(nightTokens, "--red")) >= 4.5,
-    "the crimson fill cannot carry the label printed on it",
+    contrast(token(nightTokens, "--on-red"), token(nightTokens, "--red")) >= 4.5,
+    "the coral fill cannot carry the ink label printed on it",
   );
   assert.ok(
-    contrast(token(nightTokens, "--on-dark"), token(nightTokens, "--red-dark")) >= 4.5,
-    "the pressed crimson fill cannot carry its label",
+    contrast(token(nightTokens, "--on-red"), token(nightTokens, "--red-hover")) >= 4.5,
+    "the coral fill cannot carry its label once it lights up under the cursor",
+  );
+  assert.ok(
+    contrast(token(nightTokens, "--on-gold"), token(nightTokens, "--gold-bright")) >= 4.5,
+    "the amber fill cannot carry the ink label printed on it",
+  );
+  assert.ok(
+    contrast(token(nightTokens, "--on-dark"), paper) >= 4.5,
+    "cream type on a scrim must clear the ground it is painted over",
   );
   assert.ok(
     contrast(token(nightTokens, "--on-ink"), token(nightTokens, "--ink")) >= 4.5,
@@ -1413,14 +1504,15 @@ check("no rule prints paper-coloured type on a fill that is not paper", () => {
   }
 });
 
-check("the day sheet was not disturbed by the night one", () => {
-  /* These are the values the site shipped with. The night palette is additive:
-     if a day value moved, this check says so. */
-  assert.equal(token(dayTokens, "--paper"), "#f4f1e6");
-  assert.equal(token(dayTokens, "--ink"), "#1c1a17");
-  assert.equal(token(dayTokens, "--red"), "#c1121f");
-  assert.equal(token(dayTokens, "--red-text"), "#c1121f");
-  assert.equal(token(dayTokens, "--gold"), "#755915");
+check("the day sheet still ships the values the design was drawn against", () => {
+  /* The house-lights sheet is the one the design tokens were signed off in, so
+     its values are pinned here. The night sheet is free to move — it is the
+     same room with the lights down — but if a day value drifts, this says so. */
+  assert.equal(token(dayTokens, "--paper"), "#f6f3ee");
+  assert.equal(token(dayTokens, "--ink"), "#16151a");
+  assert.equal(token(dayTokens, "--red"), "#e04a2f");
+  assert.equal(token(dayTokens, "--red-text"), "#b8351f");
+  assert.equal(token(dayTokens, "--gold"), "#8a5a12");
 
   const paper = token(dayTokens, "--paper");
   for (const [label, colourToken] of [
@@ -1438,8 +1530,8 @@ check("the day sheet was not disturbed by the night one", () => {
     "the ink fill cannot carry its label by day either",
   );
   assert.ok(
-    contrast(token(dayTokens, "--on-dark"), token(dayTokens, "--red")) >= 4.5,
-    "the crimson fill cannot carry its label by day either",
+    contrast(token(dayTokens, "--on-red"), token(dayTokens, "--red")) >= 4.5,
+    "the coral fill cannot carry its ink label by day either",
   );
 });
 
@@ -1478,9 +1570,19 @@ check("the motion tokens and the stylesheet agree", () => {
   }
 });
 
-check("the appearance switch is reachable from the header", () => {
-  const header = readFileSync("components/layout/SiteHeader.tsx", "utf8");
-  assert.match(header, /<ModeToggle \/>/, "the header no longer offers the day/night switch");
+check("the appearance switch is reachable from the site chrome", () => {
+  /* It sits in the utility strip rather than the header bar: the strip is the
+     band that carries what is true of the whole building, and the header bar is
+     already carrying six sections, a search shortcut and the ticket action. */
+  const strip = readFileSync("components/layout/UtilityStrip.tsx", "utf8");
+  assert.match(strip, /<ModeToggle \/>/, "the utility strip no longer offers the day/night switch");
+
+  const layout = readFileSync("app/layout.tsx", "utf8");
+  assert.match(
+    layout,
+    /<UtilityStrip \/>/,
+    "the utility strip is no longer part of the site chrome",
+  );
 
   const toggle = readFileSync("components/layout/ModeToggle.tsx", "utf8");
   assert.match(

@@ -37,10 +37,14 @@ export const APPEARANCE_STORAGE_KEY = "cinema-at-madhuban:appearance";
 /**
  * Browser chrome colour per mode. Must match `--paper` in `app/globals.css`;
  * `npm run check` asserts that it does.
+ *
+ * Night is the design's home sheet — the browser bar should be the same
+ * near-black as the page, so the page looks like one surface in a full-screen
+ * window rather than a page inside a frame.
  */
 export const APPEARANCE_COLORS: Record<Mode, string> = {
-  day: "#f4f1e6",
-  night: "#14120f",
+  day: "#f6f3ee",
+  night: "#0b0b0c",
 };
 
 export function isMode(value: unknown): value is Mode {

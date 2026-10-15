@@ -123,21 +123,22 @@ Two doors, both requiring something this project cannot manufacture:
 
 ### Typography
 
-Four self-hosted font files, all under the **SIL Open Font License 1.1**, which permits commercial
+Three self-hosted font packages, all under the **SIL Open Font License 1.1**, which permits commercial
 use, modification and redistribution provided the licence travels with the font files. They are
 installed as npm packages and bundled by Next.js, so no third-party font request is made at runtime
 and no licence obligation is left behind in a CDN.
 
 | Package | Family | Axes | Role | Licence |
 | --- | --- | --- | --- | --- |
-| `@fontsource/anton` | Anton | Regular 400 | Display: the venue name, film titles, section headings and screening times — condensed, heavy, uppercase | **OFL-1.1** |
-| `@fontsource/barlow` | Barlow | 400 / 600 / 700 | Interface: eyebrows, navigation, buttons, badges, small labels | **OFL-1.1** |
-| `@fontsource/barlow-condensed` | Barlow Condensed | 600 | Numerals: schedule counts and tabular figures | **OFL-1.1** |
-| `@fontsource-variable/dm-sans` | DM Sans Variable | Weight | Body copy, captions, policy text and everything long | **OFL-1.1** |
+| `@fontsource-variable/archivo` | Archivo Variable | Weight | Display: the wordmark, section headings, panel titles and card titles — a heavy grotesque, uppercase, tightly tracked | **OFL-1.1** |
+| `@fontsource-variable/inter` | Inter Variable | Weight | Body copy, captions, policy text and everything long | **OFL-1.1** |
+| `@fontsource-variable/jetbrains-mono` | JetBrains Mono Variable | Weight | Everything read off the screen rather than read through: screening times, prices, codes and the micro-labels above every block | **OFL-1.1** |
 
 Each package carries its own `LICENSE` file inside `node_modules`, and the licence text is available
-at https://openfontlicense.org. The fonts are used unmodified — only the variable axis is set in CSS,
-and Anton is used as shipped in its single weight — so no renamed variant needs to be published.
+at https://openfontlicense.org. The fonts are used unmodified — only the variable axes are set in CSS
+— so no renamed variant needs to be published. The faces changed with the "projection house" redesign;
+Anton, Barlow, Barlow Condensed and DM Sans were removed in the same change, so no superseded package
+is left installed.
 
 The reference used to choose these faces (see §6) loaded Yatra One and Noto Sans Indic from Google
 Fonts at runtime. **That was not carried over**: this project self-hosts every face, which is why the
@@ -164,9 +165,10 @@ never part of a production build, and carry no brand or film imagery.
 
 ### Iconography
 
-**This site displays no logo.** It identifies itself with type only — the venue's name set in Anton,
-positioned by the layout. There is no monogram, stamp, seal or drawn mark in the header, the left
-rail, the footer or on share cards. The venue has not supplied a logo, and a neutral mark invented
+**This site displays no logo.** It identifies itself with type only — the venue's name set in Archivo
+and split across two tiers by `components/layout/BrandMark.tsx` (the first word large, the rest small
+and letterspaced in amber), positioned by the layout. There is no monogram, stamp, seal or drawn mark
+in the header, the footer or on share cards. The venue has not supplied a logo, and a neutral mark invented
 here would be a claim about a brand identity the cinema has not approved.
 
 The one exception is `app/icon.svg`, the browser favicon: a plain, identity-free glyph kept because a
@@ -197,7 +199,7 @@ documents the handover.
 - [ ] If any trailer or video is added: confirm distribution rights, supply captions or a transcript,
       provide a poster fallback, keep it muted and user-initiated, and pause it when it scrolls out of
       view. (This build ships no video at all, because no licensed footage was available.)
-- [x] Self-hosted, OFL-1.1 licensed webfonts in use (Anton, Barlow, Barlow Condensed, DM Sans
+- [x] Self-hosted, OFL-1.1 licensed webfonts in use (Archivo Variable, Inter Variable, JetBrains Mono
       Variable) — recorded above. No font is loaded from a CDN.
 - [ ] Confirm that no third-party map embed, analytics script or tag manager is added without the
       corresponding privacy wording and owner approval.
@@ -285,8 +287,8 @@ this project where a pattern was taken from an existing source rather than inven
 | Device in the reference | Reimplemented here as |
 | --- | --- |
 | Cream paper, deep red, near-black ink and a restrained antique gold | The site palette in `app/globals.css`. Red is reserved for the primary action and the footer; gold marks *unconfirmed* states; ink carries structure. The specific hexes were darkened where the reference's values failed WCAG AA as text on paper. |
-| A fixed narrow left rail holding a mark, a scroll-progress rule and a vertical label; the page inset by its width | `components/layout/Rail.tsx`. Percentage of page scrolled is shown as a tabular numeral rather than a decorative rule alone. |
-| Oversized condensed uppercase display type over a small body size | Anton for display, DM Sans at 14px for body, Barlow for labels. All sizing is in `clamp()` so the display voice scales from 320px to a wide desktop. |
+| A fixed narrow left rail holding a mark, a scroll-progress rule and a vertical label; the page inset by its width | **Removed.** The approved design replaces the rail with a two-tier header: a utility strip (standing announcement, place, appearance switch) over a sticky bar (sections, search shortcut, ticket action). Scroll position is conveyed by the page itself rather than by a decorative rule. |
+| Oversized condensed uppercase display type over a small body size | **Superseded by the approved design.** The projection-house system sets headings in Archivo at a controlled scale, body copy in Inter at 14px, and every time, price and code in JetBrains Mono. Sizing stays in `clamp()` so the same scale survives from 320px to a wide desktop. |
 | Full-viewport opening scene with the title set as large as the viewport allows and a ruled overline and footer | `components/home/Hero.tsx`. The title lines are derived from the configured brand name rather than hard-coded. |
 | A bordered "spec sheet" of small uppercase labels paired with large display values | `components/cinema/SpecSheet.tsx`, which turns the venue's confirmed/pending fact model into ruled rows. This is the device the honesty system most benefits from: an unconfirmed fact is a visible, designed row rather than an absence. |
 | Text-button filter row with an accent underline on the active item and a superscript count | `components/movies/MovieFilters.tsx`, restyled in `movies.module.css`. |
@@ -353,24 +355,45 @@ so there is nowhere to put an invented one.
 
 ---
 
-## 8. Opening intro: video and component source (licence to be confirmed)
+## 8. Opening intro — removed
+
+The scroll-scrubbed intro that covered the site on first load has been **removed in the "projection
+house" redesign**, and with it the one unverified third-party asset this project carried: a stock clip
+of a city on a third-party CDN, standing in for a place it does not depict. The site now opens directly
+on the page, which is also what the approved design shows.
+
+`components/layout/SiteIntro.tsx`, `components/ui/scroll-locked-video-hero.tsx` and its demo wrapper
+were deleted, and the reduced-motion and `noscript` escape hatches went with them. The site therefore
+makes no third-party request at all. The former record is kept below, marked as withdrawn, so the
+history of the decision is not lost.
+
+### Withdrawn asset record
 
 The site now opens with a scroll-scrubbed intro, `components/ui/scroll-locked-video-hero.tsx`, shown over
 the home page on each visit until the reader pushes through it (`components/layout/SiteIntro.tsx`).
 
 | Asset | Source | Licence position | Status |
 | --- | --- | --- | --- |
-| Intro video (default `videoSrc`) | `https://cdn.21st.dev/assets/mirror/21/21a77eac…066c0f.mp4` | **Not verified.** It is a third-party stock clip of a city, not footage of Madhuban or of this cinema, and no licence for it has been recorded. | **Must be cleared or replaced before launch.** Replace by passing the owner's own footage as `videoSrc` (self-hosted under `public/`), or remove the intro with `SiteIntro`. |
-| Intro component code | Adapted from a 21st.dev component snippet supplied by the project owner | Licence not stated in the snippet. It has been adapted (fonts, release path, skip control), not copied verbatim. | Confirm the upstream licence. Its author credit line ("by guglielmogiannattasio.exe") is kept on screen until it is cleared. |
+| Intro video (default `videoSrc`) | `https://cdn.21st.dev/assets/mirror/21/21a77eac…066c0f.mp4` | **Withdrawn.** A third-party stock clip of a city, not footage of Madhuban or of this cinema, with no licence ever recorded. | **Resolved by removal** — the component that played it no longer exists, so the asset is not referenced, fetched or shown. |
+| Intro component code | Adapted from a 21st.dev component snippet supplied by the project owner | Licence not stated in the snippet. It was adapted (fonts, release path, skip control), not copied verbatim. | **Withdrawn with the component.** No part of it remains in the tree, so there is no outstanding licence question and no on-screen credit line. |
 
-This is the only third-party video on the site. The intro never depicts this cinema, and it is not a
-photograph of the venue.
+**The site now ships no video, and no third-party asset of any kind.** The record above is kept
+because it explains why: an intro a visitor reads as footage of the building they are travelling to is
+a claim about this venue, and that is the one thing this project does not do.
 
 ---
 
-## 9. Footer crowd: sprite and licence (to be confirmed)
+## 9. Footer crowd — removed
 
-The footer carries a crowd of walking figures, `components/ui/skiper39.tsx` (`CrowdCanvas`), rendered in
+The crowd band and its sprite were **removed in the "projection house" redesign**: the approved design
+carries a four-column footer with no illustration in it, and the band's own licence position — a sprite
+hot-linked from a third-party CDN, with an attribution the footer had to print — was the weakest
+provenance on the site. `components/ui/skiper39.tsx` and its demo wrapper were deleted, and the footer
+no longer needs the `footer-crowd` print hook that `app/globals.css` used to carry for it.
+
+### Withdrawn asset record
+
+The footer carried a crowd of walking figures, `components/ui/skiper39.tsx` (`CrowdCanvas`), rendered in
 a strip beneath the footer copy. The strip is its own band, in normal flow below every line of the
 footer: **no text of any kind is printed over the figures.** That is deliberate on two counts — the
 figures illustrate a generic audience rather than this venue's, so nothing here should read as
