@@ -4,15 +4,17 @@ This file records where every asset and every borrowed idea came from, as requir
 brief. It is the audit trail for the site's rights position: if something here is wrong, it is wrong
 in public and can be corrected.
 
-**Summary: no third-party code, imagery, audio or video is included in this project — and, as of the
-current build, no first-party placeholder imagery either.** Code adapted from the owner's own
-repositories (`kingfisher`, `vistaRail`) is recorded in §6 and §10; nothing from a third party is. The site ships no images at all: the
-generated posters and cinema illustrations that an earlier build carried have been deleted, because a
-stand-in that reads as a photograph of this cinema, or as a film's own poster, is worse than no image.
-Every asset that will appear on this site has to arrive with its licence attached. The repositories
-listed below were reviewed for interaction ideas only, with one documented exception: the visual
-design language is adapted from a repository owned by the same owner, at the owner's instruction. See
-§6.
+**Summary: no third-party code, imagery, audio or video is included in this project.** Code adapted
+from the owner's own repositories (`kingfisher`, `vistaRail`, `pk`) is recorded in §6, §10 and §11;
+nothing from a third party is. The only pictures the site ships were made for it: the original abstract
+cover plates in `public/cover-art/` (§2), and four clips of original motion rendered from those plates
+in `public/media/` (§12). The generated posters and cinema illustrations that an earlier build carried
+were deleted, because a stand-in that reads as a photograph of this cinema, or as a film's own poster,
+is worse than no image — and for the same reason none of the film media in `pk` was brought across
+with its code (§11). Every further asset that appears on this site has to arrive with its licence
+attached. The repositories listed below were reviewed for interaction ideas only, with three
+documented exceptions, all repositories owned by the same owner and adapted at the owner's
+instruction: see §6, §10 and §11.
 
 ---
 
@@ -196,9 +198,13 @@ documents the handover.
       do not treat a search engine result as a licence.
 - [ ] Per-film runtimes and certifications. These are not published by release calendars, so they are
       `null` throughout the programme until a feed or the venue supplies them.
-- [ ] If any trailer or video is added: confirm distribution rights, supply captions or a transcript,
-      provide a poster fallback, keep it muted and user-initiated, and pause it when it scrolls out of
-      view. (This build ships no video at all, because no licensed footage was available.)
+- [ ] If any trailer or venue footage is added: confirm distribution rights, supply captions or a
+      transcript, provide a poster fallback, keep it muted and user-initiated, and pause it when it
+      scrolls out of view. Record it in `data/media.ts` and here first. (This build ships no licensed
+      footage. Its only video is original motion rendered from the site's own cover plates — §12. Those
+      clips are silent, so captions do not apply; each has a poster and a written description, plays
+      muted only while on screen, pauses off screen and in hidden tabs, never plays under reduced motion,
+      and stops with the page's **Pause films** control. The full reel opens only on request.)
 - [x] Self-hosted, OFL-1.1 licensed webfonts in use (Archivo Variable, Inter Variable, JetBrains Mono
       Variable) — recorded above. No font is loaded from a CDN.
 - [ ] Confirm that no third-party map embed, analytics script or tag manager is added without the
@@ -225,7 +231,7 @@ what makes reuse *possible* elsewhere but not *suitable* here:**
 | `gireeshkumarreddy/vara-studio` | `ASSET_PROVENANCE.md`: photographs downloaded from Unsplash under the Unsplash License, with photographer, page URL and image id listed; "Credit is not required by the licence but is given" | The images are women's fashion editorial photographs. Wrong subject for a cinema hall, and carrying them into this project would move a third-party licence obligation (and a brand context) into a venue site for no benefit. |
 | `gireeshkumarreddy/varasaree` | `ASSET_PROVENANCE.md`: nine images generated with the built-in image tool, with the exact prompt set recorded | Original AI images, but of Indian sarees — wrong subject. The *practice* here is the model this project followed: generate original images and record the exact prompts. |
 | `gireeshkumarreddy/Telangana-tech` | `CREDITS.md`: two Wikimedia Commons photographs under **CC BY-SA 4.0** with full attribution, plus several Unsplash illustrative photographs | CC BY-SA 4.0 is a share-alike licence. Importing one into a commercial venue site would impose attribution and share-alike obligations, and the photographs show a government secretariat and Hyderabad — not this cinema. |
-| `gireeshkumarreddy/alluarjun`, `Bahubali`, `pk`, `one-piece-`, `AVENGERS-DOOMSDAY-`, `Ghost-Rider-`, `GIRL`, `cinematic-portofilo` | Asset source notes exist in some, but the media is franchise material | Fan-project material. Franchise imagery cannot be relicensed by anyone other than the rights holder, regardless of who owns the repository. |
+| `gireeshkumarreddy/alluarjun`, `Bahubali`, `pk`, `one-piece-`, `AVENGERS-DOOMSDAY-`, `Ghost-Rider-`, `GIRL`, `cinematic-portofilo` | Asset source notes exist in some, but the media is franchise material | Fan-project material. Franchise imagery cannot be relicensed by anyone other than the rights holder, regardless of who owns the repository. (`pk`'s *code* was later adapted at the owner's direction; its media still was not — §11.) |
 
 **Finding 3 — the franchise repositories contain exactly the material that must not ship.** Direct
 inspection found, for example:
@@ -270,7 +276,12 @@ For the avoidance of doubt, this project contains:
 * no analytics, advertising or tracking scripts;
 * no credentials, API keys, Firebase configuration or demo user accounts from any source repository;
 * no video or imagery from `vistaRail` — its hero films are stock footage of a different railway and
-  are not used anywhere here (§10).
+  are not used anywhere here (§10);
+* no media from `pk` — its stills, posters, title artwork and clips are a released feature film's
+  promotional material and belong to its producers and music label (§11). `npm run check` carries the
+  fingerprint of every one of those files and fails if any appears under `public/`;
+* no embedded third-party video — no YouTube, Vimeo or GIF-host player, and no request to one; the
+  check suite fails if a component names one.
 
 ---
 
@@ -289,7 +300,7 @@ this project where a pattern was taken from an existing source rather than inven
 | Cream paper, deep red, near-black ink and a restrained antique gold | The site palette in `app/globals.css`. Red is reserved for the primary action and the footer; gold marks *unconfirmed* states; ink carries structure. The specific hexes were darkened where the reference's values failed WCAG AA as text on paper. |
 | A fixed narrow left rail holding a mark, a scroll-progress rule and a vertical label; the page inset by its width | **Removed.** The approved design replaces the rail with a two-tier header: a utility strip (standing announcement, place, appearance switch) over a sticky bar (sections, search shortcut, ticket action). Scroll position is conveyed by the page itself rather than by a decorative rule. |
 | Oversized condensed uppercase display type over a small body size | **Superseded by the approved design.** The projection-house system sets headings in Archivo at a controlled scale, body copy in Inter at 14px, and every time, price and code in JetBrains Mono. Sizing stays in `clamp()` so the same scale survives from 320px to a wide desktop. |
-| Full-viewport opening scene with the title set as large as the viewport allows and a ruled overline and footer | `components/home/Hero.tsx`. The title lines are derived from the configured brand name rather than hard-coded. |
+| Full-viewport opening scene with the title set as large as the viewport allows and a ruled overline and footer | Formerly `components/home/Hero.tsx`, now **superseded** by the cinematic opening scene adapted from `pk` (§11), which keeps the idea — the venue's name as large as the screen allows, its lines derived from the configured brand name — over the site's own title sequence. |
 | A bordered "spec sheet" of small uppercase labels paired with large display values | `components/cinema/SpecSheet.tsx`, which turns the venue's confirmed/pending fact model into ruled rows. This is the device the honesty system most benefits from: an unconfirmed fact is a visible, designed row rather than an absence. |
 | Text-button filter row with an accent underline on the active item and a superscript count | `components/movies/MovieFilters.tsx`, restyled in `movies.module.css`. |
 | Reveal-on-scroll (opacity and translate, `cubic-bezier(.16,1,.3,1)`), progressive-enhancement gated | `components/layout/RevealProvider.tsx`. Gated behind a `data-reveal="ready"` flag set only when JavaScript is available, so no content can ever be stranded behind an animation. |
@@ -310,9 +321,13 @@ reusable here:
   this project self-hosts instead. See the Typography section above.
 - **No Devanagari display face as a decorative motif.** Different brand, different region, different
   meaning.
-- **No scroll-driven sticky sequence.** The reference's centrepiece is an element held with
-  `position: sticky` while a long track scrolls past it. That is exactly the "pinned giant scroll
-  experience" the brief prohibits, so it was not rebuilt in any form.
+- **No scroll-driven sticky sequence** — *superseded by the owner's later direction.* The
+  reference's centrepiece is an element held with `position: sticky` while a long track scrolls past
+  it, which the original brief ruled out, so it was not rebuilt from this repository. The owner has
+  since directed that the effects of `pk` be brought across, and pk's centrepiece is exactly such a
+  sequence; it now opens the home page (§11). It is built so the objection to it does not apply: the
+  page scrolls natively (nothing listens to the wheel, nothing snaps or smooths), the "What's on" action
+  in its first screen skips it, and without JavaScript or with reduced motion it is not pinned at all.
 - **No audio, particles, pointer-only interactions or animated cursor.** The reference's petal
   shedding, diyas and pour interaction are pointer- and sound-driven; here, motion is limited to
   CSS opacity and transform effects that the global `prefers-reduced-motion` rule removes entirely.
@@ -380,6 +395,15 @@ the home page on each visit until the reader pushes through it (`components/layo
 **The site now ships no video, and no third-party asset of any kind.** The record above is kept
 because it explains why: an intro a visitor reads as footage of the building they are travelling to is
 a claim about this venue, and that is the one thing this project does not do.
+
+**Update — the intro and video are back, on different terms (§11, §12).** The home page again opens
+with a short intro and plays video, at the owner's direction. Neither repeats what was withdrawn here.
+The intro (`components/cinematic/SiteIntro.tsx`) is the venue's name in type for about two and a half
+seconds — no picture of any kind — on the first home-page load of a visit only; it holds nothing (the
+first key, tap, click or scroll ends it), is hidden from assistive technology, never starts under
+reduced motion and cannot appear without JavaScript. The video is the site's own: clips rendered from
+its own cover plates, each described in words as not footage of this cinema and not from any film. The
+site still makes no third-party request and ships no third-party asset.
 
 ---
 
@@ -454,4 +478,87 @@ this project's own structure and visual language, and the changes are the intere
   is connected. Upstream's brand mark is not used anywhere: this site draws no logo (§2).
 - **Its Tailwind theme, colour values, wording, copy, fonts and imagery.** None of it travels. The
   night sheet's palette is this project's own four colours, contrast-checked in `npm run check`.
+
+---
+
+## 11. Cinematic motion system: adapted from `gireeshkumarreddy/pk`
+
+At the owner's instruction — *"Video and other components and effects in this repo … clone it in this
+repo so that [the] site looks more premium and real"* — the motion system of the owner's repository
+[`gireeshkumarreddy/pk`](https://github.com/gireeshkumarreddy/pk) was brought into the home page. pk is
+an independent fan site for a released Telugu feature film, built on Next.js with Tailwind, shadcn and
+GSAP. It carries **no LICENSE file**, so the same rule as `kingfisher` (§6) and `vistaRail` (§10)
+applies: the owner's own code, adapted at the owner's direction, for this project only.
+
+The line ran through the middle of the repository. **Its code is the owner's; its media is not.**
+
+### What was adapted
+
+Nothing was copied file-for-file. Each piece was re-implemented as server-rendered markup with
+CSS-module styling against this project's tokens, enhanced by one client controller.
+
+| In `pk` | Here | What changed, and why |
+| --- | --- | --- |
+| The `.journey` scene and its GSAP timeline in `app/page.tsx`: circular camera exit, ten tiles flying into a ring that turns −210°, a centre mark, a sweeping crimson crescent, a red field flooding the stage, two statements, a framed portrait under a lifting mask with stacked words | `components/cinematic/CinematicJourney.tsx` + `CinematicMotion.tsx` | The choreography and its timings are upstream's. The film is the site's own render; the tiles are its own cover plates, decorative; the centre mark is the trade name in type (no logo is drawn — §2); the red field is house velvet (`--curtain`); the framed plate is the next release in the programme, captioned with its real date and labelled *original cover art, not the film's poster*. Upstream's copy about its film was replaced with lines that make no claim about this venue. Every layer is in the server HTML: the scene is pinned only once the controller sets `data-live`, so without JavaScript or under reduced motion it reads as plain sections. The scroll is native — no wheel listener, no snapping, no smoothing. |
+| `.wide-scene` (clip-path reveal and parallax) | `WideScene.tsx` | Same reveal. The picture is the gallery render; the copy states two counts read from the programme record. |
+| `.world` (scattered stills gathering into a column) | `WorldScene.tsx` | The stills were landscape; these plates are portrait, so they gather into a row, and a caption arrives with them saying what they are. The heading lists the programme's languages, counted from the record. Resting positions are data, applied by the controller, so the unpinned layout stays a clean grid. |
+| `.films` chapters (oversized titles drifting over wide pictures; a click opens a YouTube trailer) | `FilmChapters.tsx` | Three different films from the sourced programme instead of clips from one film; each opens that film's own page, where its date and source are shown. A portrait plate carries a landscape banner by sitting sharp beside a blurred copy of itself — never cropped, stretched or upscaled — and says what it is. |
+| `.end-card` | `EndCard.tsx` | Same curtain call. The card plays the rings render; the credits are facts about the venue and the programme. |
+| `components/cinema-media.tsx` (poster → local loop → YouTube, IntersectionObserver-gated) | `CinemaMedia.tsx` | The poster-first layering and the discipline (fetch near the viewport, play only on screen, pause in hidden tabs) are kept. The YouTube layer is gone: the site makes no third-party request. Added: no video element at all under reduced motion; art-directed posters through `next/image`; a `data-suspended` hook so a scene that fades a film out stops it. |
+| The `paused` state and the "pause films" control | `lib/playback.ts`, `PlaybackControl.tsx` | The document is the source of truth (`data-films="paused"`, restored before first paint), so CSS loops stop with the videos; the choice is remembered; the control uses the appearance switch's accessible pattern. |
+| The film dialog (Radix) | `ReelDialog.tsx` | A native modal `<dialog>`, portalled to `<body>`, playing the site's own reel with controls and a written description; background films hold while it is open. |
+| The logo intro | `SiteIntro.tsx`, `intro.module.css`, `CINEMATIC_BOOTSTRAP` in `lib/cinematic.ts` | CSS keyframes started by a pre-paint attribute instead of GSAP after hydration, so a failed script leaves no intro rather than a stuck one. Type only. Once per visit, any input ends it, never under reduced motion (see the update under §8). |
+| `components/showcase-controller.tsx` (`?showcase=1` guided tour with tab recording) | `ShowcaseTour.tsx` | Same monotone-cubic path between cue points and the same optional tab recording, with cue points read from this page's scenes. Off for readers who ask for reduced motion. |
+| `tools/video/render-showcase.mjs` (deterministic canvas render piped into ffmpeg) | `scripts/render-reel.mts` | The method, not the content: it now composes only this project's cover plates and shapes drawn in the script (§12). |
+| The progress line; the header that changes tone over dark scenes | `CinematicMotion.tsx`, the `progress` rule | The header takes the night palette — the same tokens as the night sheet — over a `data-tone="dark"` scene, instead of having its colour set inline. |
+
+### What was deliberately not taken
+
+- **Every piece of its media.** All 22 files in `public/media/` are promotional material for the film:
+  official stills and posters credited to the production house (`OG002.jpg`, `OG007.webp`,
+  `OG008.webp`, `OG009.png`, `OG011.webp`, `OG013.webp`, `OG015.webp`, `OG016.jpg`, `og-dual-guns.jpg`,
+  `og-portrait.jpg`, `og-truck.jpg`, `omi.jpg`, `poster-4.jpg`, `poster-6.jpg`, `poster-9.jpg`,
+  `yt-0.jpg`), the film's title artwork (`og-title-original.png`), and five short clips published by
+  the film's music label and distributor (`video/entrance.mp4`, `firestorm.mp4`, `glasses.mp4`,
+  `katana.mp4`, `title.mp4`). They include a real actor's likeness. pk's own README states that the
+  imagery, title marks and music belong to their owners and that promotional availability is not a
+  reuse licence; a personal repository cannot grant one to a commercial venue. And the film is not in
+  this cinema's programme, so leading the home page with it would tell visitors something false.
+  `npm run check` holds the SHA-256 fingerprint of every one of these files and fails if any appears
+  anywhere under `public/`, under any name.
+- **Its YouTube embeds** (a glimpse, a lyric video and a trailer of that film) and the player layer
+  built for them. No third-party request is made.
+- **All of its words** — headings, statements, chapter titles, credits and the fan-site disclaimer.
+- **Its Tailwind, shadcn/Radix and `tw-animate-css` layers**, its chapter-index sheet (the site's own
+  header and menu already navigate), its Vinext/Cloudflare build scripts and its ChatGPT-auth
+  dependency.
+
+### Licence position
+
+As §6 and §10: no LICENSE file, so the adaptation is permitted only because the repository is the
+owner's own and the owner directed it — for the owner, and for this project only. The media exclusion
+above does not depend on the licence question at all: even a licence from the repository's owner could
+not cover material whose rights belong to a film's producers and music label.
+
+---
+
+## 12. Motion media provenance
+
+Every clip and poster in `public/media/` is original work made for this project, rendered by
+`scripts/render-reel.mts` from the cover plates in `public/cover-art/` (themselves original — §2) and
+from shapes drawn in that script. No camera footage, film footage, stock footage, lettering, logo or
+face appears in any frame. The renders are deterministic: the same script and plates produce the same
+frames. `data/media.ts` is the manifest; `npm run check` fails if a file and its record disagree on
+existence, dimensions or running time, or if a file outgrows its budget.
+
+| File | Size | Length | Made from | What it shows |
+| --- | --- | --- | --- | --- |
+| `reel-wide.mp4`, `reel-wide.jpg` | 1920×1080 | 20 s, silent | plates `coco-2`, `tu-hai-meri-kiran`, `jailer-2`, `cult`, `frozen-iii`, `klara-and-the-sun`, `doraemon-castle-of-the-undersea-devil`, `street-fighter`, `wildwood`, `ramayana-part-one` | A projector beam strikes and lights a plate; a row of plates passes under spotlights over a polished floor; a reel of gold and crimson rings turns round a lens; a velvet curtain closes. Loops from black to black. |
+| `reel-tall.mp4`, `reel-tall.jpg` | 1080×1920 | 20 s, silent | as above | The same sequence composed for portrait screens. |
+| `gallery.mp4`, `gallery.jpg` | 1920×1080 | 15 s, silent, seamless | plates `godzilla-minus-zero`, `prem-keetanu`, `udta-teer`, `the-cat-in-the-hat`, `nayyi-navelli` | Plates drift past under warm spotlights above a polished floor. |
+| `rings.mp4`, `rings.jpg` | 1920×1080 | 10 s, silent, seamless | plate `ramayana-part-one` | Concentric rings turn round a plate seen through a lens, with dust in the light. |
+
+**Licence:** original work made for this project; no third-party rights. Encoded as H.264 (BT.709,
+`+faststart`) with no audio track. Every surface that plays a clip states, in words, that it is
+original motion and not footage of this cinema or from any film.
 

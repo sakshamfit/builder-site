@@ -1,0 +1,140 @@
+/* ==========================================================================
+   The opening intro
+   --------------------------------------------------------------------------
+   Adapted from the logo intro in gireeshkumarreddy/pk (ASSET_CREDITS.md §11):
+   the name rises out of a clip, a line draws beneath it, and the whole card
+   wipes upward off the page. Upstream drives it from GSAP after hydration; here
+   it is CSS keyframes started by an attribute the pre-paint script sets, so it
+   never waits on JavaScript and is never left on screen by a script that failed.
+
+   It is hidden unless `data-intro="play"` is on <html>, which happens only on
+   the home page, once per visit, and never under reduced motion (see
+   lib/cinematic.ts). The global reduced-motion and print rules in
+   app/globals.css hide it again through its stable `site-intro` hook.
+   ========================================================================== */
+
+.intro {
+  display: none;
+}
+
+:global([data-intro="play"]) .intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: #0b0b0c;
+  color: #f4f2ee;
+  cursor: pointer;
+  animation: introWipe 2.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+/* The page underneath is never locked: the first wheel, touch or key ends the
+   card, so a reader who starts scrolling at once simply gets the page. */
+
+@keyframes introWipe {
+  0%,
+  70% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+.mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.2vh, 26px);
+  animation: introLift 2.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+@keyframes introLift {
+  0%,
+  62% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(-14vh) scale(0.86);
+  }
+}
+
+.lead {
+  font-family: var(--font-display);
+  font-size: clamp(64px, 15vw, 230px);
+  font-weight: 800;
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  animation: introRise 1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+@keyframes introRise {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(22%);
+  }
+  to {
+    clip-path: inset(0 0 -10% 0);
+    transform: translateY(0);
+  }
+}
+
+.tail {
+  font-family: var(--font-label);
+  font-size: clamp(11px, 1.25vw, 16px);
+  font-weight: 600;
+  letter-spacing: 0.55em;
+  margin-right: -0.55em;
+  text-transform: uppercase;
+  color: #f0b04a;
+  animation: introFade 0.6s ease 0.7s both;
+}
+
+.line {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 21%;
+  height: 1px;
+  background: #f0533c;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: introLine 1.15s cubic-bezier(0.76, 0, 0.24, 1) 0.35s both;
+}
+
+.place {
+  position: absolute;
+  bottom: calc(21% - 2.6em);
+  font-family: var(--font-label);
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  margin-right: -0.4em;
+  text-transform: uppercase;
+  color: #b9b3aa;
+  animation: introFade 0.6s ease 0.95s both;
+}
+
+@keyframes introLine {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes introFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none !important;
+  }
+}

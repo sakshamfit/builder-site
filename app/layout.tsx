@@ -4,8 +4,10 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { UtilityStrip } from "@/components/layout/UtilityStrip";
 import { RevealProvider } from "@/components/layout/RevealProvider";
 import { ModeProvider } from "@/components/layout/ModeProvider";
+import { SiteIntro } from "@/components/cinematic/SiteIntro";
 import { siteConfig } from "@/lib/site-config";
 import { APPEARANCE_BOOTSTRAP } from "@/lib/appearance";
+import { CINEMATIC_BOOTSTRAP } from "@/lib/cinematic";
 import { placeLabel } from "@/lib/cinema-content";
 
 /*
@@ -53,8 +55,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
      * `suppressHydrationWarning` covers the one attribute React does not render:
      * the appearance below, which the pre-paint script has already set on this
      * element by the time hydration runs. Nothing else on <html> changes.
+     *
+     * `data-scroll-behavior` tells Next that the stylesheet's smooth scrolling is
+     * for in-page anchors only, so a route change jumps to the top of the new page
+     * instead of gliding the length of a long one.
      */
-    <html lang="en-IN" suppressHydrationWarning>
+    <html lang="en-IN" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
         {/*
           Appearance, before first paint.
@@ -67,6 +73,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           server already rendered the day sheet, which is a complete page.
         */}
         <script dangerouslySetInnerHTML={{ __html: APPEARANCE_BOOTSTRAP }} />
+
+        {/*
+          Motion, before first paint — the same contract as the script above.
+          It restores a reader's "pause films" choice, and on the first home-page
+          load of a visit (never under reduced motion, never without JavaScript)
+          starts the opening intro below, which is CSS from then on and removes
+          itself. Built from the constants in lib/cinematic.ts.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: CINEMATIC_BOOTSTRAP }} />
+        <SiteIntro />
 
         {/*
           Projector dust. Fixed, decorative, pointer-events none — the finest

@@ -16,7 +16,7 @@ export type NavItem = { label: string; href: string; hint?: string };
 export const NAV_ITEMS: NavItem[] = [
   { label: "Movies", href: "/movies", hint: "What is playing, and when it releases" },
   { label: "Showtimes", href: "/showtimes", hint: "Today onwards, from the venue's feed" },
-  { label: "Experience", href: "/experience", hint: "Screens, sound and the auditorium" },
+  { label: "Experience", href: "/cinema#screens-title", hint: "Screens, sound and the auditorium" },
   { label: "Location & Amenities", href: "/cinema", hint: "Getting there, and what is inside" },
   { label: "Offers", href: "/offers", hint: "Approved promotions only" },
   { label: "Help", href: "/help", hint: "Booking, policies and questions" },
@@ -36,7 +36,7 @@ export const FOOTER_SECTIONS: { heading: string; items: { label: string; href: s
     items: [
       { label: "Now showing", href: "/movies" },
       { label: "Today's showtimes", href: "/showtimes" },
-      { label: "Screen formats", href: "/experience#formats" },
+      { label: "Screen formats", href: "/cinema#screens-title" },
       { label: "Offers", href: "/offers" },
     ],
   },
@@ -46,7 +46,7 @@ export const FOOTER_SECTIONS: { heading: string; items: { label: string; href: s
       { label: "Location and directions", href: "/cinema#location" },
       { label: "Parking and access", href: "/cinema#access" },
       { label: "Facilities and accessibility", href: "/cinema#facilities" },
-      { label: "Plan your visit", href: "/experience#visit" },
+      { label: "Plan your visit", href: "/cinema#location-title" },
     ],
   },
   {

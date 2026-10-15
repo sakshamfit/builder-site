@@ -84,7 +84,8 @@ programme page, in the banner above it, and on every film page.
 
 ```text
 app/                      routes (App Router)
-  page.tsx                home: hero → venue showcase → film programme → showtimes → venue info
+  page.tsx                home: cinematic opening → venue showcase → film programme → showtimes →
+                          venue info → closing card
   movies/page.tsx         the programme; becomes a filterable schedule view with a feed
   movies/[slug]/page.tsx  one film: release facts, sources, and its screenings when they exist
   cinema/page.tsx         location, hours, facilities, accessibility, contact
@@ -94,7 +95,9 @@ app/                      routes (App Router)
 components/
   layout/                 header, footer, primary nav, mobile dialog, day/night provider and switch
   showcase/               venue spotlight (ARIA tabs), highlights, gallery, photography-pending panel
-  home/                   hero, prelude, scroll cue, showcase section, cinema experience, visit information
+  cinematic/              the opening sequence and its scenes, the media player, pause control,
+                          reel dialog, intro and guided tour (adapted from pk — ASSET_CREDITS §11)
+  home/                   prelude, scroll cue, showcase section, cinema experience, visit information
   programme/              the film programme: board, cards, typographic plate, schedule-wait panel
   movies/                 filter row
   showtimes/              date selector, film groups, screening chips, schedule status
@@ -102,6 +105,8 @@ components/
   ui/                     button, badge, poster image, empty state, the two appearance glyphs
 data/
   programme.json          SOURCED film programme: real titles, real release dates, real citations
+  cover-art.json          the original cover plates in public/cover-art/
+  media.ts                the original motion media in public/media/, with what each clip is made of
   showcase.ts             venue imagery registry (empty until approved photography arrives)
   cinema.ts               venue facts, each with a confirmation status
   offers.ts faqs.ts       approved content only
@@ -115,16 +120,22 @@ lib/
   date-format.ts          timezone-safe date/time/price formatting
   appearance.ts           day/night: the storage key, the rule, the pre-paint script
   motion.ts               easings and durations, checked against the stylesheet
+  cinematic.ts            the motion pre-paint script, and the facts the cinematic scenes state
+  playback.ts             one pause switch for every moving picture on a page
   types.ts site-config.ts clock.ts share-url.ts metadata.ts cinema-content.ts
 scripts/checks.mts        self-checks (npm run check)
+scripts/render-reel.mts   renders public/media/ from the cover plates (see §12)
 ASSET_CREDITS.md          provenance for every asset and every idea borrowed
 ```
 
 Every screen is a server component. The only client components are the mobile navigation dialog, the
 venue spotlight, the marquee, the two navigation helpers that mark the current section, and the two
 appearance pieces (the provider and the switch). The scroll cue is client-side too, and decorative.
-So the whole booking journey works with JavaScript disabled — without it the page simply renders on
-the day sheet, with no cue and no switch — and each date/filter choice is a real, shareable URL.
+On the home page the cinematic scenes are server components as well; what runs in the browser is the
+scroll choreography, the media player, the pause control, the reel dialog and — behind `?showcase=1`
+only — the guided tour. So the whole booking journey works with JavaScript disabled — without it the
+page simply renders on the day sheet, the opening scene shows its still poster, the scenes read top to
+bottom as ordinary sections, and each date/filter choice is a real, shareable URL.
 
 ---
 
@@ -227,11 +238,27 @@ stylesheet — a colour that fails AA is a failing build, not a matter of taste.
 `--on-dark` exist for the labels that sit *on* a fill rather than on paper: one inverts with its
 surface, the other must not, and a scan in the check suite fails any new rule that confuses them.)
 
-Motion is limited to four things: reveal-on-scroll for section blocks, short hover transitions, the
-quiet scroll cue at the foot of the hero, and the crossfade between the two sheets.
+**The cinematic opening.** At the owner's direction the home page now opens the way the owner's
+`gireeshkumarreddy/pk` site does: a full-screen film that, as the reader scrolls, contracts through a
+circular mask into a ring of plates turning round the venue's name; a crimson arc sweeps past, house
+velvet floods the stage for two lines of type, and it parts on a single framed plate — the next
+release in the programme. A wide scene states the programme's size, a dark "season" scene gathers five
+plates into a line beneath the programme's languages, three film chapters give the next releases the
+full width, and a velvet end card closes the page. The choreography is pk's; every picture in it is
+this site's own (the cover plates, and clips rendered from them — §12), and every number, date,
+language and title is read from the same programme record the film pages use. The scenes are marked
+`data-mode="night"` — the auditorium is dark whichever sheet the reader chose — so they paint from the
+night tokens the check suite already measures; the one new colour is the velvet (`--curtain`), and its
+labels are measured too. Over a dark scene the header and utility strip take the night palette, and
+hand the reader's own sheet back when the page beneath them is light again.
+
+Elsewhere, motion is limited to reveal-on-scroll for section blocks, short hover transitions, the
+quiet scroll cue at the foot of the opening scene, and the crossfade between the two sheets.
 The reveal is gated behind a `data-reveal="ready"` flag that only JavaScript sets, so if the script
-never runs every section renders fully visible — content is never hidden behind an animation.
-`prefers-reduced-motion: reduce` removes both, and disables the marquee outright.
+never runs every section renders fully visible — content is never hidden behind an animation. The
+cinematic scenes follow the same rule: their pinned, layered stage applies only once the controller
+has set `data-live` on them. `prefers-reduced-motion: reduce` removes all of it, and disables the
+marquee outright.
 
 **Where this came from:** the owner directed that the visual layer follow their own repository,
 `gireeshkumarreddy/kingfisher`. What was adapted, and what was deliberately left behind (its imagery,
@@ -398,14 +425,25 @@ visitor's device may be in another. Therefore:
   captions are visible text, not tooltips.
 * The programme plate is decorative (`aria-hidden`) with the film title rendered once as a real
   heading beside it, so a screen reader hears each title once, in a sensible outline.
-* Motion is limited to short opacity/transform transitions, the slow marquee and the day↔night
-  crossfade. `prefers-reduced-motion: reduce` collapses all of it globally: reveals appear instantly,
-  the marquee stops, the crossfade becomes a cut, and the scroll cue beside the hero is not rendered
-  at all. A reader who has asked for reduced motion never sees the opening intro either — it is
-  skipped outright, and hidden by CSS even before the script runs.
-* There is no scroll-jacking and no forced smooth scrolling: the opening intro pins the page only
-  while it is on screen, always offers a visible "Skip intro", releases on a failed video load, and
-  hands scrolling back the moment it is entered.
+* `prefers-reduced-motion: reduce` collapses every moving part of the site: reveals appear
+  instantly, the marquee stops, the crossfade becomes a cut, the scroll cue is not rendered, the
+  opening intro never starts, no video element is ever created (each clip's still poster is the
+  picture), and the cinematic scenes are never pinned — they render as ordinary sections read top to
+  bottom. The guided tour stays off, because a page that scrolls itself is motion.
+* Without JavaScript the same plain layout is what renders: the intro is hidden by default and only
+  the pre-paint script can show it, the posters are in the server HTML, and the pinned stage applies
+  only once the controller has confirmed motion is welcome.
+* The cinematic scenes scroll natively. Nothing listens to the wheel, nothing snaps and nothing smooths
+  the scroll; the scrollbar is the only clock. The header, the skip link and the opening scene's
+  "What's on" action — which jumps straight past the sequence to the programme — work at every point.
+* Moving pictures are silent, start only when on screen, stop when scrolled away, when the tab is
+  hidden or when a scene fades them out, and a fixed **Pause films** control (constant name, state in
+  `aria-pressed`, remembered across visits) stops every film and every CSS loop on the page at once —
+  the WCAG 2.2.2 mechanism. The reel dialog is a native modal `<dialog>`: focus moves in, Escape
+  closes it, focus returns to its button, and the background films hold while it is open.
+* The opening intro is the venue's name in type for about two and a half seconds, on the first
+  home-page load of a visit only. It holds nothing: the first key, tap, click or scroll ends it, and it
+  is hidden from assistive technology.
 * Every touch target is at least 44 px, and the layouts start at 320 px.
 
 Verified by rendering each route and auditing the HTML for `h1` count, duplicate ids, missing image
@@ -416,10 +454,12 @@ could overflow a 320 px viewport (none).
 
 ## 12. Assets and their rights
 
-**The site currently ships no images at all.** The ten stand-in film posters and the six generated
-cinema illustrations that this project previously carried have been deleted, along with the two data
-files that held the sample films and the sample schedule. `npm run check` fails if any of those
-directories or files reappear.
+**The site ships only artwork made for it.** The ten stand-in film posters and the six generated
+cinema illustrations that this project once carried were deleted, along with the two data files that
+held the sample films and the sample schedule, and `npm run check` fails if any of them reappear. What
+ships instead is the set of original abstract cover plates (§4) and four clips of original motion
+rendered from them (below). None of it is a film's key art, none of it depicts this building, and every
+surface that shows it says so.
 
 That is a deliberate position rather than an omission:
 
@@ -452,16 +492,44 @@ them. That was investigated in detail and could not be done, for four documented
 
 See `ASSET_CREDITS.md` §4.
 
-**Code provenance is audited the same way.** All code here is original, with two owner-directed
-exceptions from the owner's own repositories — the design language from `kingfisher` (§6) and the
-day/night system, scroll cue and prelude from `vistaRail` (§10). Neither carries a licence file;
-neither was copied verbatim; both sections itemise what travelled and what did not, and the permission
-runs to this project only.
+**Code provenance is audited the same way.** All code here is original, with three owner-directed
+exceptions from the owner's own repositories — the design language from `kingfisher` (§6), the
+day/night system, scroll cue and prelude from `vistaRail` (§10), and the cinematic motion system from
+`pk` (§11). None carries a licence file; none was copied verbatim; each section itemises what travelled
+and what did not, and the permission runs to this project only.
 
-Typography is self-hosted and OFL-1.1 licensed (**Anton** for display, **Barlow** and **Barlow
-Condensed** for interface labels and numerals, **DM Sans Variable** for body copy), installed as npm
-packages so nothing is fetched from a font CDN at runtime. Licences and swap instructions are in
-`ASSET_CREDITS.md`.
+**On the request to take the videos and content from `gireeshkumarreddy/pk`:** its code was adapted
+(above, and §13); its media was not, and cannot be. Every image and clip in that repository is
+promotional material for a released feature film — official stills and posters credited to the
+production house, the film's title artwork, a real actor's likeness, and short clips published by the
+film's music label — and pk's own README says that imagery, title marks and music belong to their
+owners. A personal repository cannot license them to a commercial venue, and putting a film that is not
+in this cinema's programme at the top of its home page would also tell visitors something false. The
+check suite carries the SHA-256 fingerprint of every one of those 22 files and fails if any of them
+appears anywhere under `public/`, under any name. `ASSET_CREDITS.md` §11 itemises what travelled.
+
+**Motion media.** The four clips in `public/media/` — the 20-second title sequence (a landscape cut
+and a portrait cut for phones), a 15-second gallery loop and a 10-second reel of turning rings — are
+rendered frame by frame by `scripts/render-reel.mts` from the cover plates and from shapes the script
+draws: a projector beam, dust in the light, a velvet curtain, a turning reel. No camera footage, no film
+footage, no lettering, no faces. Each clip, its poster, its dimensions, its running time and the plates
+it is made from are recorded in `data/media.ts`, and the check suite reads each MP4's own header to
+confirm they agree. To rebuild them (the renderer's two dependencies are deliberately not part of the
+site's install):
+
+```bash
+npm install --no-save @napi-rs/canvas
+FFMPEG=/path/to/ffmpeg npx tsx scripts/render-reel.mts     # or with ffmpeg on PATH
+npx tsx scripts/render-reel.mts --stills                     # review frames in /tmp/reel-stills
+```
+
+Real footage reaches the site the same way real posters do: the venue supplies its own walkthrough
+film with a written licence, or a distributor supplies a trailer in writing for a title this cinema is
+actually screening — recorded as a new entry in `data/media.ts` and in `ASSET_CREDITS.md` first.
+
+Typography is self-hosted and OFL-1.1 licensed (**Archivo** for display, **Inter** for body copy,
+**JetBrains Mono** for labels, times and prices), installed as npm packages so nothing is fetched from
+a font CDN at runtime. Licences and swap instructions are in `ASSET_CREDITS.md`.
 
 ---
 
@@ -474,8 +542,8 @@ Those repositories were inspected, and the decisive finding is recorded in `ASSE
 without a licence is unavailable for copying — no source file, asset or asset path was copied from any
 of them. The high-level ideas that informed this build (a restrained full-bleed hero; typed local
 content separated from presentation; poster-led cards; filter state kept separate from data; an
-enquiry form's honest failure states; offscreen video pausing as a principle applied here by not
-shipping video at all) are reimplemented from scratch in this project's own code and visual language.
+enquiry form's honest failure states; offscreen video pausing, now applied in the site's own media
+player) are reimplemented from scratch in this project's own code and visual language.
 `ASSET_CREDITS.md` lists each repository reviewed and what was taken from it, which in every case is
 "concepts only, no files".
 
@@ -487,8 +555,13 @@ trademarks, wording, Google Fonts links and scroll-driven sticky centrepiece wer
 owner's instruction components were taken from `gireeshkumarreddy/vistaRail` — the day/night
 appearance system, the scroll cue and the prelude beneath the hero. Its Tailwind theme, framer-motion
 dependency, Lenis smooth scrolling, video crossfade, brand mark, search field and copy did not travel;
-each piece was re-implemented against this project's tokens. What was taken, what was changed and what
-was left behind is itemised in `ASSET_CREDITS.md` §6 and §10.
+each piece was re-implemented against this project's tokens. Third, at the owner's instruction the
+videos, components and effects of `gireeshkumarreddy/pk` were brought across — and here the line ran
+through the middle of the repository: its GSAP choreography, layered media player, pause control,
+dialog, intro and guided tour were adapted; every piece of its media (a released film's stills,
+posters, title art and label-published clips) and all of its copy were not, and its Tailwind, shadcn
+and YouTube layers were left behind. What was taken, what was changed and what was left behind is
+itemised in `ASSET_CREDITS.md` §6, §10 and §11.
 
 ---
 

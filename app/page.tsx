@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
-import { Hero } from "@/components/home/Hero";
+import { CinematicJourney } from "@/components/cinematic/CinematicJourney";
+import { CinematicMotion } from "@/components/cinematic/CinematicMotion";
+import { EndCard } from "@/components/cinematic/EndCard";
+import { FilmChapters } from "@/components/cinematic/FilmChapters";
+import { PlaybackControl } from "@/components/cinematic/PlaybackControl";
+import { ShowcaseTour } from "@/components/cinematic/ShowcaseTour";
+import { WideScene } from "@/components/cinematic/WideScene";
+import { WorldScene } from "@/components/cinematic/WorldScene";
+import cinematicStyles from "@/components/cinematic/cinematic.module.css";
 import { Prelude } from "@/components/home/Prelude";
 import { Showcase } from "@/components/home/Showcase";
 import { MarqueeTicker } from "@/components/showcase/MarqueeTicker";
@@ -17,6 +25,7 @@ import { loadProgramme } from "@/lib/programme";
 import { readFilterParams } from "@/lib/share-url";
 import { confirmed } from "@/lib/cinema-content";
 import { summariseSchedule } from "@/lib/showtime-view";
+import { featuredFilms, programmeLanguages, programmeSpan } from "@/lib/cinematic";
 import { venue } from "@/data/cinema";
 import { siteConfig } from "@/lib/site-config";
 import programmeStyles from "@/components/programme/programme.module.css";
@@ -33,9 +42,15 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 /**
  * Home.
  *
- * Order, deliberately: the hall first, then what is on, then when you can see it.
- * The venue showcase leads because this is a venue site; the schedule follows
- * because it is the only reason a visitor needs a timetable at all.
+ * It opens as a picture house should: the cinematic sequence adapted from the
+ * owner's `gireeshkumarreddy/pk` repository (ASSET_CREDITS.md §11) — the opening
+ * film, the ring of plates, the velvet, the wide programme scene, the season and
+ * three film chapters — every frame of it the site's own artwork, and every
+ * number in it read from the programme record below. The "What's on" action in
+ * the first screen jumps straight past it for a visitor in a hurry.
+ *
+ * Then the page proper, in its long-standing order: the hall, then what is on,
+ * then when you can see it, then how to get there — and a closing card.
  *
  * The programme shown here is the sourced release calendar — real films, real
  * announced release dates, each one cited. Whether this cinema is screening any
@@ -43,8 +58,25 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
  * page keeps the two apart in words rather than blending them into one confident
  * list.
  */
+/**
+ * The fixed furniture of the cinematic page: the scroll choreography, the
+ * progress line, the "pause films" control and — behind `?showcase=1` only —
+ * the guided tour.
+ */
+function CinematicFurniture({ showcase }: { showcase: boolean }) {
+  return (
+    <>
+      <CinematicMotion />
+      <div className={cinematicStyles.progress} data-j="progress" data-overlay="" aria-hidden="true" />
+      <PlaybackControl />
+      {showcase ? <ShowcaseTour brandName={siteConfig.brandName} /> : null}
+    </>
+  );
+}
+
 export default async function HomePage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
+  const showcase = params.showcase === "1";
   const clock = readClock();
   const snapshot = await getScheduleSnapshot();
 
@@ -57,13 +89,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
   if (snapshot.state !== "ready") {
     return (
       <>
-        <Hero
-          todayISO={clock.todayISO}
-          place={place}
-          leadingFilmSlug={null}
-          leadingFilmTitle={null}
-          upcomingCount={0}
-        />
+        <CinematicJourney place={place} todayISO={clock.todayISO} filmCount={0} lead={null} />
 
         <Prelude />
 
@@ -94,6 +120,9 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
 
         <CinemaExperience />
         <VenueInfo />
+
+        <EndCard place={place} filmCount={0} />
+        <CinematicFurniture showcase={showcase} />
       </>
     );
   }
@@ -129,15 +158,16 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
     leading?.releaseDate ? `Next release ${formatDateLong(leading.releaseDate)}` : null,
   ].filter((item): item is string => Boolean(item));
 
+  /* What the cinematic scenes state — all of it counted from the same record. */
+  const languages = programmeLanguages(catalogue);
+  const featured = featuredFilms(catalogue, 3);
+
   return (
     <>
-      <Hero
-        todayISO={clock.todayISO}
-        place={place}
-        leadingFilmSlug={leading?.slug ?? null}
-        leadingFilmTitle={leading?.title ?? null}
-        upcomingCount={upcoming.length}
-      />
+      <CinematicJourney place={place} todayISO={clock.todayISO} filmCount={catalogue.length} lead={leading} />
+      <WideScene filmCount={catalogue.length} languageCount={languages.length} />
+      <WorldScene languages={languages} filmCount={catalogue.length} span={programmeSpan(catalogue)} />
+      <FilmChapters films={featured} todayISO={clock.todayISO} />
 
       <Prelude />
 
@@ -227,6 +257,9 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
 
       <CinemaExperience />
       <VenueInfo />
+
+      <EndCard place={place} filmCount={catalogue.length} />
+      <CinematicFurniture showcase={showcase} />
     </>
   );
 }

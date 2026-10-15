@@ -1094,6 +1094,15 @@ check("every link in the footer is a destination this site actually has", () => 
     assert.ok(!duplicates.has(item.href), `${item.href} appears twice in the primary navigation`);
     duplicates.add(item.href);
   }
+
+  /* On-site is not enough: the route has to exist. "Experience" pointed at an
+     /experience page that was never built, and every visitor who used the top
+     navigation to find the screens landed on a 404. */
+  for (const item of sections) {
+    const route = item.href.split("#")[0].split("?")[0].replace(/\/$/, "");
+    const page = route === "" ? "app/page.tsx" : `app${route}/page.tsx`;
+    assert.ok(existsSync(page), `${item.label} points at ${item.href}, but ${page} does not exist`);
+  }
 });
 
 check("the footer's small print is read from the records, not typed into the markup", () => {
@@ -1282,6 +1291,7 @@ const {
   resolveMode,
 } = await import("../lib/appearance.ts");
 const { MOTION, MOTION_CSS_PROPERTIES } = await import("../lib/motion.ts");
+const cinematic = await import("../lib/cinematic.ts");
 
 const stylesheet = readFileSync("app/globals.css", "utf8");
 
@@ -1607,8 +1617,8 @@ check("the scroll cue is decorative and never traps a pointer", () => {
   assert.match(cue, /aria-hidden="true"/, "the cue repeats a position the browser already conveys");
   assert.match(cue, /if \(reducedMotion\) return null;/, "reduced motion must remove the cue");
 
-  const hero = readFileSync("components/home/Hero.tsx", "utf8");
-  assert.match(hero, /<ScrollCue \/>/, "the cue is no longer mounted in the hero");
+  const opening = readFileSync("components/cinematic/CinematicJourney.tsx", "utf8");
+  assert.match(opening, /<ScrollCue \/>/, "the cue is no longer mounted in the opening scene");
 });
 
 check("the prelude derives its claims from the venue record", () => {
@@ -1623,6 +1633,237 @@ check("the prelude derives its claims from the venue record", () => {
     /^\s*"use client"/m,
     "the prelude is static content and must stay a server component",
   );
+});
+
+/* -------------------------------------------------------------------------- */
+/* Motion media — the site's own renders, and nothing borrowed                */
+/* -------------------------------------------------------------------------- */
+
+section("Motion media and the cinematic page");
+
+const { MOTION_MEDIA, MOTION_MEDIA_BUDGET } = await import("../data/media.ts");
+const { createHash } = await import("node:crypto");
+
+type MediaRecord = (typeof MOTION_MEDIA)[keyof typeof MOTION_MEDIA];
+const mediaRecords = Object.values(MOTION_MEDIA) as MediaRecord[];
+const mediaSources = mediaRecords.flatMap((record) => (record.tall ? [record.wide, record.tall] : [record.wide]));
+
+/** Every file under a directory, recursively, as repository-relative paths. */
+function filesUnder(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = `${dir}/${entry.name}`;
+    return entry.isDirectory() ? filesUnder(full) : [full];
+  });
+}
+
+/**
+ * Width, height and running time straight from an MP4's own header: the movie
+ * header (`mvhd`) for duration, and the first track header (`tkhd`) — the only
+ * track, these clips carry no sound — for the frame size.
+ */
+function mp4Info(file: string): { width: number; height: number; seconds: number } {
+  const data = readFileSync(file);
+  const mvhd = data.indexOf("mvhd");
+  const tkhd = data.indexOf("tkhd");
+  assert.ok(mvhd > 0 && tkhd > 0, `${file} has no readable movie header`);
+  const version = data[mvhd + 4];
+  const timescale = version === 1 ? data.readUInt32BE(mvhd + 24) : data.readUInt32BE(mvhd + 16);
+  const duration = version === 1 ? Number(data.readBigUInt64BE(mvhd + 28)) : data.readUInt32BE(mvhd + 20);
+  const end = tkhd - 4 + data.readUInt32BE(tkhd - 4);
+  return {
+    width: data.readUInt32BE(end - 8) / 65536,
+    height: data.readUInt32BE(end - 4) / 65536,
+    seconds: duration / timescale,
+  };
+}
+
+check("the motion-media manifest and the files on disk agree", () => {
+  const declared = new Set(mediaSources.flatMap((source) => [`public${source.src}`, `public${source.poster}`]));
+  for (const file of declared) {
+    assert.ok(existsSync(file), `data/media.ts declares ${file}, which is missing — run scripts/render-reel.mts`);
+  }
+  for (const file of filesUnder("public/media")) {
+    assert.ok(declared.has(file), `${file} is declared nowhere — every moving picture needs a record in data/media.ts`);
+  }
+});
+
+check("every clip is an original render of this project's own cover plates", () => {
+  const plates = new Set(JSON.parse(readFileSync("data/cover-art.json", "utf8")).plates as string[]);
+  for (const record of mediaRecords) {
+    assert.equal(record.provenance, "original-render", `${record.id} must be one of this site's own renders`);
+    assert.ok(existsSync(record.renderer), `${record.id} names a renderer, ${record.renderer}, that does not exist`);
+    assert.ok(record.derivedFrom.length > 0, `${record.id} must say which plates it is made from`);
+    for (const slug of record.derivedFrom) {
+      assert.ok(plates.has(slug), `${record.id} claims to be made from "${slug}", which is not one of the cover plates`);
+    }
+    assert.match(
+      record.description,
+      /not footage of this cinema/i,
+      `${record.id}'s description must say it is not footage of this cinema`,
+    );
+  }
+});
+
+check("every clip and poster stays inside its budget", () => {
+  for (const source of mediaSources) {
+    const video = statSync(`public${source.src}`).size;
+    const poster = statSync(`public${source.poster}`).size;
+    assert.ok(video <= MOTION_MEDIA_BUDGET.videoBytes, `${source.src} is ${video} bytes, over the video budget`);
+    assert.ok(poster <= MOTION_MEDIA_BUDGET.posterBytes, `${source.poster} is ${poster} bytes, over the poster budget`);
+  }
+});
+
+check("every clip is the size and length its record says", () => {
+  for (const record of mediaRecords) {
+    for (const source of record.tall ? [record.wide, record.tall] : [record.wide]) {
+      const info = mp4Info(`public${source.src}`);
+      assert.equal(info.width, source.width, `${source.src} is ${info.width} wide, not ${source.width}`);
+      assert.equal(info.height, source.height, `${source.src} is ${info.height} high, not ${source.height}`);
+      assert.ok(
+        Math.abs(info.seconds - record.durationSeconds) < 0.1,
+        `${source.src} runs ${info.seconds.toFixed(2)}s, not the ${record.durationSeconds}s its record states`,
+      );
+    }
+  }
+});
+
+check("no media file from the pk repository can reach the site, under any name", () => {
+  /*
+   * The cinematic page adapts code from gireeshkumarreddy/pk (ASSET_CREDITS.md
+   * §11). Its media — promotional stills and posters of a released feature
+   * film, the film's title artwork, an actor's likeness, and clips published by
+   * the film's music label — belongs to their owners, not to that repository.
+   * These are the SHA-256 fingerprints of every one of those 22 files, so a copy
+   * fails this check whatever it is renamed to and wherever it is put.
+   */
+  const forbidden = new Set([
+    "ae7643b31e2dbfa2fc2a7a4d7332d84d45c7077ffa3caa5fae981fa0c92c0718",
+    "d851b5042367a4e89bc8cfd9832b61e733ff5516d74339448381a111b25714e1",
+    "08a9a9d29befa383fa81f660b14e12709e090d13bdb5410b9c6361dbc96e749f",
+    "a09c646cd853e0ccf897fccf4c1571c5dd54c6202aaac95a242448de49bcf0a5",
+    "45fe04e01360da6db47baf8f0b65d00a4b1a65aa017812be8fe103247805479d",
+    "2cac5684751e76aedc3f382d05d80b38eebf96ea056979dd6016559e81615b9e",
+    "a5eae29cc47eb20d5b7d1129ac609cc2d78e290e968fc79de8a644b88a251098",
+    "5348ffdf8a6db3f7b29e2982c2e27059e1206884be76f0b94fe19e62ea8934bc",
+    "dc59880723d55778ce6a4d9e558c3577f0717613d74b0c2e5412a365ba29ea72",
+    "37a21d5a34fcfe4f57d2bae554189003bb137681a8ad1ad530745ff512e185f8",
+    "9918d5c2539e0d45dff9e1d9df15d367aaafc0a91e7b3e26659df9ffedebb8b2",
+    "949ce8b5d1b7e9e5f5b70bbd577ea5de77ba4e7308ea2be908584cfd6fc2d5e0",
+    "f2aebcc3d75fcc59d35d1f02d62800c73d767397d08a82a1d0faf0f9693fef22",
+    "781141096474b30a7e079ed2b38ecb94711682779d6d065c592e843433f52b68",
+    "202b8325a8986fb4f3dba8410e5d9e6ee8eeb99b7fdc035c2bdb894321ef2847",
+    "6a00851083a01c4dbf9aee2412b6c71f194248d66c5356f74c0a11d59ed10d97",
+    "c39ec407177f4083e8d061aa8dc3ab9a84437c2a6685e9556513931105a55ddd",
+    "e3d148eb63ce792d8dbc8801800762570b0d119a37c95ed62d13dc315310f9a6",
+    "fb4f85689899dcab97970449409982dbef18f639db1ccd579bc030ef16b45231",
+    "e05cef1a987fdbe54c9496108a54c396f1f620b481f72f89af3ff90c0578e729",
+    "0798fae84cf9950bc616a8b2f580a2f9a67d3b23ea072e53a4674e3ec5bbe49e",
+    "3bec4bc8ef09f50a01fe00754b6d6c4e99a5441d6d43b9da0d7d3f6a246a3fd4",
+  ]);
+  const files = filesUnder("public");
+  assert.ok(files.length > 30, `only ${files.length} files under public/ were scanned — the walk is broken`);
+  for (const file of files) {
+    const digest = createHash("sha256").update(readFileSync(file)).digest("hex");
+    assert.ok(!forbidden.has(digest), `${file} is a copy of a media file from the pk repository, which is not ours to publish`);
+  }
+});
+
+check("the site embeds no third-party video and names no borrowed media", () => {
+  const sources = [...filesUnder("app"), ...filesUnder("components"), ...filesUnder("lib"), ...filesUnder("data")].filter(
+    (file) => /\.(tsx?|css|json)$/.test(file),
+  );
+  for (const file of sources) {
+    const text = readFileSync(file, "utf8");
+    assert.doesNotMatch(
+      text,
+      /youtube\.com|youtu\.be|youtube-nocookie|vimeo\.com|tenor\.com|giphy\.com|<iframe/i,
+      `${file} embeds or links third-party video; this site plays only its own renders`,
+    );
+    assert.doesNotMatch(
+      text,
+      /og-title-original|og-portrait|og-dual-guns|og-truck|\/media\/video\/|DVVMovies/,
+      `${file} references media from the pk repository`,
+    );
+  }
+});
+
+check("a moving picture stops for reduced motion, off screen, in a hidden tab and on request", () => {
+  const player = readFileSync("components/cinematic/CinemaMedia.tsx", "utf8");
+  assert.match(player, /readReducedMotion/, "reduced motion must decide whether a video element exists at all");
+  assert.match(player, /!reduced && near/, "under reduced motion the poster must be the whole picture");
+  assert.match(player, /IntersectionObserver/, "a film off screen must not play");
+  assert.match(player, /visibilitychange/, "a film in a hidden tab must not play");
+  assert.match(player, /readPaused/, "the reader's pause must stop every film");
+  assert.match(player, /data-suspended/, "a scene that has faded a film out must be able to stop it");
+  assert.match(player, /muted/, "a film that starts by itself must be silent");
+  assert.doesNotMatch(player, /autoPlay/, "playback is decided by the rules above, never by the autoplay attribute");
+});
+
+check("every moving picture can be paused from one control", () => {
+  const control = readFileSync("components/cinematic/PlaybackControl.tsx", "utf8");
+  assert.match(control, /aria-pressed=\{paused\}/, "the pause control must report its state");
+  assert.match(control, /aria-label="[^"{}]+"/, "the pause control's name must be a constant");
+  assert.match(readFileSync("app/page.tsx", "utf8"), /<PlaybackControl \/>/, "the home page has lost its pause control");
+  const css = readFileSync("components/cinematic/cinematic.module.css", "utf8");
+  assert.match(
+    css,
+    /\[data-films="paused"\]\) \.chapterPlate/,
+    "the CSS loops must stop with the films when the reader pauses",
+  );
+});
+
+check("the cinematic scenes read as a plain page until motion is confirmed", () => {
+  const css = readFileSync("components/cinematic/cinematic.module.css", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  let pinned = 0;
+  for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const [, selector, body] = match;
+    if (!/position:\s*sticky/.test(body)) continue;
+    pinned += 1;
+    assert.match(selector, /\[data-live\]/, `${selector.trim()} pins without waiting for [data-live]`);
+  }
+  assert.ok(pinned >= 2, "the journey and the season should both pin once live");
+  for (const scene of ["CinematicJourney", "WideScene", "WorldScene", "FilmChapters", "EndCard"]) {
+    const source = readFileSync(`components/cinematic/${scene}.tsx`, "utf8");
+    assert.match(source, /data-scene="/, `${scene} has no data-scene hook for the controller`);
+    assert.doesNotMatch(source, /^\s*"use client"/m, `${scene} must stay a server component`);
+  }
+  const motion = readFileSync("components/cinematic/CinematicMotion.tsx", "utf8");
+  assert.match(motion, /prefers-reduced-motion: reduce/, "the controller must stand down for reduced motion");
+  assert.match(motion, /setAttribute\("data-live"/, "only the controller may switch a scene to its pinned layout");
+});
+
+check("the velvet carries its labels in both sheets", () => {
+  for (const palette of [dayTokens, nightTokens]) {
+    for (const [label, background] of [
+      ["--on-curtain", "--curtain"],
+      ["--on-curtain-2", "--curtain"],
+      ["--on-curtain", "--curtain-deep"],
+    ]) {
+      const ratio = contrast(token(palette, label), token(palette, background));
+      assert.ok(ratio >= 4.5, `${label} on ${background} is ${ratio.toFixed(2)}:1, below 4.5:1`);
+    }
+  }
+});
+
+check("the opening intro is hidden unless the pre-paint script starts it", () => {
+  const css = readFileSync("components/cinematic/intro.module.css", "utf8");
+  assert.match(css, /^\.intro \{\s*display: none;\s*\}/m, "the intro must be hidden by default, so a failed script shows the page");
+  const { CINEMATIC_BOOTSTRAP } = cinematic;
+  assert.ok(CINEMATIC_BOOTSTRAP.includes("prefers-reduced-motion: reduce"), "the intro must never start under reduced motion");
+  assert.ok(CINEMATIC_BOOTSTRAP.includes("sessionStorage"), "the intro must play once per visit, not on every return");
+  assert.ok(CINEMATIC_BOOTSTRAP.includes('location.pathname!=="/"'), "the intro belongs to the home page only");
+  assert.match(CINEMATIC_BOOTSTRAP, /setTimeout\(end,\d+\)/, "the intro must end on its own");
+  assert.match(readFileSync("components/cinematic/SiteIntro.tsx", "utf8"), /aria-hidden="true"/, "the intro is decoration");
+  assert.match(readFileSync("app/layout.tsx", "utf8"), /CINEMATIC_BOOTSTRAP/, "the layout no longer runs the motion bootstrap");
+});
+
+check("wherever a clip plays, the page says what it is", () => {
+  for (const file of filesUnder("components").filter((name) => name.endsWith(".tsx"))) {
+    const source = readFileSync(file, "utf8");
+    if (!/<CinemaMedia\b/.test(source)) continue;
+    assert.match(source, /MOTION_MEDIA_CREDIT/, `${file} plays a clip without saying it is original motion, not footage`);
+  }
 });
 
 /* -------------------------------------------------------------------------- */

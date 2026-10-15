@@ -17,6 +17,11 @@
   z-index: 60;
   border-bottom: 1px solid var(--line);
   background: var(--paper-2);
+  /* Stated rather than inherited: over a dark scene on the home page the chrome
+     takes the night palette by attribute (CinematicMotion), and inherited text
+     would keep the page's colour. */
+  color: var(--ink);
+  transition: background-color var(--dur) var(--ease);
 }
 
 .utilityInner {
@@ -86,7 +91,10 @@
   z-index: 70;
   border-bottom: 1px solid var(--line);
   background: var(--paper);
-  transition: background-color var(--dur) var(--ease);
+  color: var(--ink);
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
 
 /* Once the page has moved, the bar lets a little of what passes under it show,

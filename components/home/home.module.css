@@ -1,44 +1,10 @@
 /* ==========================================================================
-   Home — hero, spec sheet, showcase, coming soon, venue panel
+   Home — scroll cue, prelude, spec sheet, showcase, coming soon, venue panel
+   --------------------------------------------------------------------------
+   The opening scene itself now lives in components/cinematic/ (adapted from
+   gireeshkumarreddy/pk, ASSET_CREDITS.md §11); the type-only hero it replaced
+   and its rules are gone. The scroll cue below is mounted inside that scene.
    ========================================================================== */
-
-/* --- hero ----------------------------------------------------------------- */
-
-.hero {
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: 100svh;
-  padding-block: 110px 40px;
-  overflow: hidden;
-  border-bottom: 1px solid var(--line-ink);
-}
-
-/* The still is a texture behind the type, so it is held well back. */
-.heroStill {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.heroStill img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.17;
-  filter: sepia(0.35) contrast(1.05);
-}
-
-.heroInner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  /* Overline · title · ruled footer · the scroll cue beneath it. */
-  grid-template-rows: auto 1fr auto auto;
-  align-content: center;
-  width: 100%;
-  min-height: calc(100svh - 150px);
-}
 
 /*
  * --- scroll cue ------------------------------------------------------------
@@ -184,107 +150,6 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: end;
   }
-}
-
-.heroOverline {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.5rem 1.5rem;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line-ink);
-  font-family: var(--font-label);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.heroOverlineRight {
-  color: var(--ink-3);
-  text-align: right;
-}
-
-.heroTitle {
-  display: grid;
-  align-content: center;
-  padding-block: clamp(1.25rem, 4vh, 3rem);
-  color: var(--red);
-  /*
-   * As large as the viewport reasonably allows — the whole point of the
-   * treatment. The lower bound is set by the longest expected line ("Madhuban
-   * Mall" is 11 characters of Anton, which at 2.5rem fits the 240px available
-   * at a 320px viewport inside the rail and the page gutter) and the upper by a
-   * comfortable desktop width.
-   */
-  font-size: clamp(2.5rem, 11.8vw, 11.5rem);
-  line-height: 0.94;
-  letter-spacing: -0.035em;
-  text-align: center;
-  animation: heroIn 1.1s var(--ease) both;
-}
-
-@keyframes heroIn {
-  from {
-    opacity: 0;
-    transform: translateY(42px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.heroTitleLine {
-  display: block;
-}
-
-.heroTitleAccent {
-  color: var(--ink);
-}
-
-.heroScript {
-  max-width: 46ch;
-  margin-inline: auto;
-  text-align: center;
-  color: var(--ink-2);
-}
-
-.heroBottom {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.25rem;
-  padding-top: 18px;
-  border-top: 1px solid var(--line-ink);
-}
-
-.heroMeta {
-  display: grid;
-  gap: 2px;
-  font-size: 11.5px;
-  line-height: 1.55;
-  color: var(--ink-3);
-}
-
-.heroMeta p {
-  margin: 0;
-}
-
-.heroCount {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-.heroImageNote {
-  max-width: 34ch;
-}
-
-.heroActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
 /* --- spec sheet ----------------------------------------------------------- */
@@ -487,28 +352,5 @@
   .visitGrid {
     grid-template-columns: 1.1fr 1fr;
     gap: 1.75rem;
-  }
-}
-
-@media (max-width: 700px) {
-  .hero {
-    padding-block: 92px 28px;
-  }
-
-  .heroInner {
-    min-height: calc(100svh - 120px);
-  }
-
-  .heroTitle {
-    letter-spacing: -0.025em;
-  }
-
-  .heroBottom {
-    display: grid;
-  }
-
-  .heroActions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
   }
 }

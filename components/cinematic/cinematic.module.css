@@ -1,0 +1,1671 @@
+/* ==========================================================================
+   Cinematic — the home page's opening sequence and the scenes after it
+   --------------------------------------------------------------------------
+   Adapted from the motion system of gireeshkumarreddy/pk (ASSET_CREDITS.md
+   §11): the circular camera exit, the turning ring of plates, the crimson arc,
+   the flooding field, the masked portrait, the wide reveal, the gathering
+   constellation, the oversized chapter titles and the end card.
+
+   Two rules hold everywhere in this file:
+
+   1. Every scene is marked `data-mode="night"` in its markup. The auditorium is
+      dark whichever sheet the reader chose, so these scenes paint from the
+      night tokens — already contrast-checked by `npm run check` — and no new
+      colours are introduced except the velvet (`--curtain`), which is measured
+      there too.
+
+   2. Every scene has two layouts. The default is a plain page, read top to
+      bottom: it is what a reader without JavaScript, or one who asks for
+      reduced motion, gets. The pinned, layered stage applies only under
+      `[data-live]`, which `CinematicMotion` sets once it has confirmed motion
+      is welcome — so no content can be trapped behind an animation that will
+      not run.
+   ========================================================================== */
+
+/* --- shared ---------------------------------------------------------------- */
+
+.kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.4rem;
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line-ink);
+}
+
+.textLink:hover {
+  color: var(--red-text);
+  border-color: var(--red);
+}
+
+.playIcon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid currentColor;
+}
+
+/* --- media ----------------------------------------------------------------- */
+
+.media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #070607;
+}
+
+.media picture {
+  display: contents;
+}
+
+.mediaPoster,
+.mediaVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mediaVideo {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+  pointer-events: none;
+}
+
+.media[data-playing="true"] .mediaVideo {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   The journey
+   ========================================================================== */
+
+.journey {
+  --stage-h: calc(100svh - var(--header-h) - var(--utility-h));
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- the opening scene ----------------------------------------------------- */
+
+.opening {
+  position: relative;
+  height: var(--stage-h);
+  min-height: 560px;
+  overflow: hidden;
+  background: #070607;
+  transform-origin: 50% 50%;
+}
+
+.openingMedia {
+  position: absolute;
+  inset: 0;
+}
+
+.openingShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 4, 5, 0.86) 0%, rgba(5, 4, 5, 0.55) 34%, rgba(5, 4, 5, 0) 68%),
+    linear-gradient(0deg, rgba(5, 4, 5, 0.78) 0%, rgba(5, 4, 5, 0) 38%);
+}
+
+.heroCopy {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  right: var(--pad);
+  top: 50%;
+  max-width: 880px;
+  /* `translate`, not `transform`: the scroll timeline animates this element's
+     transform, and must not wipe out the centring when it does. */
+  translate: 0 -56%;
+}
+
+.heroCopy > * {
+  animation: heroRise 1s var(--ease) both;
+}
+
+.heroCopy > :nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.heroCopy > :nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+.heroCopy > :nth-child(4) {
+  animation-delay: 0.36s;
+}
+
+/* The copy waits for the intro to lift before it rises. */
+:global([data-intro="play"]) .heroCopy > * {
+  animation-delay: 2.1s;
+}
+
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(34px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroTitle {
+  display: flex;
+  flex-direction: column;
+  margin: 1.2rem 0 1.4rem;
+  font-size: clamp(3rem, 8.2vw, 8.4rem);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.heroLine {
+  display: block;
+}
+
+.heroAccent {
+  color: var(--red);
+}
+
+.heroText {
+  max-width: 46ch;
+  margin: 0 0 1.8rem;
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.6rem;
+}
+
+.reelButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 1px solid rgba(244, 242, 238, 0.4);
+}
+
+.reelButton:hover {
+  color: var(--red-text);
+  border-color: var(--red);
+}
+
+.heroFooter {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: clamp(1rem, 3vh, 1.8rem);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 1rem;
+}
+
+.heroCue {
+  grid-column: 2;
+}
+
+/* A corner caption, as a film carries one: top right, clear of the actions,
+   the scroll cue and the playback control. */
+.heroCredit {
+  position: absolute;
+  z-index: 2;
+  top: clamp(1rem, 3vh, 1.6rem);
+  right: var(--pad);
+  max-width: 34ch;
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 9.5px;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-align: right;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* --- the velvet ------------------------------------------------------------- */
+
+.field,
+.manifesto,
+.statement,
+.frameMask,
+.end {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.26) 0,
+      rgba(0, 0, 0, 0) 1.6%,
+      rgba(255, 210, 196, 0.06) 3.1%,
+      rgba(0, 0, 0, 0) 4.6%,
+      rgba(0, 0, 0, 0.26) 6.2%
+    ),
+    linear-gradient(180deg, rgba(10, 2, 4, 0.42), rgba(10, 2, 4, 0) 32%, rgba(10, 2, 4, 0) 70%, rgba(10, 2, 4, 0.45)),
+    var(--curtain);
+}
+
+.field,
+.crescent,
+.mark,
+.orbit {
+  display: none;
+}
+
+.curtainKicker {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--on-curtain-2);
+}
+
+.manifesto,
+.statement {
+  position: relative;
+  padding: clamp(4.5rem, 14vh, 8rem) var(--pad);
+  text-align: center;
+  color: var(--on-curtain);
+}
+
+.manifestoLine,
+.statementLine {
+  margin: 1.4rem auto 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  color: var(--on-curtain);
+}
+
+.manifestoLine {
+  max-width: 24ch;
+  font-size: clamp(2rem, 4.6vw, 4.6rem);
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.statementLine {
+  margin: 0 auto 1.4rem;
+  font-size: clamp(2.4rem, 6vw, 6rem);
+  line-height: 0.96;
+}
+
+/* --- the framed plate ------------------------------------------------------- */
+
+.portrait {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2rem;
+  padding: clamp(4rem, 10vh, 6rem) var(--pad) clamp(4rem, 12vh, 7rem);
+  background: var(--paper);
+}
+
+.frame {
+  position: relative;
+  width: min(320px, 72vw);
+  aspect-ratio: 0.6;
+}
+
+.frameOutline {
+  position: absolute;
+  left: -10%;
+  top: -6%;
+  width: 84%;
+  height: 92%;
+  border: 1px solid var(--line-ink);
+  pointer-events: none;
+}
+
+.frameOutline::before,
+.frameOutline::after {
+  content: "+";
+  position: absolute;
+  font-family: var(--font-label);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--ink-3);
+}
+
+.frameOutline::before {
+  top: -7px;
+  left: -5px;
+}
+
+.frameOutline::after {
+  right: -5px;
+  bottom: -7px;
+}
+
+.frameInner {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #070607;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+}
+
+.frameLink {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.frameImage {
+  object-fit: cover;
+  transform-origin: 50% 40%;
+}
+
+.frameMask {
+  display: none;
+}
+
+.sideNote {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.sideNote span:first-child {
+  color: var(--ink);
+}
+
+.portraitWords {
+  display: grid;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5.2vw, 5.6rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.portraitWords span {
+  display: block;
+}
+
+/* --- the pinned stage ------------------------------------------------------- */
+
+.journey[data-live] {
+  height: 600svh;
+}
+
+.journey[data-live] .stage {
+  position: sticky;
+  top: var(--header-h);
+  display: block;
+  /* Pinned, the stage runs from under the header to the foot of the screen.
+     At the very top of the page the utility strip pushes its last few pixels
+     below the fold, which is why the opening scene's footer is lifted by the
+     strip's height. */
+  height: calc(100svh - var(--header-h));
+  overflow: hidden;
+  isolation: isolate;
+  perspective: 1200px;
+}
+
+.journey[data-live] .opening {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  height: auto;
+  min-height: 0;
+  clip-path: circle(100vmax at 50% 50%);
+  will-change: transform, clip-path;
+}
+
+.journey[data-live] .heroFooter {
+  bottom: calc(var(--utility-h) + clamp(0.6rem, 2vh, 1.2rem));
+}
+
+.journey[data-live] .field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  clip-path: circle(0% at 50% 50%);
+  will-change: clip-path;
+}
+
+.journey[data-live] .crescent {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 47vmin;
+  height: 47vmin;
+  margin: -23.5vmin 0 0 -23.5vmin;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 72deg,
+    var(--red) 105deg 315deg,
+    transparent 345deg 360deg
+  );
+  -webkit-mask-image: radial-gradient(circle, transparent 0 55%, #000 56%);
+  mask-image: radial-gradient(circle, transparent 0 55%, #000 56%);
+}
+
+.journey[data-live] .mark {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.markLead {
+  font-family: var(--font-display);
+  font-size: clamp(76px, 13vw, 210px);
+  font-weight: 800;
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--red);
+}
+
+.markTail {
+  margin-top: 1.1em;
+  margin-right: -0.55em;
+  font-family: var(--font-label);
+  font-size: clamp(11px, 1.3vw, 17px);
+  font-weight: 600;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.journey[data-live] .orbit {
+  --orbit: min(118vmin, 1080px);
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: var(--orbit);
+  height: var(--orbit);
+  margin: calc(var(--orbit) / -2) 0 0 calc(var(--orbit) / -2);
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.tile {
+  position: absolute;
+  width: var(--w);
+  aspect-ratio: 0.58;
+  margin-left: calc(var(--w) / -2);
+  margin-top: calc(var(--w) / -2 / 0.58);
+  overflow: hidden;
+  background: #070607;
+  box-shadow: 0 26px 50px rgba(0, 0, 0, 0.55);
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.tile img {
+  object-fit: cover;
+}
+
+.journey[data-live] .manifesto,
+.journey[data-live] .statement {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  width: min(1100px, 88%);
+  padding: 0;
+  background: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.journey[data-live] .portrait {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: block;
+  padding: 0;
+  background: transparent;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.journey[data-live] .frame {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  width: auto;
+  height: 52%;
+  aspect-ratio: 0.6;
+  transform: translateX(-50%);
+}
+
+.journey[data-live] .frameMask {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10%;
+  color: var(--on-curtain);
+  pointer-events: none;
+}
+
+.frameMask p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.5vw, 38px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.frameMask span {
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-curtain-2);
+}
+
+.journey[data-live] .sideNote {
+  position: absolute;
+  top: 50%;
+  text-align: left;
+}
+
+.journey[data-live] .noteLeft {
+  left: var(--pad);
+  max-width: 22ch;
+}
+
+.journey[data-live] .noteRight {
+  right: var(--pad);
+  max-width: 24ch;
+  text-align: right;
+}
+
+.journey[data-live] .portraitWords {
+  position: absolute;
+  z-index: 3;
+  top: 30%;
+  left: 13%;
+  text-align: left;
+  text-shadow: 0 0 28px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   The wide scene
+   ========================================================================== */
+
+.wide {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.wideMedia {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+
+.wide[data-live] .wideMedia {
+  top: -4%;
+  bottom: -8%;
+}
+
+.wideShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* The copy sits over the right of the film, so the right of the film goes
+     nearly to black: a plate passing under the words must not take them away. */
+  background:
+    linear-gradient(90deg, rgba(5, 4, 5, 0.05) 0%, rgba(5, 4, 5, 0.5) 40%, rgba(5, 4, 5, 0.9) 62%, rgba(5, 4, 5, 0.94) 100%),
+    linear-gradient(0deg, rgba(5, 4, 5, 0.85) 0%, rgba(5, 4, 5, 0) 46%);
+}
+
+.wideCopy {
+  position: relative;
+  z-index: 2;
+  width: min(640px, 100%);
+  margin-left: auto;
+  padding: clamp(6rem, 22vh, 12rem) var(--pad) 9rem;
+}
+
+.wideTitle {
+  margin: 1.2rem 0 1.4rem;
+  font-size: clamp(2.6rem, 5.2vw, 5.4rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.wideText {
+  max-width: 44ch;
+  margin-bottom: 1.6rem;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.wideBottom {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 1.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(244, 242, 238, 0.16);
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.wideCredit {
+  max-width: 60ch;
+  text-align: right;
+}
+
+/* ==========================================================================
+   The season
+   ========================================================================== */
+
+.world {
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.worldStage {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 2.5rem;
+  padding: clamp(5rem, 12vh, 8rem) var(--pad);
+  overflow: hidden;
+}
+
+.worldCopy {
+  position: relative;
+  z-index: 2;
+}
+
+.worldTitle {
+  margin: 1.3rem 0 1.3rem;
+  font-size: clamp(2rem, 3.7vw, 3.9rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.worldTitle em {
+  font-style: normal;
+  color: var(--red);
+}
+
+.worldMeta {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.constellation {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.star {
+  position: relative;
+  aspect-ratio: 0.58;
+  overflow: hidden;
+  background: #070607;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+}
+
+.star img {
+  object-fit: cover;
+}
+
+.worldCaption {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.world[data-live] {
+  height: 210svh;
+}
+
+.world[data-live] .worldStage {
+  position: sticky;
+  top: var(--header-h);
+  display: block;
+  height: calc(100svh - var(--header-h));
+  padding: 0;
+  perspective: 1000px;
+}
+
+.world[data-live] .worldCopy {
+  position: absolute;
+  top: 50%;
+  left: var(--pad);
+  width: min(620px, 44%);
+  translate: 0 -50%;
+}
+
+.world[data-live] .constellation {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.world[data-live] .star {
+  position: absolute;
+  width: 11%;
+  transform-style: preserve-3d;
+}
+
+.world[data-live] .worldCaption {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  width: max-content;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Film chapters
+   ========================================================================== */
+
+.films {
+  padding: clamp(4rem, 11vh, 7rem) var(--pad) clamp(2rem, 6vh, 4rem);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.filmsInner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+.filmsLabel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: clamp(3rem, 9vh, 5.5rem);
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line-strong);
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.filmsHeading {
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+
+.chapter {
+  position: relative;
+  margin-bottom: clamp(4.5rem, 13vh, 8rem);
+}
+
+.chapterTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1.2rem;
+  margin: 0 0 1rem;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.chapterIndex {
+  color: var(--red-text);
+}
+
+.chapterLanguages {
+  margin-left: auto;
+}
+
+.chapterTitle {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -0.2em;
+  padding-left: 2%;
+  font-size: clamp(2.5rem, 8.6vw, 9.4rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  pointer-events: none;
+}
+
+.chapterBanner {
+  position: relative;
+  display: block;
+  height: clamp(320px, 62svh, 660px);
+  overflow: hidden;
+  background: #070607;
+  transform-origin: 50% 100%;
+}
+
+.chapterAmbient {
+  position: absolute;
+  inset: -12%;
+  filter: blur(26px) saturate(1.3) brightness(0.34);
+  transform: scale(1.08);
+}
+
+/* A vignette over the ambient copy, so a cream plate's glow stays a glow. */
+.chapterAmbient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgba(5, 4, 5, 0) 30%, rgba(5, 4, 5, 0.7) 100%);
+}
+
+.chapterAmbient img {
+  object-fit: cover;
+}
+
+.chapterPlate {
+  position: absolute;
+  top: 9%;
+  bottom: 9%;
+  right: 9%;
+  aspect-ratio: 0.58;
+  overflow: hidden;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.65);
+  transition: transform 1s var(--ease);
+  animation: plateDrift 14s ease-in-out infinite alternate;
+}
+
+.chapter[data-side="left"] .chapterPlate {
+  right: auto;
+  left: 9%;
+}
+
+.chapterPlate img {
+  object-fit: cover;
+}
+
+.chapterBanner:hover .chapterPlate,
+.chapterBanner:focus-visible .chapterPlate {
+  transform: scale(1.03);
+}
+
+@keyframes plateDrift {
+  from {
+    translate: 0 1.2%;
+  }
+  to {
+    translate: 0 -1.2%;
+  }
+}
+
+.chapterSweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 236, 210, 0.13) 50%, transparent 62%);
+  mix-blend-mode: screen;
+  translate: -100% 0;
+  animation: chapterSweep 7s var(--ease-inout) infinite;
+}
+
+@keyframes chapterSweep {
+  0%,
+  35% {
+    translate: -100% 0;
+  }
+  70%,
+  100% {
+    translate: 100% 0;
+  }
+}
+
+/* The reader's "pause films" stops these loops with the videos. */
+:global([data-films="paused"]) .chapterPlate,
+:global([data-films="paused"]) .chapterSweep {
+  animation-play-state: paused;
+}
+
+.chapterCta {
+  position: absolute;
+  left: clamp(1rem, 2.4vw, 2rem);
+  bottom: clamp(1rem, 2.4vw, 1.8rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 44px;
+  padding: 0 1.3rem;
+  border: 1px solid rgba(244, 242, 238, 0.32);
+  background: rgba(11, 11, 12, 0.66);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+/* The action sits on the side the plate is not. */
+.chapter[data-side="left"] .chapterCta {
+  left: auto;
+  right: clamp(1rem, 2.4vw, 2rem);
+}
+
+.chapter[data-side="left"] .chapterTitle {
+  padding-left: 0;
+  padding-right: 2%;
+  text-align: right;
+}
+
+.chapterBanner:hover .chapterCta,
+.chapterBanner:focus-visible .chapterCta {
+  border-color: var(--red);
+  background: var(--red);
+  color: var(--on-red);
+}
+
+.chapterCaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-top: 1rem;
+}
+
+.chapterCaption p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.chapterCredit {
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ==========================================================================
+   The end card
+   ========================================================================== */
+
+.end {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(4.5rem, 12vh, 7rem) var(--pad) 1.8rem;
+  text-align: center;
+  color: var(--on-curtain);
+}
+
+.endKicker {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  margin-right: -0.4em;
+  text-transform: uppercase;
+  color: var(--on-curtain-2);
+}
+
+.endMark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.6rem 0 clamp(2rem, 6vh, 3rem);
+}
+
+.endLead {
+  font-size: clamp(4.4rem, 19vw, 17rem);
+  font-weight: 800;
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  color: var(--on-curtain);
+}
+
+.endTail {
+  margin-top: 0.9em;
+  margin-right: -0.55em;
+  font-family: var(--font-label);
+  font-size: clamp(12px, 1.6vw, 19px);
+  font-weight: 600;
+  letter-spacing: 0.55em;
+  color: var(--on-curtain-2);
+}
+
+.endCard {
+  position: relative;
+  width: min(1050px, 100%);
+  aspect-ratio: 16 / 9;
+  margin-bottom: clamp(2rem, 6vh, 3rem);
+  overflow: hidden;
+  background: #070607;
+  box-shadow: 0 50px 100px rgba(25, 0, 4, 0.55);
+}
+
+.endActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 2.4rem;
+}
+
+.endActions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  border-bottom: 1px solid rgba(247, 239, 230, 0.45);
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--on-curtain);
+}
+
+.endActions a:hover {
+  border-color: var(--on-curtain);
+}
+
+.end :focus-visible {
+  outline-color: var(--on-curtain);
+}
+
+.credits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 2.2rem;
+  margin: clamp(2rem, 6vh, 3rem) 0;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-curtain-2);
+}
+
+.endLegal {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(247, 239, 230, 0.26);
+  font-size: 12px;
+  color: var(--on-curtain-2);
+}
+
+/* ==========================================================================
+   Furniture: progress line, playback control, reel dialog, tour
+   ========================================================================== */
+
+.progress {
+  position: fixed;
+  z-index: 80;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+.playback {
+  position: fixed;
+  z-index: 85;
+  right: max(10px, env(safe-area-inset-right));
+  bottom: max(10px, env(safe-area-inset-bottom));
+  color: #ffffff;
+  mix-blend-mode: difference;
+}
+
+.playbackButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  padding: 0 0.85rem;
+  font-family: var(--font-label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.74;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.playbackButton:hover,
+.playbackButton:focus-visible {
+  opacity: 1;
+}
+
+.playbackButton:focus-visible {
+  outline-color: #ffffff;
+}
+
+.playbackIcon {
+  position: relative;
+  display: inline-block;
+  width: 9px;
+  height: 10px;
+}
+
+.playbackIcon[data-state="playing"] {
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+
+.playbackIcon[data-state="paused"] {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 9px solid currentColor;
+}
+
+:global(.showcase-mode) .playback {
+  display: none;
+}
+
+.dialog {
+  /* The global reset zeroes every margin, including the browser's `auto` that
+     centres a modal dialog; it is restored here. */
+  margin: auto;
+  width: min(1180px, 94vw);
+  max-width: 94vw;
+  max-height: 94vh;
+  padding: clamp(14px, 2vw, 26px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.84);
+}
+
+.dialogHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.dialogTitle {
+  margin-top: 0.4rem;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.dialogClose {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink-2);
+}
+
+.dialogClose:hover {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+.dialogVideo {
+  width: 100%;
+  height: auto;
+  max-height: 68vh;
+  aspect-ratio: 16 / 9;
+  background: #000000;
+  object-fit: contain;
+}
+
+.dialogVideo[data-portrait] {
+  aspect-ratio: 9 / 16;
+}
+
+.dialogText {
+  max-width: 80ch;
+  margin: 1rem 0 0.4rem;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.dialogCredit {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tour {
+  position: fixed;
+  z-index: 150;
+  left: 50%;
+  bottom: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem 0.5rem;
+  width: max-content;
+  max-width: 94vw;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(11, 11, 12, 0.94);
+  color: #f4f2ee;
+  font-family: var(--font-label);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  transition: opacity var(--dur) var(--ease);
+}
+
+.tour button,
+.tour a,
+.tour > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 0.6rem;
+}
+
+.tour button:hover,
+.tour a:hover {
+  color: #f57a66;
+}
+
+.tourRunning {
+  opacity: 0;
+}
+
+.tourRunning:hover,
+.tourRunning:focus-within {
+  opacity: 1;
+}
+
+.tourMessage {
+  width: 100%;
+  max-width: 60ch;
+  margin: 0;
+  padding: 0.4rem 0.6rem 0.2rem;
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: none;
+}
+
+/* ==========================================================================
+   Small screens
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .journey[data-live] .portraitWords {
+    left: 10%;
+  }
+
+  .wideCopy {
+    width: min(560px, 100%);
+  }
+}
+
+@media (max-width: 699px) {
+  .opening {
+    min-height: 520px;
+  }
+
+  .openingShade {
+    background:
+      linear-gradient(180deg, rgba(5, 4, 5, 0.25) 0%, rgba(5, 4, 5, 0) 30%),
+      linear-gradient(0deg, rgba(5, 4, 5, 0.92) 0%, rgba(5, 4, 5, 0.55) 42%, rgba(5, 4, 5, 0) 70%);
+  }
+
+  .heroCopy {
+    top: auto;
+    bottom: 5.2rem;
+    translate: none;
+  }
+
+  .heroTitle {
+    margin: 0.9rem 0 1rem;
+    font-size: clamp(2.7rem, 13vw, 4.4rem);
+  }
+
+  .heroText {
+    margin-bottom: 1.3rem;
+    font-size: 14px;
+  }
+
+  .heroCue {
+    display: none;
+  }
+
+  .heroCredit {
+    left: var(--pad);
+    max-width: none;
+    text-align: left;
+  }
+
+  .journey[data-live] {
+    height: 520svh;
+  }
+
+  .journey[data-live] .orbit {
+    --orbit: 128vmin;
+  }
+
+  .tile {
+    --w: 17% !important;
+  }
+
+  .markLead {
+    font-size: 17vw;
+  }
+
+  .journey[data-live] .crescent {
+    width: 61vmin;
+    height: 61vmin;
+    margin: -30.5vmin 0 0 -30.5vmin;
+  }
+
+  .manifestoLine {
+    font-size: 8.4vw;
+  }
+
+  .statementLine {
+    font-size: 10vw;
+  }
+
+  .journey[data-live] .frame {
+    top: 26%;
+    height: 44%;
+  }
+
+  .journey[data-live] .noteLeft {
+    top: auto;
+    bottom: 9%;
+  }
+
+  .journey[data-live] .noteRight {
+    top: 7%;
+  }
+
+  .journey[data-live] .portraitWords {
+    top: 33%;
+    left: 6%;
+    font-size: 11vw;
+  }
+
+  .wideCopy {
+    padding: 6rem var(--pad) 8rem;
+  }
+
+  .wideTitle {
+    font-size: 13vw;
+  }
+
+  .wideShade {
+    background:
+      linear-gradient(0deg, rgba(5, 4, 5, 0.92) 0%, rgba(5, 4, 5, 0.7) 55%, rgba(5, 4, 5, 0.35) 100%);
+  }
+
+  .wideBottom {
+    /* Clear of the playback control in the corner. */
+    bottom: 4rem;
+  }
+
+  .wideBottom > :first-child {
+    display: none;
+  }
+
+  .wideCredit {
+    text-align: left;
+  }
+
+  .worldStage {
+    grid-template-columns: 1fr;
+  }
+
+  .worldTitle {
+    font-size: 8.6vw;
+  }
+
+  .constellation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .world[data-live] {
+    height: 180svh;
+  }
+
+  .world[data-live] .worldCopy {
+    top: 16%;
+    width: auto;
+    right: var(--pad);
+    translate: none;
+  }
+
+  .world[data-live] .star {
+    width: 22%;
+  }
+
+  .chapterTitle,
+  .chapter[data-side="left"] .chapterTitle {
+    font-size: 12vw;
+    line-height: 0.96;
+    padding: 0;
+    text-align: left;
+  }
+
+  .chapterLanguages {
+    display: none;
+  }
+
+  .chapterBanner {
+    height: 46svh;
+  }
+
+  .chapterPlate {
+    right: 50%;
+    translate: 50% 0;
+    animation: none;
+  }
+
+  .chapter[data-side="left"] .chapterPlate {
+    left: auto;
+    right: 50%;
+  }
+
+  .chapterCta {
+    left: 50%;
+    right: auto;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .chapter[data-side="left"] .chapterCta {
+    left: 50%;
+    right: auto;
+  }
+
+  .endActions {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}
+
+/* ==========================================================================
+   Reduced motion and print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .progress,
+  .crescent,
+  .orbit,
+  .mark,
+  .chapterSweep {
+    display: none !important;
+  }
+
+  .chapterPlate,
+  .heroCopy > * {
+    animation: none;
+  }
+}
+
+@media print {
+  .progress,
+  .playback,
+  .tour,
+  .mediaVideo,
+  .chapterSweep,
+  .heroFooter {
+    display: none !important;
+  }
+
+  .opening {
+    height: auto;
+    min-height: 0;
+    padding: 2rem var(--pad);
+  }
+
+  .openingMedia,
+  .openingShade {
+    display: none;
+  }
+
+  .heroCopy {
+    position: static;
+    translate: none;
+  }
+}

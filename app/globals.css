@@ -88,6 +88,19 @@
   --on-dark: #f7f5f1;
 
   /*
+   * --- the curtain: house velvet ------------------------------------------
+   * The deep red behind the home page's statements and its closing card. It is
+   * a dark colour in both sheets — the same velvet whether the house lights are
+   * up or down — so it carries cream labels that must not move either:
+   * --on-curtain for type, --on-curtain-2 for the quieter line beneath it.
+   * `npm run check` measures both: 8.3:1 and 6.6:1 on --curtain.
+   */
+  --curtain: #8e1621;
+  --curtain-deep: #5e0d16;
+  --on-curtain: #f7efe6;
+  --on-curtain-2: #efd5cf;
+
+  /*
    * --- amber: status, codes and block labels ------------------------------
    * Darkened to #8a5a12 so it clears 4.5:1 as small type on every paper tone
    * here: 5.28 on --paper, 4.94 on --paper-2. The brighter amber that looks
@@ -192,6 +205,12 @@
   --on-red: #14100e;
   --on-gold: #14100e;
   --on-dark: #f7f5f1;
+
+  /* The velvet does not change with the lights, and neither do its labels. */
+  --curtain: #8e1621;
+  --curtain-deep: #5e0d16;
+  --on-curtain: #f7efe6;
+  --on-curtain-2: #efd5cf;
 
   --gold: #f0b04a;
   --gold-bright: #f7c463;
